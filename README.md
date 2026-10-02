@@ -1,9 +1,9 @@
-# arpitsingh.github.io
+# arp1tsingh.github.io
 
 Personal portfolio and project archive for **Arpit Singh** — Computer Engineering student at
 Vidyalankar Institute of Technology, Mumbai.
 
-Live site: **https://arpitsingh.github.io/**
+Live site: **https://arp1tsingh.github.io/**
 
 ---
 
@@ -57,10 +57,10 @@ git commit -m "update"
 git push
 ```
 
-The site lands at `https://arpitsingh.github.io/` in about a minute.
+The site lands at `https://arp1tsingh.github.io/` in about a minute.
 
 To use a custom domain instead, add a `CNAME` file containing the domain, then point a CNAME
-record at `arpitsingh.github.io` in DNS. All asset paths in this repo are **relative**
+record at `arp1tsingh.github.io` in DNS. All asset paths in this repo are **relative**
 (`./styles.css`, not `/styles.css`), so the site works unchanged at a root domain, a subpath, or
 a local file server.
 

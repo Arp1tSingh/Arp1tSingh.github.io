@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="55%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <linearGradient id="tx" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#c9d4e8"/>
+    </linearGradient>
+    <radialGradient id="b1" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b2" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b3" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#f472b6" stop-opacity=".38"/>
+      <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="#22d3ee" stroke-opacity=".07" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="#05060a"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="120" cy="90" r="330" fill="url(#b1)"/>
+  <circle cx="1080" cy="250" r="300" fill="url(#b2)"/>
+  <circle cx="620" cy="660" r="280" fill="url(#b3)"/>
+
+  <!-- constellation -->
+  <g stroke="#22d3ee" stroke-opacity=".28" stroke-width="1.2" fill="none">
+    <path d="M840 150 L960 210 L1050 140 L1140 250 L1000 300 Z"/>
+    <path d="M960 210 L1000 300"/>
+    <path d="M1050 140 L1000 300"/>
+  </g>
+  <g fill="#22d3ee" fill-opacity=".65">
+    <circle cx="840" cy="150" r="3.5"/><circle cx="960" cy="210" r="4"/>
+    <circle cx="1050" cy="140" r="3"/><circle cx="1140" cy="250" r="4.5"/>
+    <circle cx="1000" cy="300" r="3.2"/>
+  </g>
+  <circle cx="840" cy="150" r="4" fill="#a855f7" fill-opacity=".7"/>
+  <circle cx="1140" cy="250" r="4" fill="#f472b6" fill-opacity=".7"/>
+
+  <!-- eyebrow -->
+  <g font-family="JetBrains Mono, ui-monospace, monospace">
+    <rect x="80" y="132" width="300" height="34" rx="17" fill="#22d3ee" fill-opacity=".08" stroke="#22d3ee" stroke-opacity=".3"/>
+    <circle cx="104" cy="149" r="5" fill="#a3e635"/>
+    <text x="120" y="154" fill="#b3bed2" font-size="15" letter-spacing="1.4">OPEN TO TECH INTERNSHIPS</text>
+  </g>
+
+  <!-- name -->
+  <text x="80" y="290" font-family="Space Grotesk, Segoe UI, sans-serif" font-size="104" font-weight="700" letter-spacing="-4" fill="url(#tx)">Arpit Singh</text>
+
+  <!-- role -->
+  <text x="80" y="360" font-family="JetBrains Mono, ui-monospace, monospace" font-size="30" fill="#22d3ee">Full-Stack Developer · AI/ML · Systems</text>
+
+  <!-- description -->
+  <text x="80" y="424" font-family="Space Grotesk, Segoe UI, sans-serif" font-size="25" fill="#7d889f">Computer Engineering student in Mumbai. Deepfake detection with Grad-CAM,</text>
+  <text x="80" y="458" font-family="Space Grotesk, Segoe UI, sans-serif" font-size="25" fill="#7d889f">a CPU path tracer from scratch, and a P2P transfer network.</text>
+
+  <!-- stat chips -->
+  <g font-family="JetBrains Mono, ui-monospace, monospace" font-size="18" fill="#b3bed2">
+    <g transform="translate(80,506)">
+      <rect width="128" height="52" rx="12" fill="#0b0f19" stroke="#1a2234"/>
+      <text x="20" y="33" fill="#e6edf7" font-size="22" font-weight="700">15</text>
+      <text x="56" y="33" fill="#7d889f" font-size="15">repos</text>
+    </g>
+    <g transform="translate(224,506)">
+      <rect width="150" height="52" rx="12" fill="#0b0f19" stroke="#1a2234"/>
+      <text x="20" y="33" fill="#e6edf7" font-size="22" font-weight="700">7</text>
+      <text x="44" y="33" fill="#7d889f" font-size="15">languages</text>
+    </g>
+    <g transform="translate(390,506)">
+      <rect width="150" height="52" rx="12" fill="#0b0f19" stroke="#1a2234"/>
+      <text x="20" y="33" fill="#e6edf7" font-size="22" font-weight="700">5</text>
+      <text x="44" y="33" fill="#7d889f" font-size="15">live demos</text>
+    </g>
+  </g>
+
+  <!-- logo mark -->
+  <g transform="translate(1010,470)">
+    <rect width="120" height="120" rx="26" fill="#0b0f19" fill-opacity=".7" stroke="url(#g)" stroke-opacity=".4" stroke-width="1.5"/>
+    <path d="M30 84 L60 28 L90 84" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M45 84 L60 54 L75 84" fill="none" stroke="#a855f7" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="60" cy="96" r="4.5" fill="#22d3ee"/>
+  </g>
+
+  <!-- url -->
+  <text x="80" y="600" font-family="JetBrains Mono, ui-monospace, monospace" font-size="17" fill="#4d576b" letter-spacing="1">arpitsingh.github.io</text>
+</svg>

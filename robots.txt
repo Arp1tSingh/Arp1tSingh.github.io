@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://arpitsingh.github.io/sitemap.xml

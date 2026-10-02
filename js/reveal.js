@@ -1,105 +1,133 @@
 /* ============================================================
-   reveal.js — scroll reveals, stat counters, skill bar fills
+   reveal.js — sweep-based reveals, counters, skill bars
+   ------------------------------------------------------------
+   Deliberately NOT IntersectionObserver. An IO only fires on
+   threshold crossings: a fast scroll (deep link to #work, restored
+   scroll position, Find-in-page) can move an element from below the
+   viewport to above it between two checks, so it never intersects,
+   never fires, and stays stuck at opacity 0 for good.
+   A sweep evaluated on scroll cannot miss.
    ============================================================ */
 
 const EASE_OUT = (t) => 1 - Math.pow(1 - t, 3);
 
-function animateCount(el) {
+function countUp(el) {
   const target = parseFloat(el.dataset.count || '0');
   const suffix = el.dataset.suffix || '';
-  const dur = 1400;
+  const dur = 1300;
   const start = performance.now();
 
   const tick = (now) => {
     const t = Math.min(1, (now - start) / dur);
-    const val = target * EASE_OUT(t);
-    el.textContent = (target % 1 === 0 ? Math.round(val) : val.toFixed(1)) + suffix;
+    el.textContent = Math.round(target * EASE_OUT(t)) + suffix;
     if (t < 1) requestAnimationFrame(tick);
     else el.textContent = target + suffix;
   };
-
   requestAnimationFrame(tick);
 }
 
+function fillBar(bar) {
+  const pct = Math.min(100, parseFloat(bar.dataset.bar || '0'));
+  bar.querySelector('.bar__fill').style.width = `${pct}%`;
+}
+
 export function initReveal() {
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = [...document.querySelectorAll('.reveal')];
+  const counters = [...document.querySelectorAll('[data-count]')];
+  const bars = [...document.querySelectorAll('.bar')];
 
-  const targets = document.querySelectorAll('[data-reveal]');
-  const counters = document.querySelectorAll('[data-count]');
-  const bars = document.querySelectorAll('.bar');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (reduce || !('IntersectionObserver' in window)) {
-    targets.forEach((el) => el.classList.add('is-in'));
+  if (reduce) {
+    targets.forEach((el) => el.classList.add('show'));
     counters.forEach((el) => { el.textContent = el.dataset.count + (el.dataset.suffix || ''); });
-    bars.forEach((bar) => { bar.querySelector('.bar__fill').style.width = `${bar.dataset.bar}%`; });
+    bars.forEach(fillBar);
     return;
   }
 
-  const io = new IntersectionObserver((entries, obs) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      entry.target.classList.add('is-in');
+  // Elements still waiting to appear. Each pass drops whatever has reached
+  // the trigger line, so the list only ever shrinks.
+  let pending = targets;
 
-      if (entry.target.matches('[data-count]')) animateCount(entry.target);
+  function sweep() {
+    if (!pending.length) return;
+    const line = window.innerHeight * 0.9;
+    pending = pending.filter((el) => {
+      if (el.getBoundingClientRect().top > line) return true;
+      el.classList.add('show');
+      return false;
+    });
+  }
 
-      if (entry.target.matches('.bar')) {
-        // Stagger bars inside the block they belong to.
-        const group = [...entry.target.parentElement.children].filter((c) => c.matches('.bar'));
-        const i = group.indexOf(entry.target);
-        entry.target.style.setProperty('--bd', `${(i * 0.09).toFixed(2)}s`);
-        entry.target.querySelector('.bar__fill').style.width = `${Math.min(100, parseFloat(entry.target.dataset.bar || 0))}%`;
-      }
+  let frame = 0;
+  function onScroll() {
+    if (frame) return;
+    frame = requestAnimationFrame(() => { frame = 0; sweep(); });
+  }
 
-      obs.unobserve(entry.target);
-    }
-  }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  window.addEventListener('load', onScroll);
+  window.addEventListener('hashchange', () => setTimeout(sweep, 120));
+  window.addEventListener('pageshow', sweep);
+  setTimeout(sweep, 60);
+  sweep();
 
-  targets.forEach((el) => io.observe(el));
-  counters.forEach((el) => io.observe(el));
-  bars.forEach((el) => io.observe(el));
-
-  // Safety net. IntersectionObserver can coalesce a fast jump (deep link to
-  // #work, restored scroll position, back/forward, Find-in-page) so an element
-  // may never report as intersecting and would stay stuck at opacity 0.
-  // Anything at or above the fold has definitely been passed, so show it.
-  // The `:not(.is-in)` selector shrinks as things reveal, so this stays cheap.
-  const sweep = () => {
-    document.querySelectorAll('[data-reveal]:not(.is-in)').forEach((el) => {
-      if (el.getBoundingClientRect().top < window.innerHeight * 0.95) el.classList.add('is-in');
+  // Bars and counters ride the same trigger: once they scroll in, animate.
+  let barsShown = false;
+  const barSweep = () => {
+    if (barsShown) return;
+    const first = bars[0];
+    if (!first || first.getBoundingClientRect().top > window.innerHeight * 0.95) return;
+    barsShown = true;
+    bars.forEach((bar, i) => {
+      bar.style.setProperty('--bd', `${(i * 0.09).toFixed(2)}s`);
+      bar.querySelector('.bar__fill').style.width = `${Math.min(100, parseFloat(bar.dataset.bar || 0))}%`;
     });
   };
 
-  let idle = 0;
-  window.addEventListener('scroll', () => {
-    clearTimeout(idle);
-    idle = setTimeout(sweep, 220);
-  }, { passive: true });
+  let cframe = 0;
+  const counterSweep = () => {
+    if (cframe) return;
+    cframe = requestAnimationFrame(() => {
+      cframe = 0;
+      counters.forEach((el) => {
+        if (el.dataset.done) return;
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.95) {
+          el.dataset.done = '1';
+          countUp(el);
+        }
+      });
+    });
+  };
 
-  window.addEventListener('load', () => setTimeout(sweep, 500));
-  window.addEventListener('hashchange', () => setTimeout(sweep, 200));
-  window.addEventListener('pageshow', sweep);
+  window.addEventListener('scroll', () => { barSweep(); counterSweep(); }, { passive: true });
+  window.addEventListener('load', () => { barSweep(); counterSweep(); });
+  barSweep();
+  counterSweep();
+
+  /* Expose for any later caller that needs a fresh pass. */
+  return sweep;
 }
 
-/* --- Timeline spine ----------------------------------------------------- */
+/* --- Timeline spine ------------------------------------------------- */
 export function initTimeline() {
-  const tl = document.querySelector('.tl');
+  const tl = document.getElementById('tl');
   const fill = document.getElementById('tlFill');
   if (!tl || !fill) return;
 
   let frame = 0;
-
   const update = () => {
     frame = 0;
     const r = tl.getBoundingClientRect();
-    const anchor = window.innerHeight * 0.72;
-    const progress = (anchor - r.top) / r.height;
-    fill.style.height = `${Math.max(0, Math.min(1, progress)) * 100}%`;
+    const anchor = window.innerHeight * 0.62;
+    const p = (anchor - r.top) / r.height;
+    fill.style.height = `${Math.max(0, Math.min(1, p)) * 100}%`;
   };
 
   window.addEventListener('scroll', () => {
     if (!frame) frame = requestAnimationFrame(update);
   }, { passive: true });
-
   window.addEventListener('resize', update, { passive: true });
   update();
 }

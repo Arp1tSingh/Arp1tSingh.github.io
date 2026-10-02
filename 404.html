@@ -3,56 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>404 — Page not found · Arpit Singh</title>
-<meta name="description" content="That page doesn't exist. Head back to the portfolio.">
+<title>404 — Not found · Arpit Singh</title>
+<meta name="description" content="That page does not exist.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./styles.css">
 <style>
-  .nf{min-height:100svh;display:grid;place-items:center;text-align:center;padding:2rem;position:relative}
-  .nf__code{
-    font-size:clamp(5rem,22vw,13rem);font-weight:700;letter-spacing:-.06em;line-height:.9;
-    font-family:var(--mono);
-  }
-  .nf__msg{margin:1.5rem 0 2.25rem;color:var(--muted);font-size:1.05rem;max-width:32rem;margin-inline:auto}
-  .nf__hint{
-    margin-top:2.5rem;font-family:var(--mono);font-size:.72rem;color:var(--faint);letter-spacing:.14em;
-  }
-  .nf__actions{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+  .nf{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+      padding:calc(var(--nav-h) + 3rem) 0 4rem}
+  .nf__code{font-family:var(--font-display);font-size:clamp(6rem,26vw,15rem);
+    line-height:.86;letter-spacing:-.03em;color:var(--accent);margin-bottom:1.5rem}
+  .nf__title{font-family:var(--font-display);font-size:clamp(1.6rem,5vw,2.6rem);
+    line-height:1;margin-bottom:1rem}
+  .nf__title em{font-style:italic;color:var(--ink-40)}
+  .nf__msg{max-width:44ch;color:var(--ink-40);margin-bottom:2rem}
+  .nf__actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:3rem}
+  .nf__foot{border-top:1px solid var(--rule);padding-top:1rem;
+    font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80);
+    text-transform:uppercase;letter-spacing:.2em}
 </style>
 </head>
 <body>
-  <canvas class="fx fx--particles" id="particles" aria-hidden="true"></canvas>
-  <div class="fx fx--grid" aria-hidden="true"></div>
-  <div class="fx fx--mesh" aria-hidden="true">
-    <span class="blob blob--1"></span><span class="blob blob--2"></span><span class="blob blob--3"></span>
-  </div>
-  <div class="fx fx--grain" aria-hidden="true"></div>
-  <div class="fx fx--vignette" aria-hidden="true"></div>
-
-  <main class="nf">
-    <div>
-      <p class="sec-kicker"><span>err</span> not found</p>
-      <h1 class="nf__code grad">404</h1>
-      <p class="nf__msg">
-        This route doesn't resolve — neither did that TSP route until I added branch &amp; bound.
-        Let's get you back somewhere useful.
-      </p>
-      <div class="nf__actions">
-        <a class="btn btn--primary" href="./"><span>Back to home</span></a>
-        <a class="btn btn--ghost" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener"><span>GitHub</span></a>
-        <a class="btn btn--ghost" href="./#work"><span>See the work</span></a>
-      </div>
-      <p class="nf__hint">$ ls ./this-page → No such file or directory</p>
+<main class="nf">
+  <div class="wrap">
+    <p class="label label--accent" style="margin-bottom:1.5rem">Error 404 — not found</p>
+    <h1 class="nf__code">404</h1>
+    <p class="nf__title">This route doesn't <em>resolve.</em></p>
+    <p class="nf__msg">
+      Neither did that bus route, until I added branch andamp; bound. Head back to
+      somewhere that does resolve.
+    </p>
+    <div class="nf__actions">
+      <a class="btn btn--solid" href="./">Back to home</a>
+      <a class="btn" href="./#work">See the work</a>
+      <a class="btn" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener">GitHub</a>
     </div>
-  </main>
-
-  <script type="module">
-    import { initParticles } from './js/particles.js';
-    initParticles();
-  </script>
+    <p class="nf__foot">$ ls ./this-page &rarr; No such file or directory</p>
+  </div>
+</main>
 </body>
 </html>

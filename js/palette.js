@@ -1,19 +1,18 @@
 /* ============================================================
    palette.js — ⌘K / Ctrl+K command palette
-   Fuzzy subsequence match over sections, projects and socials.
+   Fuzzy subsequence match over sections and projects.
    ============================================================ */
 
 import { NAV_ITEMS, PROJECTS, CONFIG } from './config.js';
 
-/* Subsequence match with a light contiguous bonus.
-   Returns { score, hits } or null. */
+/* Subsequence match with a contiguous-run bonus.
+   Exact substrings always win. Returns { score, hits } or null. */
 function fuzzy(query, text) {
   if (!query) return { score: 0, hits: [] };
 
   const q = query.toLowerCase();
   const t = text.toLowerCase();
 
-  // Exact substring is always the best result.
   const direct = t.indexOf(q);
   if (direct !== -1) {
     return {
@@ -23,9 +22,7 @@ function fuzzy(query, text) {
   }
 
   const hits = [];
-  let qi = 0;
-  let score = 0;
-  let streak = 0;
+  let qi = 0, score = 0, streak = 0;
 
   for (let ti = 0; ti < t.length && qi < q.length; ti++) {
     if (t[ti] === q[qi]) {
@@ -37,65 +34,55 @@ function fuzzy(query, text) {
       streak = 0;
     }
   }
-
   return qi === q.length ? { score, hits } : null;
 }
 
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 function highlight(label, hits) {
-  if (!hits || !hits.length) return escapeHtml(label);
+  if (!hits || !hits.length) return esc(label);
   const set = new Set(hits);
   let out = '';
   for (let i = 0; i < label.length; i++) {
-    const ch = escapeHtml(label[i]);
+    const ch = esc(label[i]);
     out += set.has(i) ? `<mark>${ch}</mark>` : ch;
   }
   return out;
 }
 
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
 function buildIndex() {
-  const items = [];
-
-  NAV_ITEMS.forEach((n) => {
-    items.push({ kind: 'section', icon: n.icon, label: n.label, hint: 'Jump to section', href: n.href });
-  });
+  const items = NAV_ITEMS.map((n) => ({
+    kind: 'section', icon: n.icon, label: n.label, hint: '', href: n.href,
+  }));
 
   PROJECTS.forEach((p) => {
     items.push({
-      kind: 'project',
-      icon: 'code',
-      label: p.name,
-      hint: p.desc,
-      href: p.href,
-      meta: p.repo ? 'source' : 'live',
-      extra: p.repo,
+      kind: 'project', icon: 'search', label: p.name, hint: p.desc,
+      href: p.href, meta: p.meta,
     });
   });
 
-  items.push({ kind: 'link', icon: 'github', label: 'GitHub profile', hint: CONFIG.social.github, href: CONFIG.social.github, external: true });
+  items.push({ kind: 'link', icon: 'github',   label: 'GitHub profile',   hint: CONFIG.social.github,   href: CONFIG.social.github,   external: true });
   items.push({ kind: 'link', icon: 'linkedin', label: 'LinkedIn profile', hint: CONFIG.social.linkedin, href: CONFIG.social.linkedin, external: true });
-  items.push({ kind: 'link', icon: 'pulse', label: 'All repositories', hint: `${PROJECTS.length} featured of 15 total`, href: CONFIG.social.repos, external: true });
+  items.push({ kind: 'link', icon: 'search',   label: 'All repositories', hint: `${PROJECTS.length} featured`, href: CONFIG.social.repos,   external: true });
   if (CONFIG.email) {
-    items.push({ kind: 'link', icon: 'mail', label: 'Email me', hint: CONFIG.email, href: `mailto:${CONFIG.email}`, external: true });
+    items.push({ kind: 'link', icon: 'mail', label: 'Send an email', hint: CONFIG.email, href: `mailto:${CONFIG.email}`, external: true });
   }
-
   return items;
 }
 
 export function initPalette() {
-  const overlay = document.getElementById('palette');
+  const $ = (s) => document.querySelector(s);
+  const overlay = $('#palette');
   if (!overlay) return;
 
-  const input = document.getElementById('paletteInput');
-  const list = document.getElementById('paletteList');
-  const trigger = document.getElementById('paletteBtn');
+  const input = $('#paletteInput');
+  const list = $('#paletteList');
   if (!input || !list) return;
 
   const index = buildIndex();
-  let results = index.slice(0, 8);
+  let results = [];
   let selected = 0;
   let lastFocus = null;
 
@@ -119,25 +106,25 @@ export function initPalette() {
     selected = 0;
 
     if (!results.length) {
-      list.innerHTML = `<li class="palette__empty">No matches for “${escapeHtml(query)}”</li>`;
+      list.innerHTML = `<li class="palette__empty">No matches for “${esc(query)}”</li>`;
       return;
     }
 
     list.innerHTML = results.map((it, i) => `
       <li role="option" aria-selected="${i === 0}">
-        <button class="palette__row${i === 0 ? ' is-sel' : ''}" type="button" data-i="${i}">
+        <button class="prow" type="button" data-i="${i}">
           <span class="ic"><svg class="i" viewBox="0 0 24 24"><use href="#i-${it.icon}"/></svg></span>
           <span class="lb">${highlight(it.label, query ? fuzzy(query, it.label)?.hits : [])}</span>
-          <span class="kind">${it.meta || it.kind}</span>
+          <span class="kind">${esc(it.meta || it.kind)}</span>
         </button>
       </li>`).join('');
   }
 
-  function paintSelection() {
-    const rows = list.querySelectorAll('.palette__row');
+  function paint() {
+    const rows = list.querySelectorAll('.prow');
     rows.forEach((r, i) => {
       const on = i === selected;
-      r.classList.toggle('is-sel', on);
+      r.setAttribute('aria-selected', String(on));
       r.closest('li')?.setAttribute('aria-selected', String(on));
     });
     rows[selected]?.scrollIntoView({ block: 'nearest' });
@@ -146,7 +133,7 @@ export function initPalette() {
   function open() {
     lastFocus = document.activeElement;
     overlay.hidden = false;
-    document.body.classList.add('is-locked');
+    document.body.style.overflow = 'hidden';
     input.value = '';
     render('');
     input.focus();
@@ -154,7 +141,7 @@ export function initPalette() {
 
   function close() {
     overlay.hidden = true;
-    document.body.classList.remove('is-locked');
+    document.body.style.overflow = '';
     lastFocus?.focus?.();
   }
 
@@ -171,33 +158,22 @@ export function initPalette() {
   input.addEventListener('input', () => render(input.value.trim()));
 
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      selected = (selected + 1) % Math.max(results.length, 1);
-      paintSelection();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      selected = (selected - 1 + results.length) % Math.max(results.length, 1);
-      paintSelection();
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      run(results[selected]);
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      close();
-    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); selected = (selected + 1) % Math.max(results.length, 1); paint(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); selected = (selected - 1 + results.length) % Math.max(results.length, 1); paint(); }
+    else if (e.key === 'Enter') { e.preventDefault(); run(results[selected]); }
+    else if (e.key === 'Escape') { e.preventDefault(); close(); }
   });
 
   list.addEventListener('click', (e) => {
-    const btn = e.target.closest('.palette__row');
+    const btn = e.target.closest('.prow');
     if (btn) run(results[Number(btn.dataset.i)]);
   });
 
   list.addEventListener('pointermove', (e) => {
-    const btn = e.target.closest('.palette__row');
+    const btn = e.target.closest('.prow');
     if (!btn) return;
     const i = Number(btn.dataset.i);
-    if (i !== selected) { selected = i; paintSelection(); }
+    if (i !== selected) { selected = i; paint(); }
   });
 
   overlay.addEventListener('mousedown', (e) => { if (e.target === overlay) close(); });
@@ -208,7 +184,6 @@ export function initPalette() {
       overlay.hidden ? open() : close();
       return;
     }
-    // `/` opens the palette unless you're already typing somewhere.
     if (e.key === '/' && overlay.hidden && !e.metaKey && !e.ctrlKey && !e.altKey) {
       const tag = document.activeElement?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
@@ -217,5 +192,5 @@ export function initPalette() {
     }
   });
 
-  trigger?.addEventListener('click', open);
+  $('#paletteBtn')?.addEventListener('click', open);
 }

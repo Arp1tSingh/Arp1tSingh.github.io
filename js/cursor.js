@@ -1,59 +1,92 @@
 /* ============================================================
-   cursor.js — dot + lagging ring, magnetises to interactive elements
-   Skipped entirely on touch / reduced-motion.
+   cursor.js — flat corner reticle, in the spirit of a targeting
+   instrument. A 5px dot tracks with zero lag; four 1px brackets
+   chase it fast, then lock onto whatever the pointer is over.
+   No glow, no mix-blend, no fill.
    ============================================================ */
+
+const MAGNETS = 'a, button, [data-cursor], input, li';
 
 export function initCursor() {
   const root = document.getElementById('cursor');
   if (!root) return;
 
-  const fine = window.matchMedia('(pointer: fine)').matches;
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(pointer: fine)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!fine || reduce) return;
 
-  // Only suppress the native cursor once we know the custom one is running,
-  // so a JS failure can never leave the visitor with no pointer at all.
-  document.documentElement.classList.add('has-custom-cursor');
+  // Only suppress the native pointer once we know ours is running, so a JS
+  // failure can never leave the visitor with no cursor at all.
+  document.documentElement.classList.add('has-cursor');
 
   const dot = document.getElementById('cursorDot');
-  const ring = document.getElementById('cursorRing');
-  const label = ring?.querySelector('.cursor__label');
+  const box = document.getElementById('cursorBox');
+  const label = box?.querySelector('.cursor__label');
+  if (!dot || !box) return;
 
-  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-  let rx = mx, ry = my;
+  const R = { x: innerWidth / 2, y: innerHeight / 2, w: 26, h: 26 };  // current
+  const T = { x: R.x, y: R.y, w: 26, h: 26 };                        // target
+  let locked = null;
   let raf = 0;
+  let armed = false;
+  let firstX = 0, firstY = 0;
 
-  const MAGNETS = 'a, button, [data-tilt], [data-cursor], input, .chip';
+  const mix = (a, b, t) => a + (b - a) * t;
 
-  function loop() {
-    // Ring eases toward the pointer; the dot is already there.
-    rx += (mx - rx) * 0.16;
-    ry += (my - ry) * 0.16;
-
-    if (dot) dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
-    if (ring) ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
-
-    raf = requestAnimationFrame(loop);
-  }
-
-  window.addEventListener('pointermove', (e) => {
+  addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'mouse') return;
-    mx = e.clientX;
-    my = e.clientY;
-    root.classList.add('is-on');
+    dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%,-50%)`;
 
-    const target = e.target instanceof Element ? e.target.closest(MAGNETS) : null;
-    if (target) {
-      root.classList.add('is-magnet');
-      if (label) label.textContent = target.dataset.cursor || '';
-    } else {
-      root.classList.remove('is-magnet');
+    // Browsers can fire a single synthetic pointermove during load. Wait
+    // until the pointer has actually travelled from wherever it was first
+    // seen, so a stationary pointer never leaves a reticle in the corner.
+    if (!armed) {
+      if (!firstX && !firstY) { firstX = e.clientX; firstY = e.clientY; return; }
+      if (Math.hypot(e.clientX - firstX, e.clientY - firstY) < 3) return;
+      armed = true;
     }
+    root.classList.add('on');
+
+    if (!locked) { T.x = e.clientX; T.y = e.clientY; T.w = 26; T.h = 26; }
   }, { passive: true });
 
-  document.addEventListener('pointerleave', () => root.classList.remove('is-on'));
-  window.addEventListener('blur', () => root.classList.remove('is-on'));
+  addEventListener('pointerover', (e) => {
+    const hit = e.target instanceof Element ? e.target.closest(MAGNETS) : null;
+    if (!hit) return;
+    locked = hit;
+    root.classList.add('magnet');
+    if (label) label.textContent = hit.dataset.cursor || '';
+  });
 
-  raf = requestAnimationFrame(loop);
-  window.addEventListener('pagehide', () => cancelAnimationFrame(raf));
+  addEventListener('pointerout', (e) => {
+    if (locked && !e.relatedTarget?.closest?.(MAGNETS)) {
+      locked = null;
+      root.classList.remove('magnet');
+    }
+  });
+
+  addEventListener('pointerleave', () => root.classList.remove('on'));
+
+  function frame() {
+    if (locked) {
+      // re-measure every frame so the brackets track elements that move
+      const b = locked.getBoundingClientRect();
+      T.x = b.left + b.width / 2;
+      T.y = b.top + b.height / 2;
+      T.w = b.width + 14;
+      T.h = b.height + 14;
+    }
+    R.x = mix(R.x, T.x, 0.34);   // responsive, not floaty
+    R.y = mix(R.y, T.y, 0.34);
+    R.w = mix(R.w, T.w, 0.28);
+    R.h = mix(R.h, T.h, 0.28);
+
+    box.style.width = `${R.w}px`;
+    box.style.height = `${R.h}px`;
+    box.style.transform = `translate(${R.x - R.w / 2}px, ${R.y - R.h / 2}px)`;
+
+    raf = requestAnimationFrame(frame);
+  }
+  raf = requestAnimationFrame(frame);
+  addEventListener('pagehide', () => cancelAnimationFrame(raf));
 }

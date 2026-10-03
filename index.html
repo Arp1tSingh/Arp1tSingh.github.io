@@ -3,37 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Arpit Singh — Full-Stack Developer, AI/ML &amp; Systems</title>
-<meta name="description" content="Arpit Singh — Computer Engineering student in Mumbai building deepfake detection, a CPU path tracer written from scratch, and a P2P transfer network. Available for tech internships. arpitsingh8534@gmail.com">
+<title>Arpit Singh — Deepfake Detection, CPU Rendering, Systems</title>
+<meta name="description" content="Arpit Singh. Computer Engineering student in Mumbai. Deepfake detection with Grad-CAM, a CPU path tracer written from scratch, and a BitTorrent-style P2P transfer network. arpitsingh8534@gmail.com">
 <meta name="author" content="Arpit Singh">
-<meta name="theme-color" content="#0b0a09">
+<meta name="theme-color" content="#000016">
 <link rel="canonical" href="https://arp1tsingh.github.io/">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Arpit Singh — Full-Stack Developer, AI/ML &amp; Systems">
+<meta property="og:title" content="Arpit Singh — Deepfake Detection, CPU Rendering, Systems">
 <meta property="og:description" content="Deepfake detection with Grad-CAM, a CPU path tracer written from scratch, and a BitTorrent-style P2P transfer network. Open to tech internships — 2026.">
 <meta property="og:url" content="https://arp1tsingh.github.io/">
 <meta property="og:image" content="./assets/og.png">
 <meta property="og:site_name" content="Arpit Singh">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Arpit Singh — Full-Stack Developer, AI/ML &amp; Systems">
+<meta name="twitter:title" content="Arpit Singh — Deepfake Detection, CPU Rendering, Systems">
 <meta name="twitter:description" content="Deepfake detection with Grad-CAM, a CPU path tracer written from scratch, and a BitTorrent-style P2P transfer network. Open to tech internships — 2026.">
 <meta name="twitter:image" content="./assets/og.png">
 
 <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-<!-- Progressive enhancement marker, two-stage.
-     `js` means scripting is available at all, so scroll-reveal hiding is legal.
-     `js-scroll` is added by js/scroll.js only once GSAP + ScrollTrigger + Lenis have all
-     resolved. Every pinned container and scrubbed transform is scoped under it, so a
-     missing or blocked vendor file degrades to the plain stacked document. -->
+<!-- Two-stage progressive enhancement marker.
+     `js`      — scripting exists, so entry hides are legal.
+     `js-scroll` — added by js/scroll.js only once GSAP + ScrollTrigger + Lenis
+     all resolve AND motion is allowed. Every pinned and scrubbed rule in
+     styles.css is scoped under it. No JS, blocked vendor files and
+     prefers-reduced-motion all render the same plain stacked document. -->
 <script>document.documentElement.className+=' js';</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="preload" as="font" type="font/woff2" href="./assets/fonts/fraunces-var.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="./assets/fonts/inter-tight-var.woff2" crossorigin>
 <link rel="stylesheet" href="./styles.css">
-<link rel="preload" as="image" href="./assets/portrait-1440.jpg"
-      imagesrcset="./assets/portrait-720.jpg 720w, ./assets/portrait-1440.jpg 1440w"
-      imagesizes="100vw" fetchpriority="high">
 
 <script type="application/ld+json">
 {
@@ -41,17 +38,13 @@
   "@type": "Person",
   "name": "Arpit Singh",
   "url": "https://arp1tsingh.github.io/",
-  "image": "https://arp1tsingh.github.io/assets/portrait.jpg",
-  "jobTitle": "Full-Stack Developer, AI/ML & Systems Engineer",
+  "jobTitle": "AI/ML and Systems Engineer",
   "description": "Computer Engineering student in Mumbai building deepfake detection, a CPU path tracer written from scratch, and a BitTorrent-style P2P transfer network.",
   "email": "mailto:arpitsingh8534@gmail.com",
   "address": { "@type": "PostalAddress", "addressLocality": "Mumbai", "addressCountry": "IN" },
   "alumniOf": { "@type": "CollegeOrUniversity", "name": "Vidyalankar Institute of Technology" },
-  "sameAs": [
-    "https://github.com/Arp1tSingh",
-    "https://www.linkedin.com/in/rpitsingh"
-  ],
-  "knowsAbout": ["Python","TypeScript","JavaScript","C++","C","React","FastAPI","Machine Learning","Deepfake Detection","Computer Graphics","P2P Networking","Supabase","Next.js","Tailwind CSS","Node.js"]
+  "sameAs": ["https://github.com/Arp1tSingh", "https://www.linkedin.com/in/rpitsingh"],
+  "knowsAbout": ["Python","TypeScript","C++","C","React","FastAPI","Machine Learning","Deepfake Detection","Computer Graphics","P2P Networking","Next.js","Node.js"]
 }
 </script>
 </head>
@@ -60,7 +53,7 @@
 
 <!-- ============ BOOT ============ -->
 <div class="boot" id="boot" aria-hidden="true">
-  <div class="wrap" style="max-width:420px">
+  <div style="width:min(100% - 3rem, 420px)">
     <p class="boot__mark" id="bootMark">Arpit Singh</p>
     <div class="boot__bar"><i id="bootBar"></i></div>
     <div class="boot__meta"><span>loading</span><span class="boot__pct" id="bootPct">00</span></div>
@@ -75,14 +68,15 @@
 
 <a class="skip" href="#hero">Skip to content</a>
 
-<!-- ============ NAV ============ -->
+<!-- ============ NAV ============
+     The header carries the permanent contact CTA: painted on frame one,
+     present at every width, never scrolls away. -->
 <header class="nav" id="nav">
   <div class="nav__rail"><i id="navRail"></i></div>
   <div class="nav__inner">
     <a class="brand" href="#hero">Arpit<span>.</span></a>
 
     <nav class="nav__links" aria-label="Primary">
-      <a href="#about"   data-nav>About</a>
       <a href="#work"    data-nav>Work</a>
       <a href="#toolkit" data-nav>Toolkit</a>
       <a href="#journey" data-nav>Journey</a>
@@ -92,13 +86,10 @@
     <div class="nav__actions">
       <button class="nav__search" id="paletteBtn" type="button" aria-label="Open search">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-search"/></svg>
-        <span>Search</span><kbd>⌘K</kbd>
       </button>
       <a class="nav__social" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener" aria-label="GitHub" data-cursor="github">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
       </a>
-      <!-- The 10-second rule lives here: this is reachable from the first paint,
-           on every breakpoint, without reading anything. -->
       <a class="nav__hire" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">Hire me</a>
       <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
         <i></i><i></i><i></i>
@@ -110,13 +101,12 @@
 <!-- ============ DRAWER ============ -->
 <div class="drawer" id="drawer" hidden>
   <div class="drawer__panel">
-    <a class="drawer__hire" href="mailto:arpitsingh8534@gmail.com">arpitsingh8534@gmail.com</a>
+    <a class="drawer__mail" href="mailto:arpitsingh8534@gmail.com">arpitsingh8534@gmail.com</a>
     <nav class="drawer__links" aria-label="Mobile">
-      <a href="#about"   data-nav><span class="drawer__idx">01</span> About</a>
-      <a href="#work"    data-nav><span class="drawer__idx">02</span> Work</a>
-      <a href="#toolkit" data-nav><span class="drawer__idx">03</span> Toolkit</a>
-      <a href="#journey" data-nav><span class="drawer__idx">04</span> Journey</a>
-      <a href="#contact" data-nav><span class="drawer__idx">05</span> Contact</a>
+      <a href="#work"    data-nav><span class="drawer__idx">01</span> Work</a>
+      <a href="#toolkit" data-nav><span class="drawer__idx">02</span> Toolkit</a>
+      <a href="#journey" data-nav><span class="drawer__idx">03</span> Journey</a>
+      <a href="#contact" data-nav><span class="drawer__idx">04</span> Contact</a>
     </nav>
     <div class="drawer__foot">
       <a href="https://github.com/Arp1tSingh" target="_blank" rel="noopener">GitHub</a>
@@ -127,324 +117,264 @@
 
 <main>
 
-<!-- ============ HERO ============ -->
+<!-- ============ 1 · HERO — type only ============
+     No image. The name is the whole first screen, and the email is the
+     second biggest thing on it. -->
 <section class="hero" id="hero">
   <div class="pin" data-hero-pin>
-    <div class="pin__vp hero__vp">
-      <div class="hero__bg" data-hero-media>
-        <img src="./assets/portrait-1440.jpg"
-             srcset="./assets/portrait-720.jpg 720w, ./assets/portrait-1440.jpg 1440w"
-             sizes="100vw"
-             alt="Arpit Singh standing in front of a stone wall and hedge"
-             width="1440" height="2560" fetchpriority="high" decoding="async">
-      </div>
-      <div class="hero__scrim" data-hero-scrim></div>
-
+    <div class="pin__vp">
       <div class="hero__inner">
         <div class="wrap">
-          <p class="hero__tag label label--accent">
-            <span class="led"></span>Open to tech internships — 2026
-          </p>
+          <h1 class="hero__name" data-hero-name>
+            <span class="line"><span>Arpit</span></span>
+            <span class="line"><span>Singh</span></span>
+          </h1>
 
-          <h1 class="hero__name" id="heroName">Arpit Singh</h1>
+          <a class="hero__mail" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">arpitsingh8534@gmail.com</a>
 
-          <p class="hero__role">
-            <span>I build</span>
-            <span class="tw" id="typewriter"></span>
-          </p>
-
-          <p class="hero__lead" data-hero-lead>
-            Deepfake detection, a path tracer written from scratch, and a P2P network
-            on nothing but the standard library.
-          </p>
-
-          <!-- Email leads. Contact must not be behind a decision to keep scrolling. -->
-          <div class="hero__actions">
-            <a class="btn btn--solid" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">
-              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg>Email
-            </a>
-            <a class="btn" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener" data-cursor="github">
-              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>GitHub
-            </a>
-            <a class="btn btn--sm" href="#work" data-nav>View work</a>
+          <div class="hero__meta">
+            <p class="mono">Mumbai · Computer Engineering · 2026</p>
+            <p class="hero__lead">Deepfake detection, a CPU renderer, a P2P network.</p>
           </div>
-
-          <ul class="hero__stats" data-hero-stats>
-            <li><b data-count="248">0</b><span>Commits</span></li>
-            <li><b data-count="16">0</b><span>Repositories</span></li>
-            <li><b data-count="5">0</b><span>Live demos</span></li>
-            <li><b data-count="7">0</b><span>Languages</span></li>
-          </ul>
-        </div>
-
-        <div class="wrap hero__foot">
-          <span>Vidyalankar Institute of Technology</span>
-          <span>24102A0014</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ AVAILABILITY ============
-     Sits inside the first scroll. Contact is therefore reachable well inside
-     ten seconds even by someone who never scrolls. -->
-<section class="avail" aria-label="Availability">
-  <div class="wrap avail__inner">
-    <p class="avail__text">
-      Open to a <b>tech internship</b> in 2026. Hiring, mentoring, or want to compare notes on
-      deepfake detection or CPU rendering —
-      <a href="mailto:arpitsingh8534@gmail.com" data-cursor="email">arpitsingh8534@gmail.com</a>
+<!-- ============ 2 · IMPACT ============
+     Cream to red as you pass, tracking tightening. The site's one
+     unforgettable move. -->
+<section class="pin" id="why" data-seq="impact-1">
+  <div class="pin__vp">
+    <p class="impact">
+      <span class="impact__line" data-impact>I write renderers that run on a CPU.</span>
     </p>
   </div>
 </section>
 
-<!-- ============ ABOUT — pinned statement sequence ============ -->
-<section class="pin" id="about" data-seq="about">
-  <div class="pin__vp seq seq--about">
-    <div class="wrap seq__grid">
-      <div class="seq__rail">
-        <p class="sec-idx"><span>01</span> About</p>
-        <ul class="seq__steps">
-          <li data-step class="is-on"><span>Web</span><p>I stopped watching tutorials and started shipping. A full-stack ERP, split into its own frontend and backend repos.</p></li>
-          <li data-step><span>Systems</span><p>A multithreaded CPU path tracer with a BVH and dielectric materials. No graphics API, just arithmetic.</p></li>
-          <li data-step><span>Models</span><p>Real detection checkpoints running on real video, with Grad-CAM showing which face regions drove each verdict.</p></li>
-        </ul>
+<!-- ============ 3 · WORK ============
+     Two full-bleed image panels say "look". Four narrow type panels say
+     "read one line". Alternating, so it reads as a spread not a list. -->
+<section class="work" id="work">
+  <div class="wrap work__grid">
+
+    <article class="slot slot--img">
+      <div class="shot">
+        <span class="slot__num" aria-hidden="true">02</span>
+        <img src="./assets/fsrs-dashboard.png" width="1900" height="971" loading="lazy" decoding="async"
+             alt="The LeetCode spaced repetition tracker: an FSRS-6 review queue with due cards, retention estimates and a review history chart.">
+        <p class="shot__cap">Spaced repetition, scheduled</p>
       </div>
-      <div class="seq__stage">
-        <p class="seq__statement" data-statement>Every repository is me finding out how far a topic goes before it pushes back.</p>
+      <h3 class="slot__title">LeetCode Tracker</h3>
+      <p class="slot__desc">FSRS-6 scheduling instead of re-reading the same problem for the third time.</p>
+      <p class="slot__stack">React · Supabase · FSRS-6</p>
+      <div class="slot__links">
+        <a class="link" href="https://leetcode-practice-tracker.vercel.app/" target="_blank" rel="noopener">Live<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+        <a class="link link--mute" href="https://github.com/Arp1tSingh/Leetcode-Practice-Tracker" target="_blank" rel="noopener" data-cursor="code">Source</a>
       </div>
-    </div>
+    </article>
+
+    <article class="slot slot--type">
+      <span class="slot__idx">01</span>
+      <h3 class="slot__title">DeepGuard v2</h3>
+      <p class="slot__desc">Three detectors, Grad-CAM evidence, PDF report.</p>
+      <p class="slot__stack">Next.js · FastAPI · PyTorch</p>
+      <div class="slot__links">
+        <a class="link" href="https://github.com/Arp1tSingh/Deepguard-v2" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+      </div>
+    </article>
+
+    <article class="slot slot--type">
+      <span class="slot__idx">03</span>
+      <h3 class="slot__title">P2P Transfer</h3>
+      <p class="slot__desc">BitTorrent-style swarming. Standard library only.</p>
+      <p class="slot__stack">Python · Sockets · Threads</p>
+      <div class="slot__links">
+        <a class="link" href="https://p2p-file-sharing-pjgm.onrender.com/" target="_blank" rel="noopener">Live<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+      </div>
+    </article>
+
+    <article class="slot slot--img">
+      <div class="shot">
+        <span class="slot__num" aria-hidden="true">04</span>
+        <img src="./assets/path-tracer.png" width="800" height="533" loading="lazy" decoding="async"
+             alt="Output of the CPU path tracer: a rendered scene with soft shadows, dielectric refraction and a bright caustic cast on a floor plane.">
+        <p class="shot__cap">Rendered on eight cores</p>
+      </div>
+      <h3 class="slot__title">CPU Path Tracer</h3>
+      <p class="slot__desc">BVH, ten bounces, dielectric refraction. No GPU.</p>
+      <p class="slot__stack">C++ · BVH · Multithreading</p>
+      <div class="slot__links">
+        <a class="link" href="https://github.com/Arp1tSingh/cpp-path-tracer" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+      </div>
+    </article>
+
+    <article class="slot slot--type">
+      <span class="slot__idx">05</span>
+      <h3 class="slot__title">BigOBoard</h3>
+      <p class="slot__desc">Infinite canvas for DSA. One file.</p>
+      <p class="slot__stack">Vanilla JS · Canvas</p>
+      <div class="slot__links">
+        <a class="link" href="https://github.com/Arp1tSingh/BigOBoard" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+      </div>
+    </article>
+
+    <article class="slot slot--type">
+      <span class="slot__idx">06</span>
+      <h3 class="slot__title">And eleven more</h3>
+      <p class="slot__desc">Wishlist Keeper, E-Waste Passport, an ERP, a TSP solver in C.</p>
+      <p class="slot__stack">16 repositories</p>
+      <div class="slot__links">
+        <a class="link" href="https://github.com/Arp1tSingh?tab=repositories" target="_blank" rel="noopener" data-cursor="github">All repos<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+      </div>
+    </article>
+
   </div>
 </section>
 
-<!-- ============ WORK — pinned horizontal rail ============ -->
-<section class="pin" id="work" data-seq="work">
-  <div class="pin__vp seq seq--work">
-    <header class="seq__head">
-      <p class="sec-idx"><span>02</span> Work</p>
-      <p class="seq__counter"><b id="railNow">01</b> / 06</p>
-    </header>
-    <div class="rail" data-rail>
-      <div class="rail__track" data-rail-track>
-
-        <article class="panel" data-cat="ai">
-          <p class="panel__idx">01</p>
-          <h3 class="panel__title">DeepGuard <span>v2</span></h3>
-          <p class="panel__desc">Deepfake forensics. Three detectors agree, then Grad-CAM shows you why.</p>
-          <p class="panel__meta">Next.js · FastAPI · PyTorch</p>
-          <div class="panel__links">
-            <a class="link" href="https://github.com/Arp1tSingh/Deepguard-v2" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </article>
-
-        <article class="panel" data-cat="algo web">
-          <p class="panel__idx">02</p>
-          <h3 class="panel__title">LeetCode <span>Tracker</span></h3>
-          <p class="panel__desc">FSRS-6 scheduling instead of re-reading the same problem for the third time.</p>
-          <p class="panel__meta">React · Supabase · FSRS-6</p>
-          <div class="panel__links">
-            <a class="link" href="https://leetcode-practice-tracker.vercel.app/" target="_blank" rel="noopener">Live<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-            <a class="link link--mute" href="https://github.com/Arp1tSingh/LeetCode" target="_blank" rel="noopener" data-cursor="code">Source</a>
-          </div>
-        </article>
-
-        <article class="panel" data-cat="sys">
-          <p class="panel__idx">03</p>
-          <h3 class="panel__title">P2P <span>Transfer</span></h3>
-          <p class="panel__desc">BitTorrent-style swarming across NAT, written with the standard library only.</p>
-          <p class="panel__meta">Python · Sockets · Threads</p>
-          <div class="panel__links">
-            <a class="link" href="https://p2p-file-sharing-pjgm.onrender.com/" target="_blank" rel="noopener">Live<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </article>
-
-        <article class="panel" data-cat="sys">
-          <p class="panel__idx">04</p>
-          <h3 class="panel__title">CPU <span>Path Tracer</span></h3>
-          <p class="panel__desc">BVH, ten bounces, dielectric refraction. Renders on a CPU, on purpose.</p>
-          <p class="panel__meta">C++ · BVH · Multithreading</p>
-          <div class="panel__links">
-            <a class="link" href="https://github.com/Arp1tSingh/cpp-path-tracer" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </article>
-
-        <article class="panel" data-cat="web algo">
-          <p class="panel__idx">05</p>
-          <h3 class="panel__title">BigOBoard</p>
-          <p class="panel__desc">An infinite canvas for working through DSA. One file, zero dependencies.</p>
-          <p class="panel__meta">Vanilla JS · Canvas</p>
-          <div class="panel__links">
-            <a class="link" href="https://github.com/Arp1tSingh/BigOBoard" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </article>
-
-        <article class="panel panel--last" data-cat="web sys">
-          <p class="panel__idx">06</p>
-          <h3 class="panel__title">And <span>everything else</span></h3>
-          <p class="panel__desc">Wishlist Keeper, E-Waste Passport, a fintech committee site, an OS log analyzer, a TSP solver in C. Sixteen repositories in all.</p>
-          <p class="panel__meta">16 repositories</p>
-          <div class="panel__links">
-            <a class="link" href="https://github.com/Arp1tSingh?tab=repositories" target="_blank" rel="noopener" data-cursor="github">All repos<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </article>
-
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ TOOLKIT — scrubbed bars ============ -->
+<!-- ============ 4 · TOOLKIT ============
+     One proportion bar, not six 1px bars that look like a skeleton. -->
 <section class="pin" id="toolkit" data-seq="toolkit">
-  <div class="pin__vp seq seq--toolkit">
-    <div class="wrap seq__grid seq__grid--toolkit">
-      <div class="seq__rail seq__rail--toolkit">
-        <p class="sec-idx"><span>03</span> Toolkit</p>
-        <p class="seq__lede">Weighted by bytes of code across every public repository — not by hand.</p>
-        <div class="strip" data-strip>
-          <div class="strip__track">
-            <span>Python</span><span>TypeScript</span><span>React</span><span>Next.js</span><span>FastAPI</span>
-            <span>PyTorch</span><span>DeepfakeBench</span><span>Grad-CAM</span><span>Supabase</span><span>PostgreSQL</span>
-            <span>Tailwind</span><span>Sockets</span><span>BVH</span><span>Ray Tracing</span><span>FSRS-6</span><span>C++</span><span>Git</span>
-          </div>
-        </div>
+  <div class="pin__vp toolkit">
+    <div class="wrap toolkit__grid">
+      <div>
+        <p class="mono">Toolkit</p>
+        <p class="body toolkit__lede">Weighted by bytes of code across sixteen public repositories.</p>
       </div>
 
-      <div class="seq__stage">
-        <div class="bars">
-          <div class="bar" data-bar="58.8">
-            <div class="bar__top"><span class="bar__name">Python</span><span class="bar__pct">58.8%</span></div>
-            <div class="bar__track"><i class="bar__fill" style="width:58.8%"></i></div>
-          </div>
-          <div class="bar" data-bar="25.7">
-            <div class="bar__top"><span class="bar__name">TypeScript</span><span class="bar__pct">25.7%</span></div>
-            <div class="bar__track"><i class="bar__fill" style="width:25.7%"></i></div>
-          </div>
-          <div class="bar" data-bar="5.2">
-            <div class="bar__top"><span class="bar__name">CSS</span><span class="bar__pct">5.2%</span></div>
-            <div class="bar__track"><i class="bar__fill" style="width:5.2%"></i></div>
-          </div>
-          <div class="bar" data-bar="4.9">
-            <div class="bar__top"><span class="bar__name">HTML</span><span class="bar__pct">4.9%</span></div>
-            <div class="bar__track"><i class="bar__fill" style="width:4.9%"></i></div>
-          </div>
-          <div class="bar" data-bar="3.7">
-            <div class="bar__top"><span class="bar__name">JavaScript</span><span class="bar__pct">3.7%</span></div>
-            <div class="bar__track"><i class="bar__fill" style="width:3.7%"></i></div>
-          </div>
-          <div class="bar" data-bar="1.5">
-            <div class="bar__top"><span class="bar__name">C++ / C</span><span class="bar__pct">1.5%</span></div>
-            <div class="bar__track"><i class="bar__fill" style="width:1.5%"></i></div>
-          </div>
+      <div>
+        <div class="share" role="img" aria-label="Language share: Python 58.8%, TypeScript 25.7%, CSS 5.2%, HTML 4.9%, JavaScript 3.7%, C++ and C 1.5%">
+          <i class="share__seg" data-k="1" data-w="58.8" style="flex:58.8"></i>
+          <i class="share__seg" data-k="2" data-w="25.7" style="flex:25.7"></i>
+          <i class="share__seg" data-k="3" data-w="5.2"  style="flex:5.2"></i>
+          <i class="share__seg" data-k="4" data-w="4.9"  style="flex:4.9"></i>
+          <i class="share__seg" data-k="5" data-w="3.7"  style="flex:3.7"></i>
+          <i class="share__seg" data-k="6" data-w="1.5"  style="flex:1.5"></i>
+        </div>
+        <div class="share__labels" aria-hidden="true">
+          <span style="flex:58.8">Python 58.8%</span>
+          <span style="flex:25.7">TypeScript 25.7%</span>
+          <span style="flex:15.3"></span>
+        </div>
+        <p class="share__rest">CSS 5.2% &nbsp;·&nbsp; HTML 4.9% &nbsp;·&nbsp; JavaScript 3.7% &nbsp;·&nbsp; C++ / C 1.5%</p>
+        <div class="toolkit__lead">
+          <span class="toolkit__big" data-share-big>0.0</span>
+          <span class="mono">Python<br>dominant</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ JOURNEY — pinned timeline against the real commit record ============ -->
+<!-- ============ 5 · PHOTO BAND ============
+     arpit-landscape.jpg, cropped to the top 735 of 960 rows: ~16:9, and
+     it excludes the shirt logo while keeping the whole head.
+     Full colour on purpose — the sky already runs navy to red. -->
+<section class="pin" data-seq="band">
+  <div class="pin__vp" style="padding:0;min-height:0">
+    <figure class="band">
+      <img class="band__img" src="./assets/arpit-landscape.jpg"
+           width="1280" height="960" loading="lazy" decoding="async" data-band-img
+           alt="Arpit Singh at dusk on a seafront, lit from the left by the setting sun, looking out to sea.">
+      <p class="band__cap band__cap--tl">Mumbai · 21:04</p>
+      <figcaption class="band__line">Sixteen repositories.<br>One standard library.</figcaption>
+      <p class="band__cap band__cap--bl">The rest is just typing</p>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 6 · IMPACT, again ============
+     This one earns the calendar. -->
+<section class="pin" data-seq="impact-2">
+  <div class="pin__vp">
+    <p class="impact">
+      <span class="impact__line" data-impact>248 commits. 59 days. The gaps stay.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============ 7 · JOURNEY ============
+     Dates set huge on a rail that scrubs horizontally. -->
 <section class="pin" id="journey" data-seq="journey">
-  <div class="pin__vp seq seq--journey">
-    <div class="wrap seq__grid seq__grid--journey">
-      <div class="seq__rail seq__rail--journey">
-        <p class="sec-idx"><span>04</span> Journey</p>
-        <div class="tl" id="tl">
-          <div class="tl__fill" id="tlFill" aria-hidden="true"></div>
-
-          <div class="tl__item">
-            <span class="tl__dot" aria-hidden="true"></span>
-            <p class="tl__when">October 2025</p>
-            <h3 class="tl__title">First blood</h3>
-            <p class="tl__body">A full-stack ERP, and a TSP bus-route solver in C. Twenty-seven commits in three weeks.</p>
-          </div>
-
-          <div class="tl__item">
-            <span class="tl__dot" aria-hidden="true"></span>
-            <p class="tl__when">Nov 2025 — Mar 2026</p>
-            <h3 class="tl__title">A quiet stretch</h3>
-            <p class="tl__body">No public commits for five months. Coursework. The gap is real and it is on the calendar to the right.</p>
-          </div>
-
-          <div class="tl__item">
-            <span class="tl__dot" aria-hidden="true"></span>
-            <p class="tl__when">April 2026</p>
-            <h3 class="tl__title">Down to the metal</h3>
-            <p class="tl__body">A multithreaded path tracer in C++. An OS log analyzer in Python.</p>
-          </div>
-
-          <div class="tl__item">
-            <span class="tl__dot" aria-hidden="true"></span>
-            <p class="tl__when">August 2026</p>
-            <h3 class="tl__title">Into the models</h3>
-            <p class="tl__body">Vendored DeepfakeBench. Ran real checkpoints. Designed an FSRS-6 review scheduler.</p>
-          </div>
-
-          <div class="tl__item tl__item--accent">
-            <span class="tl__dot" aria-hidden="true"></span>
-            <p class="tl__when">September 2026</p>
-            <h3 class="tl__title">The heavy lift</h3>
-            <p class="tl__body">Five projects in one month, DeepGuard rebuilt solo. One hundred and three commits.</p>
-          </div>
-        </div>
+  <div class="pin__vp">
+    <p class="mono sec-label">Journey</p>
+    <div class="rail" data-rail><div class="journey__rail" data-rail-track>
+      <div class="jday">
+        <p class="jday__when">October 2025</p>
+        <h3 class="jday__title">First blood</h3>
+        <p class="jday__body">A full-stack ERP. A TSP bus-route solver in C.</p>
+        <p class="jday__n">27 commits</p>
       </div>
-
-      <div class="seq__stage seq__stage--cal">
-        <div class="cal">
-          <div class="cal__head">
-            <h3>Commit activity</h3>
-            <span class="cal__sub" id="calRange">—</span>
-          </div>
-          <div class="cal__scroll">
-            <div class="cal__grid" id="calGrid" role="img" aria-label="Calendar of commits per day"></div>
-            <div class="cal__months" id="calMonths"></div>
-            <noscript>
-              <p class="cal__ns">248 commits across 59 active days, October 2025 to date.</p>
-            </noscript>
-          </div>
-          <div class="cal__legend">
-            <span>Less</span>
-            <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>
-            <span>More</span>
-          </div>
-          <dl class="cstats">
-            <div class="cstat"><dt>Total commits</dt><dd id="cTotal">—</dd></div>
-            <div class="cstat"><dt>Active days</dt><dd id="cDays">—</dd></div>
-            <div class="cstat"><dt>First commit</dt><dd id="cFirst">—</dd></div>
-            <div class="cstat"><dt>Repositories</dt><dd id="cRepos">16</dd></div>
-          </dl>
-          <p class="cal__foot" id="calNote">—</p>
-        </div>
+      <div class="jday">
+        <p class="jday__when">Nov 2025 — Mar 2026</p>
+        <h3 class="jday__title">A quiet stretch</h3>
+        <p class="jday__body">No public commits for five months. Coursework. The gap is real.</p>
+        <p class="jday__n">0 commits</p>
       </div>
+      <div class="jday">
+        <p class="jday__when">April 2026</p>
+        <h3 class="jday__title">Down to the metal</h3>
+        <p class="jday__body">A multithreaded path tracer in C++.</p>
+        <p class="jday__n">BVH · C++</p>
+      </div>
+      <div class="jday">
+        <p class="jday__when">August 2026</p>
+        <h3 class="jday__title">Into the models</h3>
+        <p class="jday__body">Vendored DeepfakeBench. Ran real checkpoints.</p>
+        <p class="jday__n">PyTorch · FSRS-6</p>
+      </div>
+      <div class="jday">
+        <p class="jday__when">September 2026</p>
+        <h3 class="jday__title">The heavy lift</h3>
+        <p class="jday__body">Five projects in one month, DeepGuard rebuilt solo.</p>
+        <p class="jday__n">103 commits</p>
+      </div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ 8 · CALENDAR ============
+   Generated from the GitHub API by tools/fetch-commits.mjs. -->
+<section class="work" id="commits" style="padding-top:0">
+  <div class="wrap">
+    <div class="cal">
+      <div class="cal__head">
+        <h3>Commit activity</h3>
+        <span class="cal__sub" id="calRange">—</span>
+      </div>
+      <div class="cal__scroll">
+        <div class="cal__grid" id="calGrid" role="img" aria-label="Calendar of commits per day, October 2025 to October 2026"></div>
+        <div class="cal__months" id="calMonths"></div>
+        <noscript><p class="cal__ns">248 commits across 59 active days, October 2025 onward.</p></noscript>
+      </div>
+      <div class="cal__legend">
+        <span>Less</span>
+        <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>
+        <span>More</span>
+      </div>
+      <dl class="cal__stats">
+        <div class="cstat"><dt>Total commits</dt><dd id="cTotal">—</dd></div>
+        <div class="cstat"><dt>Active days</dt><dd id="cDays">—</dd></div>
+        <div class="cstat"><dt>First commit</dt><dd id="cFirst">—</dd></div>
+        <div class="cstat"><dt>Repositories</dt><dd id="cRepos">16</dd></div>
+      </dl>
+      <p class="cal__foot" id="calNote">—</p>
     </div>
   </div>
 </section>
 
-<!-- ============ CONTACT — pinned outro ============ -->
-<section class="pin" id="contact" data-outro>
-  <div class="pin__vp seq seq--contact">
-    <div class="wrap contact">
-      <p class="sec-idx"><span>05</span> Contact</p>
-      <h2 class="contact__title">Let's build<br><em>something real.</em></h2>
-      <p class="contact__sub">Looking for a tech internship where the work has actual users.</p>
-
-      <div class="contact__grid">
-        <a class="ccard" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">
-          <span class="ccard__t"><svg class="i" viewBox="0 0 24 24"><use href="#i-mail"/></svg>Email</span>
-          <span class="ccard__s">arpitsingh8534@gmail.com</span>
-        </a>
-        <a class="ccard" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener" data-cursor="github">
-          <span class="ccard__t"><svg class="i" viewBox="0 0 24 24"><use href="#i-github"/></svg>GitHub</span>
-          <span class="ccard__s">github.com/Arp1tSingh</span>
-        </a>
-        <a class="ccard" href="https://www.linkedin.com/in/rpitsingh" target="_blank" rel="noopener" data-cursor="linkedin">
-          <span class="ccard__t"><svg class="i" viewBox="0 0 24 24"><use href="#i-linkedin"/></svg>LinkedIn</span>
-          <span class="ccard__s">linkedin.com/in/rpitsingh</span>
-        </a>
-        <button class="ccard" type="button" id="copyHandle" data-cursor="copy">
-          <span class="ccard__t"><svg class="i" viewBox="0 0 24 24"><use href="#i-copy"/></svg><span id="copyLabel">Copy handle</span></span>
-          <span class="ccard__s" id="copyValue">@Arp1tSingh</span>
-        </button>
-      </div>
+<!-- ============ 9 · CONTACT ============
+   The email address is the page. -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <a class="contact__mail" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">arpitsingh8534@gmail.com</a>
+    <p class="contact__sub">Open to a tech internship — 2026.</p>
+    <div class="contact__links">
+      <a class="clink" href="mailto:arpitsingh8534@gmail.com" data-cursor="email"><svg class="i" viewBox="0 0 24 24"><use href="#i-mail"/></svg>Email</a>
+      <a class="clink" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener" data-cursor="github"><svg class="i" viewBox="0 0 24 24"><use href="#i-github"/></svg>GitHub</a>
+      <a class="clink" href="https://www.linkedin.com/in/rpitsingh" target="_blank" rel="noopener" data-cursor="linkedin"><svg class="i" viewBox="0 0 24 24"><use href="#i-linkedin"/></svg>LinkedIn</a>
+      <button class="clink" type="button" id="copyHandle" data-cursor="copy"><svg class="i" viewBox="0 0 24 24"><use href="#i-copy"/></svg><span id="copyLabel">Copy handle</span></button>
     </div>
   </div>
 </section>
@@ -454,7 +384,7 @@
 <!-- ============ FOOTER ============ -->
 <footer class="footer">
   <div class="wrap footer__inner">
-    <p class="footer__c">© <span id="year">2026</span> Arpit Singh — <a href="mailto:arpitsingh8534@gmail.com">arpitsingh8534@gmail.com</a></p>
+    <p>© <span id="year">2026</span> Arpit Singh</p>
     <nav class="footer__links" aria-label="Footer">
       <a href="https://github.com/Arp1tSingh" target="_blank" rel="noopener">GitHub</a>
       <a href="https://www.linkedin.com/in/rpitsingh" target="_blank" rel="noopener">LinkedIn</a>
@@ -464,9 +394,9 @@
   </div>
 </footer>
 
-<!-- ============ FLOATING CONTACT DOCK ============
-     Redundant third affordance. Fades in once the hero is behind you, hides again
-     over the contact outro so it never covers the primary links. -->
+<!-- ============ FLOATING DOCK ============
+     Third, redundant contact affordance. Appears once the hero is behind
+     you, hides over the contact block so it never covers the email. -->
 <div class="dock" id="dock" aria-hidden="true">
   <a class="dock__mail" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">
     <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg>
@@ -490,8 +420,24 @@
   </div>
 </div>
 
-<!-- ============ SVG SPRITE ============ -->
+<!-- ============ SVG SPRITE + DUOTONE FILTER ============
+     #duo maps the two software screenshots to luminance, then ramps that
+     luminance across the navy palette. Applied from CSS with filter:url(),
+     so no image tooling is committed and the originals stay untouched. -->
 <svg class="sprite" aria-hidden="true" focusable="false">
+  <filter id="duo" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="
+      0.2126 0.7152 0.0722 0 0
+      0.2126 0.7152 0.0722 0 0
+      0.2126 0.7152 0.0722 0 0
+      0      0      0      1 0"/>
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues="0.008 0.09 0.42 0.78 0.98"/>
+      <feFuncG type="table" tableValues="0.012 0.10 0.44 0.79 0.98"/>
+      <feFuncB type="table" tableValues="0.086 0.28 0.62 0.84 0.95"/>
+    </feComponentTransfer>
+  </filter>
+
   <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2 1.49 3.17 1.18 3.17 1.18.63 1.58.23 2.75.11 3.04.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></symbol>
   <symbol id="i-linkedin" viewBox="0 0 24 24"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21.4 8.65 22 11 22 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2 0-2.3 1.57-2.3 3.2V21h-4V9Z"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" d="M3 6.5h18v11H3zM3 7l9 6 9-6"/></symbol>

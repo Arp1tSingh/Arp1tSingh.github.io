@@ -4,14 +4,14 @@
 
    Boot order matters in one place only: initScroll() must run before
    anything that asks hasMotion(), because it is what decides whether
-   the pinned sequences exist. Everything else is independent.
+   the pinned sequences exist. initWipes() follows it so the hero name is
+   never revealed against a metric the display font hasn't loaded yet.
    ============================================================ */
 
 import { CONFIG, GITHUB_STATS } from './config.js';
-import { initReveal } from './reveal.js';
 import { initCursor } from './cursor.js';
 import { initPalette } from './palette.js';
-import { initScroll, scrollTo, stopScroll, startScroll, hasMotion } from './scroll.js';
+import { initScroll, initWipes, scrollTo, stopScroll, startScroll, hasMotion } from './scroll.js';
 
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -59,56 +59,6 @@ function initBoot() {
 
   requestAnimationFrame(scramble);
   setTimeout(() => boot.classList.add('is-done'), 2600);   // never trap the visitor
-}
-
-/* ---------- 2. Hero name, per character ---------------------------- */
-function initHeroName() {
-  const el = $('#heroName');
-  if (!el) return;
-  const text = el.textContent.trim();
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  el.textContent = '';
-  [...text].forEach((ch, i) => {
-    const span = document.createElement('span');
-    span.className = ch === ' ' ? 'sp' : 'ch';
-    span.textContent = ch === ' ' ? ' ' : ch;
-    if (!reduce) span.style.transitionDelay = `${(i * 0.05).toFixed(3)}s`;
-    el.appendChild(span);
-  });
-
-  if (reduce) { el.classList.add('revealed'); return; }
-  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('revealed')));
-}
-
-/* ---------- 3. Typewriter ------------------------------------------ */
-function initTypewriter() {
-  const el = $('#typewriter');
-  if (!el) return;
-
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const roles = CONFIG.roles;
-  if (reduce) { el.textContent = roles[0]; return; }
-
-  let r = 0, i = 0, deleting = false, timer = 0;
-
-  const tick = () => {
-    const word = roles[r];
-    i += deleting ? -1 : 1;
-    el.textContent = word.slice(0, i);
-
-    let delay = deleting ? 42 : 74;
-    if (!deleting && i === word.length) { deleting = true; delay = 1700; }
-    else if (deleting && i === 0) { deleting = false; r = (r + 1) % roles.length; delay = 320; }
-
-    timer = setTimeout(tick, delay);
-  };
-
-  tick();
-  document.addEventListener('visibilitychange', () => {
-    clearTimeout(timer);
-    if (!document.hidden) tick();
-  });
 }
 
 /* ---------- 4. Nav -------------------------------------------------- */
@@ -367,10 +317,8 @@ function hardenExternalLinks() {
 /* ---------- boot ---------------------------------------------------- */
 function start() {
   initBoot();
-  initHeroName();
   initNav();
   initDrawer();
-  initTypewriter();
   initAnchors();
   initContact();
   initCommits();
@@ -382,7 +330,7 @@ function start() {
   // compensating branch afterwards: the un-armed state is already the
   // finished state in CSS, so reduced-motion and no-JS need no repainting.
   initScroll();
-  initReveal();
+  initWipes();
 }
 
 if (document.readyState === 'loading') {

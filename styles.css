@@ -1,52 +1,84 @@
 /* ============================================================
    Arpit Singh — Portfolio
-   System derived from three references (landonorris.com,
-   charlesleclerc.com, aahana-surya.github.io):
-   · one characterful serif for display
-   · mono for every small technical label
-   · border-radius 0 — shape comes from hairlines and rules
-   · flat colour. zero box-shadow, zero blur, zero glass
-   · ONE accent hue on a tinted warm dark
+   ------------------------------------------------------------
+   THEME: EVIDENCE, NOT NARRATION.
+
+   One accent means one thing: red is actionable, or you are here.
+   No decorative red anywhere else on the page.
+
+   Palette is charlesleclerc.com's: #000016 navy, #e4032e signal red.
+   Display face is Fraunces at opsz 144 with WONK 1 — the off-kilter
+   letterforms that read chosen rather than defaulted.
+
+   Fonts are self-hosted. There is no request to fonts.googleapis.com
+   or fonts.gstatic.com anywhere in this project.
    ============================================================ */
+
+/* ---------- FONTS ---------- */
+@font-face{
+  font-family:'Fraunces';
+  src:url('./assets/fonts/fraunces-var.woff2') format('woff2');
+  font-weight:300 700;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Inter Tight';
+  src:url('./assets/fonts/inter-tight-var.woff2') format('woff2');
+  font-weight:300 500;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'JetBrains Mono';
+  src:url('./assets/fonts/jetbrains-mono.woff2') format('woff2');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
 
 /* ---------- TOKENS ---------- */
 :root{
-  /* warm near-black ground; neutrals carry a hue, like all three refs */
-  --ground:    #0b0a09;
-  --ground-2:  #100e0c;
-  --surface:   #14110f;
+  --ground:    #000016;
+  --ground-2:  #02031f;
+  --surface:   #06072e;
 
-  --ink-00:    #f7f2ea;
-  --ink-40:    #a89f94;
-  --ink-60:    #7a7268;
-  --ink-80:    #4a453e;
+  --ink-00:    #f1f1f1;
+  --ink-40:    #a9adbd;
+  --ink-60:    #7c8092;
+  --ink-80:    #4b4e63;
 
-  --rule:        rgba(247,242,234,.11);
-  --rule-strong: rgba(247,242,234,.22);
+  --rule:        rgba(241,241,241,.13);
+  --rule-strong: rgba(241,241,241,.24);
 
-  --accent:      #ff5a1f;
-  --accent-dim:  #c2410c;
-  --accent-wash: rgba(255,90,31,.10);
+  --accent:      #e4032e;
+  --accent-dim:  #b80225;
+  --accent-wash: rgba(228,3,46,.12);
 
-  --font-display: "Instrument Serif", "Times New Roman", Times, serif;
-  --font-body:    "Inter Tight", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --display: 'Fraunces', 'Times New Roman', Times, serif;
+  --body:    'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  /* fluid modular scale — one source, no breakpoint jumps */
-  --t-display: clamp(3rem, 11.5vw, 9.5rem);
-  --t-h2:      clamp(2.1rem, 5.5vw, 4.4rem);
-  --t-h3:      clamp(1.15rem, 2vw, 1.55rem);
-  --t-lead:    clamp(1.05rem, 1.7vw, 1.4rem);
-  --t-body:    clamp(.95rem, 1.05vw, 1.05rem);
-  --t-small:   .82rem;
+  /* Fraunces' personality axes. SOFT rounds the terminals, WONK tips the
+     letterforms off true. 0 is tidy, 1 is characterful. */
+  --wonk: 1;
+  --wonk-tight: 1;
+
+  --t-mega:    clamp(4rem, 24vw, 24rem);
+  --t-impact:  clamp(2.1rem, 6.4vw, 6.6rem);
+  --t-title:   clamp(2rem, 3.9vw, 4.4rem);
+  --t-h3:      clamp(1.2rem, 1.7vw, 1.55rem);
+  --t-body:    clamp(.95rem, 1vw, 1.05rem);
+  --t-small:   .84rem;
   --t-label:   .66rem;
-  --t-micro:   .58rem;
-  --t-statement: clamp(1.9rem, 4.4vw, 4rem);
-  --track-label: .26em;
+  --t-micro:   .575rem;
+  --t-mail:    clamp(1.3rem, 4.2vw, 4.4rem);
+  --t-mail-lg: clamp(1.4rem, 7.4vw, 7.6rem);
 
-  --wrap: 1280px;
-  --gutter: clamp(1.25rem, 5vw, 3.5rem);
-  --nav-h: 62px;
+  --wrap: 1400px;
+  --gutter: clamp(1.5rem, 4vw, 4rem);
+  --nav-h: 64px;
+  --track: .26em;
 
   --ease: cubic-bezier(.16,1,.3,1);
   --dur: .3s;
@@ -56,16 +88,11 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{
   -webkit-text-size-adjust:100%;
-  /* `clip`, not `hidden`: hidden would make the root a scroll container
-     and silently break every position:sticky on the page. */
   overflow-x:clip;
   scroll-padding-top:calc(var(--nav-h) + 18px);
 }
-/* Lenis drives scrolling itself once it exists; native smooth scroll would
-   fight it. Without JS the browser default (instant) is correct. */
-html.js-scroll{scroll-behavior:auto}
 body{
-  font-family:var(--font-body);
+  font-family:var(--body);
   font-size:var(--t-body);
   line-height:1.6;
   color:var(--ink-00);
@@ -80,68 +107,52 @@ a{color:inherit;text-decoration:none}
 button,input{font:inherit;color:inherit;background:none;border:none;outline:none}
 button{cursor:pointer}
 ul,dl{list-style:none}
-h1,h2,h3{font-weight:400;letter-spacing:-.02em;line-height:1}
 b,strong{font-weight:500;color:var(--ink-00)}
 ::selection{background:var(--accent);color:var(--ground)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 .sprite{position:absolute;width:0;height:0;overflow:hidden}
 .i{width:1em;height:1em;flex:none}
 
 .wrap{width:min(100% - var(--gutter) * 2, var(--wrap));margin-inline:auto}
 .skip{
   position:fixed;top:8px;left:8px;z-index:999;
-  font-family:var(--font-mono);font-size:var(--t-label);text-transform:uppercase;
-  letter-spacing:var(--track-label);text-indent:var(--track-label);
+  font-family:var(--mono);font-size:var(--t-label);text-transform:uppercase;
+  letter-spacing:var(--track);text-indent:var(--track);
   padding:.6rem 1rem;background:var(--accent);color:var(--ground);
   transform:translateY(-200%);transition:transform .25s var(--ease);
 }
 .skip:focus{transform:none}
 
 /* ---------- SHARED TYPE ---------- */
-.label{
-  font-family:var(--font-mono);font-size:var(--t-label);font-weight:400;
-  text-transform:uppercase;letter-spacing:var(--track-label);
-  text-indent:var(--track-label);color:var(--ink-60);
+/* Every display line in the site is Fraunces at display optical size.
+   `opsz 144` is what gives it the high-contrast cut at huge sizes. */
+.disp{
+  font-family:var(--display);
+  font-variation-settings:'opsz' 144, 'SOFT' 0, 'WONK' var(--wonk);
+  font-weight:400;
+  line-height:.86;
+  letter-spacing:-.03em;
 }
-.label--accent{color:var(--accent)}
-.mono{font-family:var(--font-mono)}
-em{font-style:italic;color:var(--ink-40)}
-
-.sec-idx{
-  font-family:var(--font-mono);font-size:var(--t-label);
-  text-transform:uppercase;letter-spacing:var(--track-label);
-  text-indent:var(--track-label);color:var(--accent);
-  display:flex;align-items:baseline;gap:.6rem;
+.mono{
+  font-family:var(--mono);font-size:var(--t-label);font-weight:400;
+  text-transform:uppercase;letter-spacing:var(--track);color:var(--ink-60);
 }
-.sec-idx span{color:var(--ink-80)}
-
-/* ---------- REVEAL ----------
-   Visible by default. The hidden state is scoped to .js so that with
-   JavaScript disabled nothing is ever stuck at opacity 0. */
-.reveal{opacity:1;transform:none}
-.js .reveal{
-  opacity:0;transform:translateY(18px);
-  transition:opacity .9s var(--ease),transform .9s var(--ease);
-}
-.js .reveal[data-delay="1"]{transition-delay:.08s}
-.js .reveal[data-delay="2"]{transition-delay:.16s}
-.js .reveal[data-delay="3"]{transition-delay:.24s}
-.js .reveal[data-delay="4"]{transition-delay:.32s}
-.js .reveal.show{opacity:1;transform:none}
+.body{color:var(--ink-40);font-weight:300;line-height:1.55}
 
 /* ---------- BOOT ---------- */
 .boot{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;background:var(--ground);
   transition:opacity .5s var(--ease),visibility .5s}
 .boot.is-done{opacity:0;visibility:hidden}
-.boot__mark{font-family:var(--font-display);font-size:clamp(2rem,7vw,3.5rem);letter-spacing:-.02em}
-.boot__bar{height:1px;background:var(--rule);margin-top:1.25rem;overflow:hidden}
+.boot__mark{font-family:var(--display);font-size:clamp(2rem,7vw,3.5rem);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;letter-spacing:-.02em}
+.boot__bar{height:1px;background:var(--rule);margin-top:1.5rem;overflow:hidden;max-width:320px}
 .boot__bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s var(--ease)}
-.boot__meta{display:flex;justify-content:space-between;margin-top:.7rem;
-  font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80);
+.boot__meta{display:flex;justify-content:space-between;margin-top:.7rem;max-width:320px;
+  font-family:var(--mono);font-size:var(--t-micro);color:var(--ink-80);
   text-transform:uppercase;letter-spacing:.2em}
 .boot__pct{font-variant-numeric:tabular-nums}
 
-/* ---------- CURSOR: flat corner reticle ---------- */
+/* ---------- CURSOR ---------- */
 .cursor{position:fixed;top:0;left:0;z-index:900;pointer-events:none;opacity:0;transition:opacity .25s}
 .cursor.on{opacity:1}
 .cursor__dot{position:absolute;width:5px;height:5px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%)}
@@ -154,30 +165,33 @@ em{font-style:italic;color:var(--ink-40)}
 .cursor.on .cursor__box i{opacity:1}
 .cursor__label{
   position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);
-  font-family:var(--font-mono);font-size:var(--t-micro);text-transform:uppercase;
+  font-family:var(--mono);font-size:var(--t-micro);text-transform:uppercase;
   letter-spacing:.16em;color:var(--accent);white-space:nowrap;opacity:0;transition:opacity .2s;
 }
 .cursor.magnet .cursor__label{opacity:1}
 .cursor.magnet .cursor__dot{opacity:0}
 .has-cursor,.has-cursor *{cursor:none !important}
 
-/* ---------- NAV ---------- */
+/* ---------- NAV ----------
+   The header carries the permanent contact CTA. It is the first thing
+   painted and never leaves. */
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;
   transition:background .3s,border-color .3s}
-.nav.stuck{background:rgba(11,10,9,.9);border-bottom:1px solid var(--rule)}
+.nav.stuck{background:rgba(0,0,22,.92);border-bottom:1px solid var(--rule)}
 .nav__rail{position:absolute;top:0;left:0;right:0;height:1px;background:var(--rule)}
 .nav__rail i{display:block;height:100%;width:0;background:var(--accent)}
 .nav__inner{
   height:var(--nav-h);display:flex;align-items:center;gap:1.5rem;
   width:min(100% - var(--gutter) * 2, var(--wrap));margin-inline:auto;
 }
-.brand{display:flex;align-items:baseline;gap:.5rem;margin-right:auto;
-  font-family:var(--font-display);font-size:1.15rem;letter-spacing:-.01em}
+.brand{font-family:var(--display);font-size:1.2rem;
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  letter-spacing:-.02em;margin-right:auto;line-height:1}
 .brand span{color:var(--accent)}
-.nav__links{display:flex;gap:.35rem}
+.nav__links{display:flex;gap:.25rem}
 .nav__links a{
   position:relative;padding:.35rem .6rem;
-  font-family:var(--font-mono);font-size:var(--t-label);
+  font-family:var(--mono);font-size:var(--t-label);
   text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60);
   transition:color var(--dur) var(--ease);
 }
@@ -190,39 +204,24 @@ em{font-style:italic;color:var(--ink-40)}
 .nav__links a:hover::after,.nav__links a.on::after{transform:scaleX(1);transform-origin:left}
 .nav__links a.on{color:var(--ink-00)}
 .nav__actions{display:flex;align-items:center;gap:.5rem}
-.nav__search{
-  display:flex;align-items:center;gap:.45rem;padding:.35rem .55rem;
-  border:1px solid var(--rule);color:var(--ink-60);
-  font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.12em;
-  transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease);
-}
-.nav__search:hover{border-color:var(--rule-strong);color:var(--ink-00)}
-.nav__search .i{width:.9rem;height:.9rem}
-.nav__search kbd{
-  font-family:var(--font-mono);font-size:.6rem;padding:.05rem .25rem;
-  border:1px solid var(--rule);color:var(--ink-80);
-}
-.nav__social{
-  display:grid;place-items:center;width:30px;height:30px;
+.nav__search,.nav__social{
+  display:grid;place-items:center;width:32px;height:32px;
   border:1px solid var(--rule);color:var(--ink-60);
   transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease);
 }
-.nav__social:hover{border-color:var(--accent);color:var(--accent)}
-.nav__social .i{width:1rem;height:1rem}
-
-/* The permanent contact affordance. Solid accent so it never reads as
-   another quiet text link. This is the primary answer to the ten-second rule. */
+.nav__search:hover,.nav__social:hover{border-color:var(--accent);color:var(--accent)}
+.nav__search .i,.nav__social .i{width:.95rem;height:.95rem}
 .nav__hire{
-  display:inline-flex;align-items:center;height:30px;padding:0 .8rem;
+  display:inline-flex;align-items:center;height:32px;padding:0 .9rem;
   background:var(--accent);color:var(--ground);
-  font-family:var(--font-mono);font-size:var(--t-label);
-  text-transform:uppercase;letter-spacing:.14em;
+  font-family:var(--mono);font-size:var(--t-label);
+  text-transform:uppercase;letter-spacing:.16em;
   transition:background var(--dur) var(--ease),color var(--dur) var(--ease);
 }
-.nav__hire:hover{background:var(--accent-dim);color:var(--ink-00)}
-.burger{display:none;width:34px;height:30px;border:1px solid var(--rule);
-  grid-template-rows:repeat(3,1fr);align-items:center;justify-items:center;padding:0 8px;gap:3px}
+.nav__hire:hover{background:var(--ground);color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent)}
+.burger{display:none;width:36px;height:32px;border:1px solid var(--rule);
+  grid-template-rows:repeat(3,1fr);align-items:center;justify-items:center;padding:0 9px;gap:3px}
 .burger i{display:block;width:100%;height:1px;background:var(--ink-00);
   transition:transform .3s var(--ease),opacity .2s}
 .burger[aria-expanded="true"] i:nth-child(1){transform:translateY(4px) rotate(45deg)}
@@ -230,255 +229,332 @@ em{font-style:italic;color:var(--ink-40)}
 .burger[aria-expanded="true"] i:nth-child(3){transform:translateY(-4px) rotate(-45deg)}
 
 /* ---------- DRAWER ---------- */
-.drawer{position:fixed;inset:0;z-index:99;background:rgba(11,10,9,.96)}
+.drawer{position:fixed;inset:0;z-index:99;background:rgba(0,0,22,.97)}
 .drawer[hidden]{display:none}
-.drawer__panel{height:100%;display:flex;flex-direction:column;justify-content:center;
-  gap:2rem;padding:var(--gutter);
+.drawer__panel{height:100%;display:flex;flex-direction:column;justify-content:center;gap:2.5rem;
   width:min(100% - var(--gutter) * 2,var(--wrap));margin-inline:auto}
-.drawer__hire{
-  display:block;padding:1rem 1.1rem;background:var(--accent);color:var(--ground);
-  font-family:var(--font-mono);font-size:var(--t-small);
-  text-transform:uppercase;letter-spacing:.12em;word-break:break-all;
-}
+.drawer__mail{display:block;padding:1.1rem;background:var(--accent);color:var(--ground);
+  font-family:var(--mono);font-size:var(--t-small);
+  text-transform:uppercase;letter-spacing:.12em;word-break:break-all}
 .drawer__links{display:flex;flex-direction:column}
-.drawer__links a{
-  display:flex;align-items:baseline;gap:1rem;padding:.7rem 0;
+.drawer__links a{display:flex;align-items:baseline;gap:1rem;padding:.7rem 0;
   border-bottom:1px solid var(--rule);
-  font-family:var(--font-display);font-size:clamp(1.9rem,8vw,2.6rem);
-  line-height:1;transition:color var(--dur) var(--ease);
-}
+  font-family:var(--display);font-size:clamp(2rem,8vw,3rem);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  line-height:1;letter-spacing:-.02em;transition:color var(--dur) var(--ease)}
 .drawer__links a:hover{color:var(--accent)}
-.drawer__idx{font-family:var(--font-mono);font-size:var(--t-micro);
+.drawer__idx{font-family:var(--mono);font-size:var(--t-micro);
   text-transform:uppercase;letter-spacing:.2em;color:var(--ink-80)}
-.drawer__foot{display:flex;gap:1.25rem;font-family:var(--font-mono);font-size:var(--t-label);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60)}
+.drawer__foot{display:flex;gap:1.5rem;font-family:var(--mono);font-size:var(--t-label);
+  text-transform:uppercase;letter-spacing:.16em;color:var(--ink-60)}
 .drawer__foot a:hover{color:var(--accent)}
 
 /* ============================================================
-   PINNED SCROLL SEQUENCES
-   ------------------------------------------------------------
-   Every rule in this block that depends on pinning, pinning-type
-   transforms, or the dock is scoped under `.js-scroll`, which
-   js/scroll.js adds only once GSAP + ScrollTrigger + Lenis have all
-   resolved. Without that class — no JS, blocked vendor files, or
-   prefers-reduced-motion — the markup below renders as an ordinary
-   stacked document and stays fully readable.
-
-   GSAP ScrollTrigger pins by wrapping the element in a
-   `pin-spacer` and applying `position: fixed` to the pinned node, so
-   these sections must not set their own `position` or `overflow`.
+   PINNED SEQUENCES
+   Every rule that depends on pinning or a scrub is scoped under
+   .js-scroll, which js/scroll.js adds only once GSAP + ScrollTrigger
+   + Lenis resolve and motion is allowed. Without it the markup below
+   is an ordinary stacked document.
    ============================================================ */
-
-/* Baseline: an ordinary full-height section. */
 .pin{position:relative;width:100%}
 .pin__vp{
-  position:relative;
-  min-height:100svh;
+  position:relative;min-height:100svh;
   display:flex;flex-direction:column;justify-content:center;
   padding:calc(var(--nav-h) + 2rem) 0 clamp(2rem,6vh,4rem);
 }
 
-/* --- sequence 01 · About ------------------------------------------- */
-.seq--about{background:var(--ground)}
-.seq__grid{
-  display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);
-  gap:clamp(2rem,5vw,4.5rem);align-items:center;
+/* ---------- HERO · type only ----------
+   No image. The name is the whole first screen. */
+.hero .pin__vp{justify-content:flex-end;padding-bottom:clamp(1.5rem,4vh,3rem)}
+.hero__inner{width:100%}
+.hero__name{
+  font-family:var(--display);
+  font-size:var(--t-mega);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  font-weight:400;line-height:.8;letter-spacing:-.045em;
+  margin:0;
 }
-/* min-width:0 is load-bearing on both grid items. A grid item's automatic
-   minimum size is min-content, so without it the 53-column commit calendar
-   refuses to shrink and pushes its card past the right edge of the viewport. */
-.seq__rail{align-self:center;min-width:0}
-.seq__stage{min-width:0}
-/* .seq__stage is a flex container, so .cal is itself a flex item and inherits
-   min-width:auto — which is min-content, i.e. all 53 calendar columns. It has to
-   be reset on the child, not the parent. */
-.seq__stage>*{min-width:0;max-width:100%}
-.seq__steps{margin-top:clamp(1.5rem,4vh,2.5rem);display:flex;flex-direction:column}
-.seq__steps li{
-  border-top:1px solid var(--rule);padding:1rem 0;
-  transition:border-color var(--dur) var(--ease);
+/* Per-line clip wipe, the landonorris device. Each .line is its own
+   overflow box and the mask sweeps it open. */
+.line{display:block;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em}
+.js .line>span{
+  display:block;
+  transform:translateY(105%);
+  transition:transform 1.05s var(--ease);
 }
-.seq__steps li:last-child{border-bottom:1px solid var(--rule)}
-.seq__steps li.is-on{border-color:var(--accent)}
-.seq__steps span{
-  display:block;font-family:var(--font-mono);font-size:var(--t-label);
-  text-transform:uppercase;letter-spacing:var(--track-label);
-  color:var(--ink-80);margin-bottom:.4rem;transition:color var(--dur) var(--ease);
+.js .line.is-in>span{transform:none}
+
+.hero__mail{
+  display:inline-block;margin-top:clamp(1.25rem,3vh,2.25rem);
+  font-family:var(--display);font-size:var(--t-mail);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  font-weight:400;line-height:1;letter-spacing:-.02em;
+  color:var(--accent);position:relative;
+  background-image:linear-gradient(var(--accent),var(--accent));
+  background-repeat:no-repeat;
+  background-size:0% 1px;background-position:0 100%;
+  transition:background-size .5s var(--ease),color .35s var(--ease);
 }
-.seq__steps li.is-on span{color:var(--accent)}
-.seq__steps p{
-  color:var(--ink-60);font-size:var(--t-small);line-height:1.6;
-  transition:color var(--dur) var(--ease);
+.hero__mail:hover{background-size:100% 1px;color:var(--accent-dim)}
+.hero__meta{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;
+  margin-top:clamp(2rem,6vh,4rem);padding-top:1.25rem;
+  border-top:1px solid var(--rule);
 }
-.seq__steps li.is-on p{color:var(--ink-00)}
-.seq__stage{display:flex;align-items:center}
-.seq__statement{
-  font-family:var(--font-display);font-size:var(--t-statement);
-  line-height:1;letter-spacing:-.02em;text-wrap:balance;
+.hero__meta .mono{color:var(--ink-60)}
+.hero__lead{max-width:38ch;color:var(--ink-40);font-weight:300;font-size:var(--t-body);line-height:1.5}
+
+/* ---------- IMPACT STATEMENTS ----------
+   Cream to red as you pass, tracking tightening. The site's one
+   unforgettable move. */
+.impact{text-align:center;padding-inline:var(--gutter)}
+.impact__line{
+  font-family:var(--display);font-size:var(--t-impact);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  font-weight:400;line-height:.94;letter-spacing:-.02em;
+  max-width:19ch;margin-inline:auto;text-wrap:balance;
+  color:var(--ink-00);
 }
 
-/* --- sequence 02 · Work rail -------------------------------------- */
-.seq--work{justify-content:center;overflow:clip}
-.seq__head{
-  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
-  width:min(100% - var(--gutter) * 2, var(--wrap));margin:0 auto clamp(1.5rem,4vh,2.5rem);
-  padding-bottom:1rem;border-bottom:1px solid var(--rule);
+/* ---------- WORK · mixed editorial grid ----------
+   Two full-bleed image panels say "look". Four narrow type panels say
+   "read one line". Alternating, so the section reads as a spread. */
+.work{padding-block:clamp(4rem,9vh,7rem)}
+.work__grid{
+  display:grid;grid-template-columns:repeat(12,1fr);
+  gap:clamp(1.25rem,2.2vw,2.25rem);
+  /* align-items:start keeps each panel its natural height. Stretched panels
+     left a void *inside* the hairline, which reads as a mistake; this way the
+     air sits outside the rule and reads as editorial spacing. */
+  align-items:start;
 }
-.seq__counter{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.18em;color:var(--ink-60);
-  font-variant-numeric:tabular-nums}
-.seq__counter b{color:var(--accent);font-weight:400}
-.rail{width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
-.rail::-webkit-scrollbar{display:none}
-.rail__track{
-  display:flex;width:max-content;
-  padding-inline:var(--gutter);
+.slot{position:relative;grid-column:span 5;display:flex;flex-direction:column;
+  padding-top:1.25rem;border-top:1px solid var(--rule);
+  transition:border-color var(--dur) var(--ease)}
+.slot--type{grid-column:span 4}
+.slot--img{grid-column:span 8}
+
+/* image panel */
+.shot{position:relative;overflow:hidden;background:var(--surface);
+  aspect-ratio:16/9;border:1px solid var(--rule)}
+.shot img{
+  width:100%;height:100%;object-fit:cover;
+  /* Duotone into the navy ramp via an inline SVG filter. No image
+     tooling, no baked derivatives, originals untouched. */
+  filter:url(#duo);
+  /* At rest the panel is a plain rounded-nothing rectangle. On hover the
+     corners close in and the image pushes under the mask — a spotlight
+     tightening rather than a fade. */
+  clip-path:ellipse(100% 52% at 50% 50%);
+  transform:scale(1.001);
+  transition:transform .9s var(--ease),clip-path .7s var(--ease);
 }
-.panel{
-  flex:none;width:clamp(280px,26vw,380px);
-  min-height:clamp(300px,46svh,440px);
-  display:flex;flex-direction:column;
-  padding:clamp(1.25rem,2vw,1.75rem);
-  border:1px solid var(--rule);border-right:0;
-  transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease);
+.slot--img:hover .shot img{transform:scale(1.1);clip-path:ellipse(76% 44% at 50% 50%)}
+.shot__cap{
+  position:absolute;left:0;bottom:0;z-index:2;
+  padding:.6rem .8rem;background:var(--ground);color:var(--ink-60);
+  font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.16em;
 }
-.panel:first-child{border-left:0}
-.panel--last{border-right:1px solid var(--rule);border-left:0}
-.panel:hover{background:var(--surface);border-color:var(--rule-strong)}
-.panel__idx{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-80);margin-bottom:auto;padding-bottom:2.5rem}
-.panel__title{
-  font-family:var(--font-display);font-size:clamp(1.5rem,2.4vw,2.1rem);
-  line-height:1.02;letter-spacing:-.015em;margin-bottom:.9rem;
-  /* Two lines reserved, or a one-line title shifts its whole panel down. */
-  min-height:2.04em;
+
+/* The plate number, clipped by .shot so it can never collide with the fixed
+   header, and inverted against the render so it reads as part of the image. */
+.slot__num{
+  position:absolute;left:.02em;top:-.08em;z-index:3;
+  font-family:var(--display);font-size:clamp(5rem,8vw,8rem);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  font-weight:400;line-height:.8;letter-spacing:-.05em;
+  color:var(--accent);opacity:.92;pointer-events:none;
 }
-.panel__title span{font-style:italic;color:var(--accent)}
-.panel__desc{color:var(--ink-40);font-size:var(--t-small);line-height:1.65;
-  margin-bottom:1.25rem;min-height:4.5em}
-.panel__meta{font-family:var(--font-mono);font-size:var(--t-micro);
+
+/* type panel */
+.slot__idx{font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-80);margin-bottom:1.25rem}
+.slot__title{
+  font-family:var(--display);font-size:var(--t-h3);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  line-height:1.04;letter-spacing:-.015em;margin-bottom:.6rem;
+}
+.slot--img .slot__title{font-size:var(--t-title);margin-top:clamp(1.5rem,3vh,2.5rem)}
+.slot__desc{color:var(--ink-40);font-size:var(--t-small);font-weight:300;
+  line-height:1.6;max-width:34ch;margin-bottom:1.1rem}
+.slot__stack{font-family:var(--mono);font-size:var(--t-micro);
   text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80);
-  padding-top:.9rem;border-top:1px solid var(--rule);margin-bottom:1.25rem}
-.panel__links{display:flex;gap:1rem;flex-wrap:wrap}
+  padding-top:.9rem;border-top:1px solid var(--rule);margin-top:1.25rem}
+.slot__links{display:flex;gap:1.1rem;margin-top:1rem;flex-wrap:wrap}
 .link{display:inline-flex;align-items:center;gap:.35rem;
-  font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--accent);
+  font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.16em;color:var(--accent);
   transition:gap var(--dur) var(--ease)}
-.link:hover{gap:.55rem}
+.link:hover{gap:.6rem}
 .link--mute{color:var(--ink-60)}
 .link--mute:hover{color:var(--ink-00)}
-.link .i{width:.9rem;height:.9rem}
+.link .i{width:.85rem;height:.85rem}
 
-/* --- sequence 03 · Toolkit ---------------------------------------- */
-.seq--toolkit{background:var(--ground-2)}
-.seq__lede{margin-top:1rem;max-width:34ch;color:var(--ink-40);font-size:var(--t-small);line-height:1.6}
-.strip{margin-top:clamp(1.5rem,4vh,2.5rem);overflow:hidden;
-  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:.85rem 0}
-.strip__track{display:flex;gap:2.25rem;width:max-content;white-space:nowrap}
-.strip__track span{display:inline-flex;align-items:center;gap:2.25rem;
-  font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.16em;color:var(--ink-60)}
-.strip__track span::after{content:"";width:3px;height:3px;background:var(--accent);flex:none}
-.bars{display:flex;flex-direction:column;gap:clamp(1.15rem,3.6svh,2.6rem)}
-.bar__top{display:flex;justify-content:space-between;align-items:baseline;
-  margin-bottom:.45rem;gap:1rem}
-.bar__name{font-size:var(--t-small);color:var(--ink-00)}
-.bar__pct{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60);
-  font-variant-numeric:tabular-nums}
-/* Widths are inline on each fill, so the finished state is correct with zero
-   scripting. The transform is what GSAP scrubs, and it only starts at zero
-   when the sequences are actually armed. */
-.bar__track{height:1px;background:var(--rule)}
-.bar__fill{display:block;height:4px;margin-top:-1px;background:var(--accent);
-  transform-origin:left center;transform:scaleX(1)}
+/* ---------- TOOLKIT · one mark, not six ----------
+   A single bar split by language share. One honest mark beats six
+   decorative 1px bars that look like a loading skeleton. */
+.toolkit{background:var(--ground-2);border-block:1px solid var(--rule)}
+.toolkit__grid{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);
+  gap:clamp(2rem,5vw,5rem);align-items:center}
+.toolkit__lede{max-width:32ch;margin-top:1.25rem}
+.toolkit__note{font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80);
+  margin-top:2rem;padding-top:1rem;border-top:1px solid var(--rule)}
+.share{display:flex;width:100%;height:44px;background:var(--rule);overflow:hidden}
+.share__seg{position:relative;height:100%;transform:scaleX(1);transform-origin:left center}
+.share__seg[data-k="1"]{background:var(--accent)}
+.share__seg[data-k="2"]{background:#c8354f}
+.share__seg[data-k="3"]{background:#8d4a63}
+.share__seg[data-k="4"]{background:#5b4a6b}
+.share__seg[data-k="5"]{background:#3d4260}
+.share__seg[data-k="6"]{background:#2b3050}
+/* Each label carries the same flex value as the segment it labels, so the
+   row of labels lines up with the row of segments above it. */
+.share__labels{display:flex;margin-top:1rem;font-family:var(--mono);
+  font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60)}
+.share__labels span{overflow:hidden;text-overflow:clip;white-space:nowrap;
+  padding-right:.6rem;font-variant-numeric:tabular-nums;
+  font-size:clamp(.5rem,.62vw,.575rem);letter-spacing:.1em}
+.share__rest{margin-top:.85rem;font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60)}
+.toolkit__lead{display:flex;align-items:baseline;gap:1rem;margin-top:clamp(2rem,5vh,3.5rem);
+  padding-top:clamp(1.5rem,3vh,2rem);border-top:1px solid var(--rule)}
+.toolkit__big{
+  font-family:var(--display);font-size:clamp(4rem,9vw,9rem);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  line-height:.8;letter-spacing:-.05em;font-variant-numeric:lining-nums;
+}
 
-/* --- sequence 04 · Journey + calendar ----------------------------- */
-.seq--journey{justify-content:center}
-.seq__grid--journey{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center}
-.seq__rail--journey{align-self:stretch;display:flex;flex-direction:column;justify-content:center}
-.tl{position:relative;padding-left:1.6rem;margin-top:clamp(1.25rem,3vh,2rem)}
-.tl::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:1px;background:var(--rule)}
-/* Lit and full by default; only reset when a scrub is going to drive it. */
-.tl__fill{position:absolute;left:0;top:6px;width:1px;height:100%;background:var(--accent)}
-.tl__item{position:relative;padding-bottom:1.5rem}
-.tl__item:last-child{padding-bottom:0}
-.tl__dot{position:absolute;left:calc(-1.6rem - 2.5px);top:6px;
-  width:6px;height:6px;background:var(--ground);border:1px solid var(--accent);
-  transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
-.tl__item.on .tl__dot{background:var(--accent)}
-.tl__when{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-60);margin-bottom:.3rem}
-.tl__title{font-family:var(--font-display);font-size:1.15rem;margin-bottom:.35rem;letter-spacing:-.01em}
-.tl__item--accent .tl__when{color:var(--accent)}
-.tl__body{color:var(--ink-40);max-width:46ch;font-size:var(--t-small);line-height:1.6}
-.cal{border:1px solid var(--rule);background:var(--surface);padding:clamp(1rem,2vw,1.5rem)}
+/* ---------- PHOTO BAND ----------
+   arpit-landscape.jpg cropped to y 0..735 of the 960-row original, which
+   is ~16:9 and excludes the shirt logo while keeping the whole head.
+   Full colour: the sky already runs navy to red, so duotoning it would
+   be subtracting for nothing. Top-aligned cover so the crop keeps sky. */
+.band{position:relative;width:100%;aspect-ratio:21/9;overflow:hidden;background:var(--ground)}
+.band__img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:50% 0;will-change:transform}
+.band::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  /* One flat tint, not two scrims. The photograph's lower half is dark sea,
+     and with a heavy bottom scrim it dissolved into the page background
+     entirely — the band looked like it only occupied its top third. */
+  background:linear-gradient(180deg,rgba(0,0,22,.55) 0%,rgba(0,0,22,.12) 34%,rgba(0,0,22,.10) 66%,rgba(0,0,22,.5) 100%)}
+.band::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:rgba(0,0,22,.18)}
+.band__cap{
+  position:absolute;z-index:3;
+  font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-40);
+}
+.band__cap--tl{top:16%;left:var(--gutter)}
+.band__cap--bl{bottom:15%;left:var(--gutter)}
+/* Left column only: the right half of the frame is the subject. */
+.band__line{
+  position:absolute;z-index:3;top:50%;left:var(--gutter);transform:translateY(-50%);
+  font-family:var(--display);font-size:clamp(1.4rem,2.9vw,3rem);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  line-height:1.02;letter-spacing:-.025em;color:var(--ink-00);max-width:15ch;
+}
+
+/* ---------- JOURNEY ----------
+   Dates set huge on a horizontal rail that scrubs with scroll. */
+.rail{width:100%;overflow:hidden}
+.sec-label{padding-inline:var(--gutter);margin-bottom:2rem}
+.journey__rail{display:flex;width:max-content;will-change:transform}
+.jday{
+  width:clamp(280px,26vw,400px);flex:none;
+  padding:1.25rem 1.5rem 1.25rem 0;
+  border-top:1px solid var(--rule);margin-right:clamp(1.5rem,3vw,3rem);
+}
+.jday__when{font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-60);margin-bottom:.75rem}
+.jday__title{font-family:var(--display);
+  font-size:clamp(1.5rem,2.5vw,2.4rem);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  line-height:1;letter-spacing:-.025em;margin-bottom:.7rem}
+.jday__body{color:var(--ink-40);font-size:var(--t-small);font-weight:300;line-height:1.6;max-width:30ch}
+.jday__n{font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.16em;color:var(--accent);margin-top:1rem}
+
+/* ---------- CALENDAR ---------- */
+.cal{padding:clamp(1.25rem,2.2vw,1.75rem);border:1px solid var(--rule);background:var(--surface)}
 .cal__head{display:flex;justify-content:space-between;align-items:baseline;
-  gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
-.cal__head h3{font-family:var(--font-mono);font-size:var(--t-label);font-weight:400;
-  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-00)}
-.cal__sub{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80);
-  text-transform:uppercase;letter-spacing:.12em}
+  gap:1rem;margin-bottom:1.1rem;flex-wrap:wrap}
+.cal__head h3{font-family:var(--mono);font-size:var(--t-label);font-weight:400;
+  text-transform:uppercase;letter-spacing:var(--track);color:var(--ink-00)}
+.cal__sub{font-family:var(--mono);font-size:var(--t-micro);color:var(--ink-80);
+  text-transform:uppercase;letter-spacing:.14em}
 .cal__scroll{overflow-x:auto;padding-bottom:.35rem;scrollbar-width:none}
 .cal__scroll::-webkit-scrollbar{display:none}
 .cal__grid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);
   gap:3px;min-width:max-content;margin-bottom:.4rem}
-.cal__cell{width:11px;height:11px;background:rgba(247,242,234,.045)}
-.cal__cell[data-l="1"]{background:rgba(255,90,31,.28)}
-.cal__cell[data-l="2"]{background:rgba(255,90,31,.5)}
-.cal__cell[data-l="3"]{background:rgba(255,90,31,.75)}
+.cal__cell{width:12px;height:12px;background:rgba(241,241,241,.06)}
+.cal__cell[data-l="1"]{background:rgba(228,3,46,.3)}
+.cal__cell[data-l="2"]{background:rgba(228,3,46,.52)}
+.cal__cell[data-l="3"]{background:rgba(228,3,46,.76)}
 .cal__cell[data-l="4"]{background:var(--accent)}
-.cal__months{display:grid;grid-auto-flow:column;grid-auto-columns:11px;gap:3px;
+.cal__months{display:grid;grid-auto-flow:column;grid-auto-columns:12px;gap:3px;
   min-width:max-content;height:1rem}
-.cal__months span{font-family:var(--font-mono);font-size:.5rem;
+.cal__months span{font-family:var(--mono);font-size:.5rem;
   text-transform:uppercase;letter-spacing:.1em;color:var(--ink-80);
-  white-space:nowrap;width:11px;overflow:visible}
+  white-space:nowrap;width:12px;overflow:visible}
 .cal__legend{display:flex;align-items:center;gap:.3rem;justify-content:flex-end;
-  margin-top:.85rem;font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80)}
+  margin-top:.85rem;font-family:var(--mono);font-size:var(--t-micro);color:var(--ink-80)}
 .cal__legend i{width:10px;height:10px}
-.cal__legend .l0{background:rgba(247,242,234,.045)}
-.cal__legend .l1{background:rgba(255,90,31,.28)}
-.cal__legend .l2{background:rgba(255,90,31,.5)}
-.cal__legend .l3{background:rgba(255,90,31,.75)}
+.cal__legend .l0{background:rgba(241,241,241,.06)}
+.cal__legend .l1{background:rgba(228,3,46,.3)}
+.cal__legend .l2{background:rgba(228,3,46,.52)}
+.cal__legend .l3{background:rgba(228,3,46,.76)}
 .cal__legend .l4{background:var(--accent)}
-.cstats{display:flex;flex-wrap:wrap;gap:0 1.75rem;margin-top:1rem;
-  padding-top:.85rem;border-top:1px solid var(--rule)}
-.cstat{display:flex;flex-direction:column;gap:.15rem}
-.cstat dt{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80)}
-.cstat dd{font-size:1.05rem;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.cal__foot{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.12em;color:var(--ink-60);margin-top:.85rem}
-.cal__ns{font-family:var(--font-mono);font-size:var(--t-small);color:var(--ink-60);
+.cal__stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--rule);margin-top:1.25rem;border:1px solid var(--rule)}
+.cstat{background:var(--surface);padding:1rem 1.1rem}
+.cstat dt{font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80);margin-bottom:.5rem}
+.cstat dd{font-family:var(--display);font-size:clamp(1.3rem,2vw,1.9rem);
+  font-variation-settings:'opsz' 40,'SOFT' 0,'WONK' 0;
+  line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.cal__foot{font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.12em;color:var(--ink-60);margin-top:.9rem}
+.cal__ns{font-family:var(--mono);font-size:var(--t-small);color:var(--ink-60);
   line-height:1.7;margin-top:.75rem}
-/* the empty grid box is meaningless until JS fills it */
 .cal__grid:empty,.cal__months:empty{display:none}
 
-/* --- sequence 05 · Contact ---------------------------------------- */
-/* Never pinned, so it never gets .is-static — but it is meant to land as a
-   full-screen close, so it asks for its own viewport. */
-.pin__vp.seq--contact{justify-content:center;min-height:100svh}
-.contact{border:1px solid var(--rule);background:var(--surface);padding:clamp(1.75rem,5vw,3.5rem)}
-.contact__title{font-family:var(--font-display);font-size:var(--t-h2);
-  line-height:.92;letter-spacing:-.02em;margin:1.1rem 0 1.1rem;max-width:16ch}
-.contact__title em{font-style:italic;color:var(--accent)}
-.contact__sub{max-width:52ch;color:var(--ink-40);margin-bottom:2rem}
-.contact__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--rule)}
-.ccard{
-  display:flex;flex-direction:column;gap:.2rem;padding:1.1rem 1.2rem;
-  background:var(--surface);text-align:left;
-  transition:background var(--dur) var(--ease);
+/* ---------- CONTACT · the email is the page ----------
+   6.6vw, filling with red from the left on hover. */
+.contact{padding-block:clamp(5rem,12vh,10rem);text-align:center}
+.contact__mail{
+  position:relative;display:inline-block;
+  font-family:var(--display);font-size:var(--t-mail-lg);
+  font-variation-settings:'opsz' 144,'SOFT' 0,'WONK' 1;
+  font-weight:400;line-height:.94;letter-spacing:-.035em;
+  color:var(--ink-00);
+  background-image:linear-gradient(var(--accent),var(--accent));
+  background-repeat:no-repeat;background-size:0% 100%;background-position:0 0;
+  transition:background-size .6s var(--ease),color .4s var(--ease);
 }
-.ccard:hover{background:var(--ground-2)}
-.ccard__t{display:flex;align-items:center;gap:.5rem;font-size:1rem}
-.ccard__t .i{width:1rem;height:1rem;color:var(--accent)}
-.ccard__s{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-60);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ccard:hover .ccard__s{color:var(--ink-00)}
+.contact__mail:hover{background-size:100% 100%;color:var(--ground)}
+.contact__sub{margin:clamp(1.5rem,4vh,2.5rem) auto 0;max-width:40ch;color:var(--ink-40);
+  font-weight:300}
+.contact__links{display:flex;justify-content:center;gap:clamp(1.25rem,3vw,2.5rem);
+  margin-top:clamp(2rem,5vh,3.5rem);padding-top:clamp(1.25rem,3vh,2rem);
+  border-top:1px solid var(--rule);max-width:44rem;margin-inline:auto}
+.clink{display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--mono);font-size:var(--t-label);
+  text-transform:uppercase;letter-spacing:.16em;color:var(--ink-60);
+  transition:color var(--dur) var(--ease)}
+.clink:hover{color:var(--accent)}
+.clink .i{width:.95rem;height:.95rem}
 
-/* ---------- FLOATING CONTACT DOCK ----------
-   Third, redundant affordance. Hidden by default in CSS so it cannot appear
-   before the scripts have decided the page is motion-capable. */
+/* ---------- FOOTER ---------- */
+.footer{border-top:1px solid var(--rule);padding:2rem 0;background:var(--ground-2)}
+.footer__inner{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;
+  font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80)}
+.footer__links{display:flex;gap:1.5rem;color:var(--ink-60)}
+.footer__links a:hover{color:var(--accent)}
+
+/* ---------- FLOATING DOCK ---------- */
 .dock{
   position:fixed;left:var(--gutter);bottom:var(--gutter);z-index:95;
   display:flex;align-items:stretch;gap:1px;
@@ -489,115 +565,21 @@ em{font-style:italic;color:var(--ink-40)}
 .dock.on{opacity:1;visibility:visible;transform:none}
 .dock__mail{display:flex;align-items:center;gap:.55rem;padding:.6rem .9rem;
   background:var(--ground-2);
-  font-family:var(--font-mono);font-size:var(--t-micro);
+  font-family:var(--mono);font-size:var(--t-micro);
   text-transform:uppercase;letter-spacing:.12em;color:var(--ink-00)}
 .dock__mail .i{width:.9rem;height:.9rem;color:var(--accent)}
 .dock__mail:hover{color:var(--accent)}
 .dock__copy{display:grid;place-items:center;padding:0 .7rem;background:var(--ground-2);
   color:var(--ink-60);transition:color var(--dur) var(--ease)}
 .dock__copy .i{width:.9rem;height:.9rem}
-.dock__copy:hover{color:var(--accent)}
-.dock__copy.done{color:var(--accent)}
-
-/* ---------- HERO ---------- */
-.hero{position:relative}
-.hero__vp{justify-content:flex-end;overflow:clip}
-.hero__bg{position:absolute;inset:0;z-index:-3;will-change:transform}
-.hero__bg img{width:100%;height:100%;object-fit:cover;object-position:50% 15.4%;
-  filter:brightness(1.12) contrast(1.04)}
-/* two warm-black scrims: vertical for overall falloff, horizontal for the
-   text column. Tuned so the portrait actually reads on the right while the
-   left third stays dark enough for cream text at 15ch. */
-.hero__scrim{position:absolute;inset:0;z-index:-2;
-  background:
-    linear-gradient(90deg,rgba(11,10,9,.92) 0%,rgba(11,10,9,.46) 34%,rgba(11,10,9,0) 60%),
-    linear-gradient(180deg,rgba(11,10,9,.3) 0%,rgba(11,10,9,.5) 38%,rgba(11,10,9,.88) 78%,var(--ground) 100%)}
-.hero__inner{position:relative;z-index:1;width:100%}
-.hero__tag{display:inline-flex;align-items:center;gap:.55rem;margin-bottom:1.5rem}
-.hero__tag .led{width:5px;height:5px;border-radius:50%;background:var(--accent);
-  animation:led 2.4s ease-in-out infinite}
-@keyframes led{0%,100%{opacity:1}50%{opacity:.25}}
-.hero__name{
-  font-family:var(--font-display);
-  font-size:var(--t-display);line-height:.88;letter-spacing:-.025em;
-  margin-bottom:1.6rem;max-width:14ch;
-}
-.js .hero__name .ch{display:inline-block;opacity:0;
-  transform:translateY(.42em) rotateX(-42deg);
-  transition:opacity .6s var(--ease),transform .8s var(--ease)}
-.hero__name .sp{display:inline-block;width:.24em}
-.js .hero__name.revealed .ch{opacity:1;transform:none}
-.hero__role{
-  display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:1.4rem;
-  font-family:var(--font-mono);font-size:clamp(.8rem,1.5vw,.95rem);
-  text-transform:uppercase;letter-spacing:.16em;color:var(--ink-60);
-}
-.hero__role .tw{color:var(--accent);letter-spacing:.16em}
-.hero__lead{
-  max-width:42ch;color:var(--ink-00);font-size:var(--t-lead);
-  line-height:1.5;margin-bottom:2rem;font-weight:300;
-}
-.hero__actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2.5rem}
-.hero__stats{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-  border-top:1px solid var(--rule);padding-top:1.25rem;
-}
-.hero__stats li{display:flex;flex-direction:column;gap:.15rem}
-.hero__stats b{font-size:clamp(1.3rem,2.8vw,1.7rem);font-weight:400;letter-spacing:-.02em;
-  font-variant-numeric:tabular-nums;line-height:1.1}
-.hero__stats span{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60)}
-.hero__foot{
-  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
-  margin-top:clamp(2rem,6vh,4rem);
-  border-top:1px solid var(--rule);padding-top:1rem;
-  font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-80);
-}
-
-/* ---------- AVAILABILITY ----------
-   The single sentence that puts contact inside the first scroll. */
-.avail{border-block:1px solid var(--rule);background:var(--ground-2)}
-.avail__inner{padding:clamp(1.25rem,3vh,2rem) 0}
-.avail__text{max-width:74ch;color:var(--ink-40);font-size:var(--t-lead);
-  line-height:1.5;font-weight:300}
-.avail__text a{border-bottom:1px solid var(--accent);color:var(--accent);
-  transition:opacity var(--dur) var(--ease)}
-.avail__text a:hover{opacity:.75}
-
-/* ---------- BUTTONS ---------- */
-.btn{
-  position:relative;display:inline-flex;align-items:center;gap:.5rem;
-  padding:.65rem 1.1rem;border:1px solid var(--rule-strong);
-  font-family:var(--font-mono);font-size:var(--t-label);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-00);
-  transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease),background var(--dur) var(--ease);
-}
-.btn .i{width:.95rem;height:.95rem;transition:transform var(--dur) var(--ease)}
-.btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn:hover .i{transform:translate(2px,-2px)}
-.btn--solid{background:var(--accent);border-color:var(--accent);color:var(--ground)}
-.btn--solid:hover{background:var(--accent-dim);border-color:var(--accent-dim);color:var(--ink-00)}
-.btn--sm{padding:.45rem .75rem;font-size:var(--t-micro)}
-
-/* ---------- FOOTER ---------- */
-.footer{border-top:1px solid var(--rule);padding:2rem 0;background:var(--ground-2)}
-.footer__inner{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap}
-.footer__c{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80)}
-.footer__c a{color:var(--ink-60);border-bottom:1px solid var(--rule);transition:color var(--dur) var(--ease)}
-.footer__c a:hover{color:var(--accent)}
-.footer__links{display:flex;gap:1.5rem;font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60)}
-.footer__links a{transition:color var(--dur) var(--ease)}
-.footer__links a:hover{color:var(--accent)}
+.dock__copy:hover,.dock__copy.done{color:var(--accent)}
 
 /* ---------- COMMAND PALETTE ---------- */
 .palette{position:fixed;inset:0;z-index:200;display:grid;place-items:start center;
-  padding-top:14vh;background:rgba(11,10,9,.8);animation:fade .18s var(--ease)}
+  padding-top:14vh;background:rgba(0,0,22,.86);animation:fade .18s var(--ease)}
 .palette[hidden]{display:none}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-.palette__box{width:min(560px,92vw);border:1px solid var(--rule-strong);
+.palette__box{width:min(600px,92vw);border:1px solid var(--rule-strong);
   background:var(--surface);animation:pop .24s var(--ease)}
 @keyframes pop{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
 .palette__search{display:flex;align-items:center;gap:.7rem;padding:.9rem 1rem;
@@ -605,7 +587,7 @@ em{font-style:italic;color:var(--ink-40)}
 .palette__search .i{width:1rem;height:1rem;color:var(--ink-60)}
 .palette__search input{flex:1;font-size:1rem}
 .palette__search input::placeholder{color:var(--ink-80)}
-.palette__search kbd{font-family:var(--font-mono);font-size:var(--t-micro);
+.palette__search kbd{font-family:var(--mono);font-size:var(--t-micro);
   padding:.1rem .3rem;border:1px solid var(--rule);color:var(--ink-80)}
 .palette__list{max-height:min(52vh,400px);overflow-y:auto;padding:.4rem}
 .prow{display:flex;align-items:center;gap:.75rem;width:100%;padding:.5rem .6rem;
@@ -614,116 +596,77 @@ em{font-style:italic;color:var(--ink-40)}
 .prow .ic .i{width:.95rem;height:.95rem}
 .prow .lb{flex:1;min-width:0;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .prow .lb mark{background:none;color:var(--accent)}
-.prow .kind{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.12em;color:var(--ink-80)}
+.prow .kind{font-family:var(--mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80)}
 .prow[aria-selected="true"],.prow:hover{background:var(--accent-wash)}
 .palette__empty{padding:1.5rem 1rem;text-align:center;
-  font-family:var(--font-mono);font-size:var(--t-small);color:var(--ink-80)}
+  font-family:var(--mono);font-size:var(--t-small);color:var(--ink-80)}
 .palette__foot{display:flex;gap:1.25rem;padding:.6rem 1rem;border-top:1px solid var(--rule);
-  font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80);
-  text-transform:uppercase;letter-spacing:.12em}
+  font-family:var(--mono);font-size:var(--t-micro);color:var(--ink-80);
+  text-transform:uppercase;letter-spacing:.14em}
 
 /* ============================================================
-   SEQUENCES, ARMED
-   Everything below only applies once js/scroll.js has confirmed
-   GSAP + ScrollTrigger + Lenis are present and motion is allowed.
+   SEQUENCES ARMED
    ============================================================ */
-
-/* Hero grows one extra viewport so the portrait has somewhere to travel. */
-/* The hero pins at every width — it is one screen of content even at 360 — so it
-   keeps its viewport regardless of the media queries below. */
 .js-scroll .hero .pin{height:200svh}
 .js-scroll .hero .pin__vp{height:100svh;min-height:100svh}
-.pin__vp.hero__vp{height:100svh;min-height:100svh}
 
-/* Pinned sequences. `pinType: 'fixed'` makes ScrollTrigger position:fixed the
-   inner viewport for the length of the pinned range, so the inner viewport has
-   to be exactly one screen tall or the pin visibly jitters at the boundaries. */
-/* `:not(.is-static)` on every one of these is load-bearing. The heights reserve
-   scroll distance for a pin; a section that js/scroll.js declined to pin has no
-   pin to spend it on, and reserving it anyway leaves a 1200px hole in the page. */
 .js-scroll [data-seq]:not(.is-static){height:auto}
-.js-scroll [data-seq]:not(.is-static) .pin__vp{height:100svh}
-.js-scroll [data-seq="about"]:not(.is-static){height:200svh}
-.js-scroll [data-seq="work"]:not(.is-static){height:340svh}
+.js-scroll [data-seq]:not(.is-static) .pin__vp{height:100svh;min-height:100svh}
+/* `:not(.is-static)` is required on these too, not optional: :not() adds its
+   argument's specificity, so `.js-scroll [data-seq]:not(.is-static)` above is
+   (0,3,0) and would otherwise beat a bare `[data-seq="impact-1"]` at (0,2,0) —
+   leaving every pinned section one viewport tall with a zero-length scrub
+   range, and every timeline frozen at progress 1. */
+.js-scroll [data-seq="impact-1"]:not(.is-static){height:200svh}
+.js-scroll [data-seq="impact-2"]:not(.is-static){height:200svh}
 .js-scroll [data-seq="toolkit"]:not(.is-static){height:220svh}
-.js-scroll [data-seq="journey"]:not(.is-static){height:320svh}
+.js-scroll [data-seq="band"]:not(.is-static){height:180svh}
+.js-scroll [data-seq="journey"]:not(.is-static){height:260svh}
 
-/* Bars are scrubbed via scaleX against an inline width, so the armed state has
-   to start the transform at zero. The same applies to the timeline spine and
-   its dots: the un-armed default is the finished, lit look. */
-/* A scrubbed rail owns its own horizontal offset; leaving it scrollable would
-   let a trackpad scroll the panels sideways independently of scroll progress. */
-.js-scroll .pin:not(.is-static) .rail{overflow:hidden}
-.js-scroll .bar__fill{transform:scaleX(0)}
-.js-scroll .tl__fill{height:0}
-.js-scroll .tl__dot{border-color:var(--ink-80);background:var(--ground)}
-.js-scroll .tl__item.on .tl__dot{border-color:var(--accent);background:var(--accent)}
-
-/* A section js/scroll.js chose NOT to pin — a stacked viewport has no room for
-   a meaningful pin, and a pin with no scroll range would leave its scrub frozen
-   at progress 1. The class is the single source of truth, so the finished look
-   is restored here rather than guessed at three breakpoints.
-
-   Not scoped to .js-scroll on purpose: an unpinned section must hug its content
-   in every state, including no-JS and reduced motion. Reserving an empty
-   viewport for a 400px-tall block of content is the same bug three times. */
+/* The un-armed state is the finished state by construction. Every segment
+   carries its share inline and defaults to scaleX(1), so no-JS, blocked-vendor
+   and reduced-motion pages show a full bar with no script at all. Only the
+   pinned height and the scrub start are reset, and only when a scrub exists. */
 .pin.is-static .pin__vp{height:auto;min-height:0}
-.js-scroll .pin.is-static .bar__fill{transform:scaleX(1)}
-.js-scroll .pin.is-static .tl__fill{height:100%}
-.js-scroll .pin.is-static .tl__dot{border-color:var(--accent)}
-.js-scroll .pin.is-static .tl__item.on .tl__dot{background:var(--accent)}
+.js-scroll [data-seq]:not(.is-static) .share__seg{transform:scaleX(0)}
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width:1080px){
-  .seq__grid,.seq__grid--journey{grid-template-columns:1fr;gap:clamp(1.5rem,4vh,2.5rem);
-    align-items:start}
-  .seq--about,.seq--toolkit,.seq--journey{justify-content:flex-start;
-    padding-top:calc(var(--nav-h) + 2.5rem)}
-  .seq__stage--cal{align-self:stretch}
-  .seq__rail--journey{align-self:auto}
-  .tl{padding-bottom:1rem}
-  .tl__body{max-width:none}
+  .toolkit__grid{grid-template-columns:1fr;gap:2.5rem}
+  .work__grid{grid-template-columns:repeat(6,1fr)}
+  .slot,.slot--type,.slot--img{grid-column:span 6}
 }
 @media (max-width:860px){
-  /* Nothing but the hero pins here, so nothing else should reserve a viewport.
-     `.hero .pin__vp` outranks this and keeps its own. */
-  .pin__vp{min-height:0}
-  .nav__links,.nav__search span,.nav__search kbd{display:none}
-  .nav__search{display:grid;place-items:center;width:30px;height:30px;padding:0}
+  .nav__links{display:none}
+  .nav__search{width:32px}
   .burger{display:grid}
-  .hero__stats{grid-template-columns:1fr 1fr;gap:1.25rem}
-  .seq--work{justify-content:flex-start;padding-top:calc(var(--nav-h) + 2.5rem)}
-  .seq--work .rail{margin-top:clamp(1.5rem,4vh,2rem)}
-  .panel{width:min(78vw,340px)}
-  .panel__desc{min-height:0}
-  .js-scroll .dock{left:var(--gutter);right:var(--gutter)}
+  .pin__vp{min-height:0}
+  .hero .pin__vp{min-height:100svh}
+  .hero__meta{flex-direction:column;align-items:flex-start;gap:1.25rem}
+  .band{aspect-ratio:4/5}
+  .band__line{right:auto;left:var(--gutter);text-align:left;bottom:auto;top:34%}
+  .cal__stats{grid-template-columns:1fr 1fr}
+  .contact__links{flex-wrap:wrap}
+  .dock{left:var(--gutter);right:var(--gutter)}
   .dock__mail{flex:1}
 }
 @media (max-width:560px){
-  .hero__bg img{object-position:50% 0}
-  .hero__stats{gap:1rem 1.5rem}
-  .hero__actions .btn{flex:1 1 auto;justify-content:center}
-  .contact{padding:1.5rem 1.15rem}
-  .seq__statement{font-size:clamp(1.7rem,8vw,2.4rem)}
-  .strip__track{gap:1.75rem}
+  .cal__stats{grid-template-columns:1fr}
 }
 
-/* ---------- REDUCED MOTION ----------
-   Sequences never arm, so the above never applies. This block additionally
-   neutralises the reveal/hero entry states and hides the dock. */
+/* ---------- REDUCED MOTION ---------- */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.001ms !important;animation-iteration-count:1 !important;
     transition-duration:.001ms !important;scroll-behavior:auto !important;
   }
-  .js .reveal{opacity:1;transform:none}
-  .js .hero__name .ch{opacity:1;transform:none}
+  .js .line>span{transform:none}
   .cursor,.dock,.boot{display:none}
 }
 
 /* ---------- PRINT ---------- */
 @media print{
-  .nav,.drawer,.palette,.cursor,.boot,.dock,.hero__bg,.hero__scrim{display:none!important}
+  .nav,.drawer,.palette,.cursor,.boot,.dock,.band{display:none!important}
   body{background:#fff;color:#000}
 }

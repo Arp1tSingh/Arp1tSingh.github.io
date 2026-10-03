@@ -1,132 +1,143 @@
 # arp1tsingh.github.io
 
-Personal portfolio and project archive for **Arpit Singh** — Computer Engineering student at
-Vidyalankar Institute of Technology, Mumbai.
+Personal portfolio for **Arpit Singh** — Computer Engineering student at Vidyalankar
+Institute of Technology, Mumbai.
 
-Live site: **https://arp1tsingh.github.io/**
+Live: **https://arp1tsingh.github.io/**
+
+---
+
+## The idea
+
+**Evidence, not narration.**
+
+One accent colour means one thing: red is *actionable*, or you are *here*. No decorative red
+anywhere else on the page. When the email address is red, red means something.
+
+`<main>` carries **~317 words**. Eight of the nine screens hold under twenty of them. Most screens
+are a picture, a number, or eight words. Where a project deserves more than one line, the detail
+lives in the ⌘K palette rather than on the page.
+
+## The ten-second rule
+
+Contact is the one thing a visitor must never have to hunt for, so three redundant affordances exist
+and none depends on the others working:
+
+1. **A solid accent `Hire me` button in the fixed header** — painted on frame one, every width, never
+   scrolls away. It is a `mailto:`, so there is no form and nothing to fail.
+2. **The email address itself, set at 4.2vw in red, in the hero.** The most important thing on the
+   page is the second biggest thing on the page.
+3. **A floating dock** (email + copy-to-clipboard) that fades in once the hero is behind you and hides
+   again over the contact block, so it is always a shortcut and never an obstruction.
+
+Plus the close: the same address at 7.4vw, filling with red from the left on hover.
+
+`tools/verify.cjs` asserts all of it — the header and hero CTAs must be inside the first viewport at
+every width, and both must be `mailto:`.
 
 ---
 
 ## Stack
 
-No `npm install`, no build step, no framework of our own. Three third-party libraries are
-**committed to the repository** rather than loaded from a CDN, because GitHub Pages deploys the
-branch root directly and anything not committed would not ship.
+No `npm install`, no build step, no framework. Third-party code is **committed**, not fetched, because
+GitHub Pages deploys the branch root and anything uncommitted would not ship.
 
-| Concern      | Choice                                                                     |
-| ------------ | --------------------------------------------------------------------------- |
-| Markup       | Semantic HTML5                                                              |
-| Styling      | One hand-written stylesheet, CSS custom properties                            |
-| Behaviour    | Vanilla ES modules, loaded natively by the browser                            |
-| Smooth scroll| [Lenis](https://github.com/darkroomengineering/lenis) 1.3.11 (MIT)            |
-| Sequences    | [GSAP](https://gsap.com) 3.13.0 + ScrollTrigger (vendored, see below)         |
-| Type         | Instrument Serif · Inter Tight · JetBrains Mono                              |
-| Data         | `data/commits.json`, generated from the GitHub API                           |
-| Hosting      | GitHub Pages, deployed straight from the branch root                         |
+| Concern       | Choice                                                                |
+| ------------- | ---------------------------------------------------------------------- |
+| Markup        | Semantic HTML5                                                         |
+| Styling       | One hand-written stylesheet                                             |
+| Display face  | **Fraunces** (variable, `opsz`/`wght`/`SOFT`/`WONK`), self-hosted      |
+| Text face     | Inter Tight 300–500, self-hosted                                        |
+| Mono          | JetBrains Mono 400, self-hosted                                         |
+| Smooth scroll | [Lenis](https://github.com/darkroomengineering/lenis) 1.3.11 (MIT)        |
+| Sequences     | [GSAP](https://gsap.com) 3.13.0 + ScrollTrigger                          |
+| Data          | `data/commits.json`, generated from the GitHub API                      |
+| Hosting       | GitHub Pages, branch root                                               |
+
+Fonts total **192 KB** and there is **no request to `fonts.googleapis.com` or `fonts.gstatic.com`**
+anywhere in the project. The harness asserts it.
 
 ```
-index.html          markup + content + inline SVG icon sprite
+index.html          markup + content + inline SVG sprite + the duotone filter
 404.html            styled not-found page
 styles.css          the whole design system
-data/commits.json   generated — per-day commit histogram
+assets/
+  fonts/            three self-hosted woff2, latin subset
+  arpit-landscape.jpg   the photo band
+  path-tracer.png       CPU path tracer output — duotoned in CSS
+  fsrs-dashboard.png    FSRS-6 review queue — duotoned in CSS
+  og.png                social card, rendered from the live design
 js/
-  main.js           orchestration: boot, nav, drawer, typewriter, anchors, calendar, copy
-  scroll.js         Lenis + ScrollTrigger, and the pinned sequences
-  reveal.js         entry reveals and hero counters
+  main.js           orchestration: boot, nav, drawer, anchors, calendar, copy
+  scroll.js         Lenis + ScrollTrigger, the pinned sequences, the hero wipe
   cursor.js         flat corner reticle
-  palette.js        ⌘K / Ctrl+K command palette with fuzzy search
-  config.js         editable content — name, roles, email, socials, projects
-  vendor/           pinned GSAP, ScrollTrigger and Lenis builds — see js/vendor/README.md
-assets/             portrait variants, favicon, Open Graph card
+  palette.js        ⌘K command palette with fuzzy search
+  config.js         editable content — email, socials, the ten projects
+  vendor/           pinned GSAP, ScrollTrigger, Lenis builds
 tools/
   fetch-commits.mjs  regenerates data/commits.json
+  verify.cjs         the behaviour harness — 145 assertions
 ```
-
----
-
-## The ten-second rule
-
-Contact is the one thing a visitor must not have to hunt for. Three redundant affordances, so
-none of them depends on the others working:
-
-1. **A solid accent `Hire me` button in the fixed header**, on every breakpoint, visible from the
-   first paint. It is a `mailto:` — no form, no page load, nothing to fail.
-2. **Email leads the hero action row**, ahead of GitHub and "View work".
-3. **A floating dock** (email + copy-to-clipboard) that fades in once the hero is behind you and
-   hides again over the contact outro, so it is always a shortcut and never an obstruction.
-
-Plus a one-sentence **availability band** immediately under the hero, inside the first scroll.
-
-The verification harness asserts all of this: the header and hero CTAs must both be inside the
-first viewport, and both must be `mailto:`, at every width from 360 to 1920.
 
 ---
 
 ## Motion
 
-Five pinned scroll sequences, all driven by GSAP ScrollTrigger with `scrub: 1` so a fast flick
-settles rather than snapping:
+Six pinned sequences at `scrub: 1`, so a fast flick settles rather than snapping.
 
-| Sequence      | Scroll distance | What scrubs                                                              |
-| ------------- | --------------- | ------------------------------------------------------------------------- |
-| Hero out      | `200svh`        | Portrait scales and drifts right, scrim lifts, name retreats, stats exit  |
-| About         | `200svh`        | Three-step statement sequence; each step lights as it takes the stage     |
-| Work          | `340svh`        | The rail translates by exactly its overflow width; panel counter ticks     |
-| Toolkit       | `220svh`        | Six skill bars `scaleX` against scroll progress, percentages counting up   |
-| Journey       | `320svh`        | Spine fill tied to progress, timeline dots igniting as the spine passes them |
+| Sequence | Distance | What scrubs                                                        |
+| -------- | -------- | ------------------------------------------------------------------- |
+| Hero out | `200svh` | The name retreats and tightens; email and meta lift away             |
+| Impact 1 | `200svh` | *I write renderers that run on a CPU.* — cream to red                |
+| Toolkit  | `220svh` | The share bar wipes across; `58.8` counts up with it                |
+| Photo    | `180svh` | A short parallax on the photograph                                   |
+| Impact 2 | `200svh` | *248 commits. 59 days. The gaps stay.* — cream to red                |
+| Journey  | `260svh` | The date rail translates by exactly its overflow width               |
 
-`scrub: 1` rather than `scrub: true` is the reason the motion reads like the references instead of
-like a progress bar: the timeline lags the scroll slightly and then catches up.
+The impact statements are the site's one unforgettable move: scrolling literally tightens the
+sentence and turns it red. It is the `landonorris.com` mechanic and it costs nothing.
+
+The hero entrance is a per-line clip wipe — each line is its own `overflow:hidden` box with the inner
+span translated out, so CSS does the whole animation and there is no per-character DOM cost.
 
 ### The arming contract
 
-`js/scroll.js` adds the class `js-scroll` to `<html>` **only after GSAP, ScrollTrigger and Lenis
-have all resolved and the visitor has not asked for reduced motion.** Every pinned rule, every
-scrubbed transform and the dock rule in `styles.css` is scoped under `.js-scroll`.
+`js-scroll` is added to `<html>` **only once GSAP, ScrollTrigger and Lenis have all resolved and the
+visitor has not asked for reduced motion.** Every pinned rule and every scrubbed transform in
+`styles.css` is scoped under it, so four states resolve and three of them are the plain document:
 
-So there are four states, and three of them are the plain document:
+| State                             | Result                                       |
+| --------------------------------- | -------------------------------------------- |
+| Motion allowed, vendor files present | Sequences armed and scrubbed              |
+| JavaScript disabled               | Plain stacked document, fully readable        |
+| `js/vendor/` blocked or missing   | Plain stacked document, fully readable        |
+| `prefers-reduced-motion: reduce`  | Plain stacked document, boot removed          |
 
-| State                                    | Result                                                    |
-| ---------------------------------------- | --------------------------------------------------------- |
-| Motion allowed, vendor files present      | Sequences armed and scrubbed                               |
-| JavaScript disabled                       | Plain stacked document, fully readable                     |
-| `js/vendor/` blocked or missing           | Plain stacked document, fully readable                     |
-| `prefers-reduced-motion: reduce`          | Plain stacked document, boot screen removed from the DOM   |
+There is no state in which a visitor sees a pinned section whose scrub never runs.
 
-There is no state in which a visitor sees a pinned section whose scrub never runs, or an element
-stranded at `opacity: 0`.
+### The fallback needs no JavaScript
 
-### Why the fallback needs no JavaScript
+The un-armed state is the **finished** state by construction, not something JS repaints:
 
-The un-armed state is the **finished** state by construction, not something JS has to repaint:
+- Share segments carry their width inline and default to `scaleX(1)`; only `.js-scroll` resets them
+  to zero, and only for sections that actually have a scrub.
+- The journey rail is a complete flex row with no transform at rest.
 
-- Skill bar widths are inline on each `.bar__fill`, and the transform that GSAP scrubs is reset to
-  `scaleX(0)` only under `.js-scroll`.
-- The timeline spine defaults to `height: 100%` and the dots to lit; `.js-scroll` resets them.
-
-That is why there is no `initStaticEndState`-style compensation function: the fallback is CSS, so
-it cannot drift out of sync with the armed state.
+That is why there is no compensating function: a fallback that is CSS cannot drift out of sync with
+the armed state.
 
 ### Pin or stand still
 
-A pinned sequence needs a viewport exactly one screen tall **and** a scroll range to scrub across.
-Below these widths the sections stack and the second condition fails — and a pin with `start === end`
-silently freezes its timeline at progress `1`, which looks like a broken scrub rather than a layout
-decision. So `js/scroll.js` makes the call and marks the section `is-static`; the stylesheet keys the
-finished look off that class instead of re-deriving the same breakpoints in two places.
-
-| Breakpoint | Sections that stop pinning                         |
-| ---------- | -------------------------------------------------- |
-| ≤ 1080px   | About, Toolkit, Journey (they stack)               |
-| ≤ 860px    | Work — the rail becomes a natively swipeable row   |
-
-The hero pins at every width; it is one screen of content even at 360px. Crossing either
-breakpoint rebuilds the triggers, since `is-static` is otherwise a one-way decision made at load.
+A pin needs a one-screen viewport **and** a scroll range. Below `1080px` the sections stack, the
+second condition fails, and a pin with `start === end` freezes its timeline at progress `1` — which
+reads as a broken scrub rather than a layout decision. `js/scroll.js` makes the call and marks the
+section `is-static`; the stylesheet keys off that class rather than re-deriving the breakpoints.
+The journey rail stops pinning at `860px`. Crossing either breakpoint rebuilds the triggers.
 
 ### Lenis wiring
 
-Lenis owns the scroll position, ScrollTrigger must read it every frame, or pinned sections drift by
-a frame during a fast flick:
+Lenis owns the scroll position, ScrollTrigger must read it every frame, or pinned sections drift by a
+frame during a fast flick:
 
 ```js
 lenis.on('scroll', ScrollTrigger.update);
@@ -134,173 +145,100 @@ gsap.ticker.add((time) => lenis.raf(time * 1000));
 gsap.ticker.lagSmoothing(0);
 ```
 
-Every in-page link, the ⌘K palette and the footer route through one `scrollTo()` in `js/scroll.js`,
-which applies the fixed-header offset and eases through Lenis when it exists and falls back to a
-native jump when it does not. `scroll-behavior: smooth` is disabled under `.js-scroll` so the
-browser's own smoothing does not fight Lenis.
+Nav links, the ⌘K palette and the footer all route through one `scrollTo()`.
+
+---
+
+## Images
+
+Three, and each earns its place.
+
+**The photo band.** `arpit-landscape.jpg` is 1280×960, shown cropped to the top 735 rows — roughly
+16:9, which excludes the shirt logo while keeping the whole head. It is **full colour on purpose**: the
+sky already runs blue → pink → red, which is navy → red, so the photograph is already inside the
+palette and duotoning it would subtract for nothing. Type sits in the left 45%, which is empty sky and
+sea. At 1280px wide it renders 1:1; at 1920 it upscales 1.5×, acceptable here because the sky is a
+smooth gradient and the jawline is the only detailed edge in frame.
+
+**The two screenshots** are duotoned by an inline SVG `feColorMatrix` + `feComponentTransfer` filter
+applied from CSS with `filter:url(#duo)`. No image tooling is committed and the originals are
+untouched. On hover the image mask closes in from `ellipse(100% 52%)` to `ellipse(76% 44%)` and the
+render pushes to `scale(1.1)` underneath — a spotlight tightening rather than a fade.
 
 ---
 
 ## Design system
 
-Derived from three references — `landonorris.com`, `charlesleclerc.com`,
-`aahana-surya.github.io` — which share a recognisable set of rules:
+- **Palette** is `charlesleclerc.com`'s: `#000016` navy, `#f1f1f1` off-white, `#9797a5` grey, `#e4032e`
+  signal red.
+- **Fraunces at `opsz 144`** for everything that matters. `WONK 1` tips the letterforms off true, which
+  is what stops it reading as a default editorial serif.
+- Hero `clamp(4rem, 24vw, 24rem)` at `.8` leading and `-.045em`. Impact `clamp(2.1rem, 6.4vw, 6.6rem)`.
+  Email `4.2vw` in the hero, `7.4vw` at the close.
+- `border-radius: 0` throughout. Flat colour: no shadows, no blur, no glass.
+- Hairlines at 13% white as the only structural device.
+- JetBrains Mono only where it is genuinely a machine readout — a percentage, a date, a stack.
 
-- **One characterful serif for display.** Instrument Serif, with its italic cut for emphasis.
-- **Mono for every small technical label**, tracked out uppercase.
-- **`border-radius: 0`.** Shape comes from hairline rules and clip paths, never curvature.
-- **Flat colour.** Zero `box-shadow`, zero `filter: blur()`, zero glassmorphism as a system.
-- **One accent hue** (`--accent: #ff5a1f`) on a tinted warm dark. Neutrals carry a hue, like
-  all three references do.
-- **1px hairlines** at ~11% alpha as the primary structural device.
-- Sub-0.95 line-heights on display type, `0.26em` tracking on mono labels, `0.9` body leading.
-- Fluid modular scale via `clamp()` — no breakpoint jumps in type size.
+### Patterns deliberately removed
 
-### Copy is deliberately thin
-
-`<main>` carries **~484 words**, down from ~1,216. Each project is a number, a title and one line.
-The Journey timeline is five dated lines, and the honest five-month gap with no public commits is
-still there — as is the real calendar, generated from the API, sitting beside it.
-
-The detail was not deleted so much as relocated: `PROJECTS` in `js/config.js` still carries the
-full one-line description of all nine projects, and ⌘K is where it now lives.
+`01 / ABOUT` section indices · the `sec-head` block repeated six times · six 1px skill bars that looked
+like a loading skeleton · the typewriter · hairlines-as-texture · the portrait as a faded background
+behind the hero copy.
 
 ---
 
-## Running it locally
+## Running and deploying
 
-ES modules need to be served over HTTP — opening `index.html` from the filesystem will not work.
+ES modules need HTTP — opening `index.html` from the filesystem will not work.
 
 ```bash
 python3 -m http.server 8000
-# then open http://localhost:8000
 ```
 
-## Deploying
-
-Pushes to `main` deploy automatically via GitHub Pages (source: branch / root).
-
-```bash
-git add -A
-git commit -m "update"
-git push
-```
-
-The site lands at `https://arp1tsingh.github.io/` in about a minute.
-
-All asset paths are **relative** (`./styles.css`, not `/styles.css`), so the site works unchanged
-at a root domain, a subpath, or a local file server. To use a custom domain, add a `CNAME` file
-and point a CNAME record at `arp1tsingh.github.io`.
+Pushes to `main` deploy automatically via GitHub Pages. All asset paths are relative, so the site works
+at a root domain, a subpath, or a local file server.
 
 ## Verifying
 
-The behaviour that matters here — the ten-second rule, the arming contract, the pin ranges, the
-absence of clipped layout — is all asserted by a Playwright harness rather than eyeballed:
-
 ```bash
-npm i playwright        # browsers are already cached
+npm i playwright
 python3 -m http.server 8000 &
 node tools/verify.cjs http://127.0.0.1:8000
 ```
 
-It sweeps 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920 and asserts, at each one:
+145 assertions across 1280 / 1440 / 1920, then three separate fallback contexts:
 
-- no horizontal document overflow **and** nothing clipped past the viewport edge
-  (`html { overflow-x: clip }` hides the second kind from the first check)
-- no unpinned section reserving scroll distance it will never spend
-- the header and hero CTAs are in the first viewport and are both `mailto:`
-- each pinned sequence has a non-zero scrub range and its transform actually changes at the
-  midpoint; each unpinned one has **no** trigger and already shows its finished values
-- the calendar renders 362 cells with 59 lit, labelled Oct 2025 onward
-- zero console errors and zero failed requests
+- the ten-second rule at every width, both CTAs verified as `mailto:`
+- Fraunces applied at `opsz 144`, all self-hosted faces loaded, **no Google Fonts host contacted**
+- copy budget, nothing clipped past the viewport edge
+- both screenshots present, duotoned, and not upscaled more than 1.35×; the photo band not duotoned and
+  upscaled no more than 1.6×
+- six pinned sequences, each with a **non-zero scrub range** and each transform genuinely changing at
+  the midpoint; the impact statement landing exactly on `#e4032e`
+- calendar figures: 248 commits, 59 active days, first commit Oct 2025, 16 repositories
+- ⌘K palette, anchor navigation, clipboard copy, dock lifecycle, every external link
 
-Then, as separate contexts: **no JavaScript**, **`js/vendor/` blocked**, and
-**`prefers-reduced-motion: reduce`** — each asserting the page is complete and readable, plus the
-⌘K palette, anchor navigation, clipboard copy and every external link.
+Then **no JavaScript**, **`js/vendor/` blocked**, and **`prefers-reduced-motion`** — each asserting the
+page is complete and readable with zero scripting. Two bugs in this codebase were invisible to a
+document-width check and to a screenshot, and were only caught by asserting element boxes and
+computed styles directly.
 
-Note: LinkedIn hard-blocks non-browser clients (HTTP 999), so the link check asserts its URL and
-reports it as unverifiable rather than pretending to have checked it.
+## Accessibility notes
 
-## Editing content
-
-Everything you'll want to change lives in `js/config.js`:
-
-- `email` — shown in the header CTA, hero, availability band, dock, contact grid and footer.
-- `roles` — the phrases the hero typewriter cycles through.
-- `PROJECTS` — the full project descriptions, powering the ⌘K palette. The visible rail in
-  `index.html` is the deliberately cut version.
-- `GITHUB_STATS` — repo count and other headline figures.
-
-Skill percentages in the Toolkit section are computed from bytes of code across all public
-repositories, not hand-written. To refresh them:
-
-```bash
-for r in $(gh repo list Arp1tSingh --limit 100 --json name --jq '.[].name'); do
-  gh api "repos/Arp1tSingh/$r/languages"
-done
-```
-
-## The commit calendar
-
-`data/commits.json` is **generated, not hand-written.** `tools/fetch-commits.mjs` walks every
-public repository with the GitHub REST API, collects each commit's author date, and writes a
-per-day histogram.
-
-```bash
-gh auth login          # once
-node tools/fetch-commits.mjs
-```
-
-Current contents: **248 commits across 59 active days**, 2025-10-06 → present. The stretch from
-November 2025 to March 2026 has no commits. That gap is real and is deliberately left in both
-the calendar and the timeline — see "A quiet stretch" in the Journey section.
-
-Because the chart is anchored to the most recent commit rather than to today, it stays populated
-however long the site sits untouched.
-
-## The portrait
-
-`assets/portrait.jpg` is the untouched original (720×1280). Two derived variants are committed:
-
-| File               | Use                                             |
-| ------------------ | ----------------------------------------------- |
-| `portrait-720.jpg` | mobile `srcset` — native resolution, desaturated |
-| `portrait-1440.jpg` | desktop `srcset` — Lanczos-upscaled, sharpened   |
-
-Saturation is baked to 0.62 in the derivatives, which both ties the photo to the palette and
-hides JPEG chroma-subsampling artefacts that would otherwise show at the 2.67× upscale a 1920px
-hero requires. Regenerate with `sharp` if you swap the source photo.
-
-The hero is a full-bleed cover with two stacked warm-black scrims. `object-position` is biased
-upward (`50% 15.4%`, `0` on mobile) so the top of the head is never clipped — at a 1.6:1 desktop
-viewport only 450 of 1280 rows survive, and a centred crop would cut 52px off your hair.
-
-## Accessibility & performance notes
-
-- Entry reveals use a **sweep on scroll, deliberately not IntersectionObserver**. An IO only
-  fires on threshold crossings: a fast scroll (deep link, restored scroll position, Find-in-page)
-  can move an element from below the viewport to above it between two checks, so it never
-  intersects, never fires, and stays invisible for good. A sweep cannot miss.
-- The skill bars and timeline spine are **not** in `reveal.js`. They need no entry animation, and
-  keeping them in CSS means the no-JS and reduced-motion pages are correct without running a
-  single line of script.
-- Every animation is disabled under `prefers-reduced-motion: reduce`; the boot screen is removed
-  from the DOM entirely and the hero name renders statically.
-- The custom cursor and its native-pointer suppression only initialise for `(pointer: fine)`,
-  and the suppression is applied by a class added *after* the cursor is confirmed running, so a
-  JS failure can never leave you with no pointer.
-- `:focus-visible` carries a 2px accent ring, which is the only keyboard focus cue once the
-  native pointer is hidden.
-- Keyboard: `⌘K` / `Ctrl+K` or `/` opens the palette, `Esc` closes, arrows navigate, focus returns
-  to the trigger on close. Opening the palette freezes Lenis rather than setting
-  `body { overflow: hidden }`, which would fight it.
-- The hero image is preloaded with `fetchpriority="high"` and served at two widths.
+- Keyboard: `⌘K` / `Ctrl+K` or `/` opens the palette, `Esc` closes, arrows navigate, focus returns to
+  the trigger. Opening it freezes Lenis rather than setting `body { overflow: hidden }`, which would
+  fight it.
+- `:focus-visible` carries a 2px accent ring — the only keyboard focus cue once the native pointer is
+  hidden. The custom cursor only initialises for `(pointer: fine)`, and its pointer suppression is
+  applied only after the cursor is confirmed running, so a JS failure cannot leave you without a
+  pointer.
+- Every image has descriptive `alt` text; the two screenshots describe what they show, not that they
+  are screenshots.
 - External links carry `rel="noopener noreferrer"`.
-- `min-width: 0` on the sequence grid items is load-bearing. A grid item's automatic minimum size
-  is min-content, so without it the 53-column calendar refuses to shrink and pushes its card past
-  the right edge — and `overflow-x: clip` on the root hides that from a document-width check.
+- Both image sets are `loading="lazy"`, `decoding="async"`, and carry explicit `width`/`height` so
+  layout does not shift.
 
 ## Licence
 
-Hand-written apart from `js/vendor/`. The project screenshots in `assets/` belong to the projects
-they depict.
+Hand-written apart from `js/vendor/` and the three OFL fonts in `assets/fonts/`. The project
+screenshots belong to the projects they depict.

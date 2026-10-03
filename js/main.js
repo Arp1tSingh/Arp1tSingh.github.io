@@ -1,11 +1,17 @@
 /* ============================================================
    main.js — orchestration
+   ============================================================
+
+   Boot order matters in one place only: initScroll() must run before
+   anything that asks hasMotion(), because it is what decides whether
+   the pinned sequences exist. Everything else is independent.
    ============================================================ */
 
-import { CONFIG, PROJECTS, GITHUB_STATS } from './config.js';
-import { initReveal, initTimeline } from './reveal.js';
+import { CONFIG, GITHUB_STATS } from './config.js';
+import { initReveal } from './reveal.js';
 import { initCursor } from './cursor.js';
 import { initPalette } from './palette.js';
+import { initScroll, scrollTo, stopScroll, startScroll, hasMotion } from './scroll.js';
 
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -152,7 +158,8 @@ function initDrawer() {
     burger.setAttribute('aria-expanded', String(open));
     burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     drawer.hidden = !open;
-    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) stopScroll(); else startScroll();
+    if (!hasMotion()) document.body.style.overflow = open ? 'hidden' : '';
   };
 
   burger.addEventListener('click', () => setOpen(drawer.hidden));
@@ -163,30 +170,93 @@ function initDrawer() {
   matchMedia('(min-width: 861px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
 }
 
-/* ---------- 6. Ticker ----------------------------------------------- */
-function initTicker() {
-  $$('[data-ticker]').forEach((t) => { t.innerHTML += t.innerHTML; });
-}
+/* ---------- 6. Anchor links ----------------------------------------
+   Every in-page jump goes through scroll.js so Lenis eases it and the
+   fixed header offset is applied consistently. Without Lenis the native
+   jump is used and only the default is prevented when we can offset it
+   ourselves. */
+function initAnchors() {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute('href');
+    if (!id || id === '#') return;
+    const target = document.querySelector(id);
+    if (!target) return;           // let the browser handle unknown anchors
 
-/* ---------- 7. Project filters -------------------------------------- */
-function initFilters() {
-  const buttons = $$('.filters button');
-  const cards = $$('#work .card');
-  if (!buttons.length || !cards.length) return;
-
-  buttons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const want = btn.dataset.filter;
-      buttons.forEach((b) => b.setAttribute('aria-selected', String(b === btn)));
-      cards.forEach((card) => {
-        const cats = (card.dataset.cat || '').split(/\s+/);
-        card.classList.toggle('hide', want !== 'all' && !cats.includes(want));
-      });
-    });
+    e.preventDefault();
+    scrollTo(target);
+    // Keep the URL shareable without letting the browser's own jump fight
+    // the tween.
+    history.replaceState(null, '', id);
   });
 }
 
-/* ---------- 8. Commit calendar --------------------------------------
+/* ---------- 7. Copy to clipboard -----------------------------------
+   Shared by the contact card and the dock button. */
+async function copyText(text) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+/* ---------- 8. Contact ---------------------------------------------- */
+function initContact() {
+  const year = $('#year');
+  if (year) year.textContent = String(new Date().getFullYear());
+
+  const btn = $('#copyHandle');
+  const label = $('#copyLabel');
+  const value = $('#copyValue');
+  let resetTimer = 0;
+
+  btn?.addEventListener('click', async () => {
+    const ok = await copyText(CONFIG.handle);
+    if (!ok) return;                     // clipboard blocked — leave it visible
+    btn.classList.add('is-done');
+    if (label) label.textContent = 'Copied';
+    if (value) value.textContent = 'handle copied to clipboard';
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(() => {
+      btn.classList.remove('is-done');
+      if (label) label.textContent = 'Copy handle';
+      if (value) value.textContent = CONFIG.handle;
+    }, 2200);
+  });
+
+  // The dock's own copy button copies the email address, which is the
+  // action a visitor hovering it is most likely to want.
+  const dockBtn = $('#dockCopy');
+  const dockMail = $('.dock__mail span');
+  let dockTimer = 0;
+  dockBtn?.addEventListener('click', async () => {
+    const ok = await copyText(CONFIG.email);
+    if (!ok) return;
+    dockBtn.classList.add('done');
+    if (dockMail) dockMail.textContent = 'Email copied';
+    clearTimeout(dockTimer);
+    dockTimer = setTimeout(() => {
+      dockBtn.classList.remove('done');
+      if (dockMail) dockMail.textContent = CONFIG.email;
+    }, 2200);
+  });
+}
+
+/* ---------- 9. Commit calendar --------------------------------------
    Rendered from data/commits.json, which tools/fetch-commits.mjs
    generates straight from the GitHub API. Nothing here is invented.
    ------------------------------------------------------------------ */
@@ -195,6 +265,7 @@ const DAY = 86400000;
 
 async function initCommits() {
   const grid = $('#calGrid');
+  const note = $('#calNote');
   if (!grid) return;
 
   let data;
@@ -203,7 +274,7 @@ async function initCommits() {
     if (!res.ok) throw new Error(res.status);
     data = await res.json();
   } catch {
-    $('#calNote').textContent = 'commit data unavailable';
+    if (note) note.textContent = 'commit data unavailable';
     return;
   }
 
@@ -214,8 +285,8 @@ async function initCommits() {
   // 53 columns x 7 rows, ending on the week containing the latest commit.
   const endDate = new Date(`${data.last}T00:00:00Z`);
   const end = Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate());
-  const endDow = new Date(end).getUTCDay();
-  const lastCol = Math.floor((end - (data.first ? Date.parse(`${data.first}T00:00:00Z`) : end)) / DAY / 7);
+  const firstMs = Date.parse(`${data.first}T00:00:00Z`);
+  const lastCol = Math.floor((end - firstMs) / DAY / 7);
 
   const frag = document.createDocumentFragment();
   const monthMarks = [];
@@ -224,7 +295,7 @@ async function initCommits() {
   for (let col = 0; col <= lastCol; col++) {
     // Leading blanks so row 0 is always Sunday.
     if (col === 0) {
-      const firstDate = new Date(Date.parse(`${data.first}T00:00:00Z`));
+      const firstDate = new Date(firstMs);
       for (let k = 0; k < firstDate.getUTCDay(); k++) {
         const blank = document.createElement('i');
         blank.style.visibility = 'hidden';
@@ -233,7 +304,7 @@ async function initCommits() {
     }
 
     for (let row = 0; row < 7; row++) {
-      const t = Date.parse(`${data.first}T00:00:00Z`) + (col * 7 + row) * DAY;
+      const t = firstMs + (col * 7 + row) * DAY;
       if (t > end) {
         const blank = document.createElement('i');
         blank.style.visibility = 'hidden';
@@ -275,54 +346,15 @@ async function initCommits() {
     return `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
   };
 
-  $('#cTotal').textContent = data.total;
-  $('#cDays').textContent = data.activeDays;
-  $('#cFirst').textContent = fmt(data.first);
-  $('#cLast').textContent = fmt(data.last);
-  $('#calRange').textContent = `${data.activeDays} active days`;
-  $('#calNote').textContent = `generated ${data.generated} · ${data.total} commits across ${GITHUB_STATS.repos} repositories`;
-  const reposEl = $('#cRepos');
-  if (reposEl) reposEl.textContent = String(GITHUB_STATS.repos);
-}
-
-/* ---------- 9. Contact ---------------------------------------------- */
-function initContact() {
-  const year = $('#year');
-  if (year) year.textContent = String(new Date().getFullYear());
-
-  const btn = $('#copyHandle');
-  if (!btn) return;
-  const label = $('#copyLabel');
-  const value = $('#copyValue');
-  let resetTimer = 0;
-
-  btn.addEventListener('click', async () => {
-    const text = CONFIG.handle;
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        // Fallback for non-secure contexts.
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.setAttribute('readonly', '');
-        ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
-      }
-      btn.classList.add('is-done');
-      if (label) label.textContent = 'Copied';
-      if (value) value.textContent = 'handle copied to clipboard';
-      clearTimeout(resetTimer);
-      resetTimer = setTimeout(() => {
-        btn.classList.remove('is-done');
-        if (label) label.textContent = 'Copy handle';
-        if (value) value.textContent = text;
-      }, 2200);
-    } catch { /* clipboard blocked — leave the handle visible */ }
-  });
+  const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+  set('#cTotal', data.total);
+  set('#cDays', data.activeDays);
+  set('#cFirst', fmt(data.first));
+  set('#calRange', `${data.activeDays} active days`);
+  set('#cRepos', String(GITHUB_STATS.repos));
+  if (note) {
+    note.textContent = `generated ${data.generated} · ${data.total} commits across ${GITHUB_STATS.repos} repositories`;
+  }
 }
 
 /* ---------- 10. Safety --------------------------------------------- */
@@ -339,15 +371,18 @@ function start() {
   initNav();
   initDrawer();
   initTypewriter();
-  initTicker();
-  initFilters();
+  initAnchors();
   initContact();
   initCommits();
-  initReveal();
-  initTimeline();
   initPalette();
   initCursor();
   hardenExternalLinks();
+
+  // Last, because it decides the page's motion architecture. There is no
+  // compensating branch afterwards: the un-armed state is already the
+  // finished state in CSS, so reduced-motion and no-JS need no repainting.
+  initScroll();
+  initReveal();
 }
 
 if (document.readyState === 'loading') {

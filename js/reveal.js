@@ -1,15 +1,27 @@
 /* ============================================================
-   reveal.js — sweep-based reveals, counters, skill bars
+   reveal.js — entry reveals and hero counters
    ------------------------------------------------------------
    Deliberately NOT IntersectionObserver. An IO only fires on
-   threshold crossings: a fast scroll (deep link to #work, restored
-   scroll position, Find-in-page) can move an element from below the
-   viewport to above it between two checks, so it never intersects,
-   never fires, and stays stuck at opacity 0 for good.
+   threshold crossings: a fast scroll (deep link, restored
+   scroll position, Find-in-page) can move an element from
+   below the viewport to above it between two checks, so it never
+   intersects, never fires, and stays stuck at opacity 0 for good.
    A sweep evaluated on scroll cannot miss.
+
+   The skill bars and the timeline spine used to live here too. They
+   do not any more: their un-armed state is the finished state by
+   construction (inline bar widths, a full spine, lit dots), so the
+   no-JS and prefers-reduced-motion pages are correct without running
+   a single line of script. Nothing here needs to compensate for the
+   sequences, which is exactly why the fallback is trustworthy.
    ============================================================ */
 
 const EASE_OUT = (t) => 1 - Math.pow(1 - t, 3);
+
+const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+
+const prefersReduced = () =>
+  matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function countUp(el) {
   const target = parseFloat(el.dataset.count || '0');
@@ -26,22 +38,13 @@ function countUp(el) {
   requestAnimationFrame(tick);
 }
 
-function fillBar(bar) {
-  const pct = Math.min(100, parseFloat(bar.dataset.bar || '0'));
-  bar.querySelector('.bar__fill').style.width = `${pct}%`;
-}
-
 export function initReveal() {
-  const targets = [...document.querySelectorAll('.reveal')];
-  const counters = [...document.querySelectorAll('[data-count]')];
-  const bars = [...document.querySelectorAll('.bar')];
+  const targets = $$('.reveal');
+  const counters = $$('[data-count]');
 
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (reduce) {
+  if (prefersReduced()) {
     targets.forEach((el) => el.classList.add('show'));
     counters.forEach((el) => { el.textContent = el.dataset.count + (el.dataset.suffix || ''); });
-    bars.forEach(fillBar);
     return;
   }
 
@@ -60,74 +63,43 @@ export function initReveal() {
   }
 
   let frame = 0;
-  function onScroll() {
+  const onScroll = () => {
     if (frame) return;
     frame = requestAnimationFrame(() => { frame = 0; sweep(); });
-  }
+  };
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  window.addEventListener('load', onScroll);
-  window.addEventListener('hashchange', () => setTimeout(sweep, 120));
-  window.addEventListener('pageshow', sweep);
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
+  addEventListener('load', onScroll);
+  addEventListener('hashchange', () => setTimeout(sweep, 120));
+  addEventListener('pageshow', sweep);
   setTimeout(sweep, 60);
   sweep();
 
-  // Bars and counters ride the same trigger: once they scroll in, animate.
-  let barsShown = false;
-  const barSweep = () => {
-    if (barsShown) return;
-    const first = bars[0];
-    if (!first || first.getBoundingClientRect().top > window.innerHeight * 0.95) return;
-    barsShown = true;
-    bars.forEach((bar, i) => {
-      bar.style.setProperty('--bd', `${(i * 0.09).toFixed(2)}s`);
-      bar.querySelector('.bar__fill').style.width = `${Math.min(100, parseFloat(bar.dataset.bar || 0))}%`;
-    });
+  // Counters are hero-only and sit above the fold on every breakpoint, but
+  // they still ride a sweep rather than a timer so a restored scroll position
+  // or a slow font swap cannot leave them stuck on zero.
+  let done = false;
+  const countSweep = () => {
+    if (done) return;
+    const first = counters[0];
+    if (!first) { done = true; return; }
+    if (first.getBoundingClientRect().top > window.innerHeight) return;
+    done = true;
+    counters.forEach((el, i) => setTimeout(() => {
+      if (!el.dataset.done) { el.dataset.done = '1'; countUp(el); }
+    }, i * 90));
   };
 
-  let cframe = 0;
-  const counterSweep = () => {
-    if (cframe) return;
-    cframe = requestAnimationFrame(() => {
-      cframe = 0;
-      counters.forEach((el) => {
-        if (el.dataset.done) return;
-        if (el.getBoundingClientRect().top < window.innerHeight * 0.95) {
-          el.dataset.done = '1';
-          countUp(el);
-        }
-      });
-    });
-  };
-
-  window.addEventListener('scroll', () => { barSweep(); counterSweep(); }, { passive: true });
-  window.addEventListener('load', () => { barSweep(); counterSweep(); });
-  barSweep();
-  counterSweep();
-
-  /* Expose for any later caller that needs a fresh pass. */
-  return sweep;
+  addEventListener('scroll', countSweep, { passive: true });
+  addEventListener('load', countSweep);
+  countSweep();
 }
 
-/* --- Timeline spine ------------------------------------------------- */
-export function initTimeline() {
-  const tl = document.getElementById('tl');
-  const fill = document.getElementById('tlFill');
-  if (!tl || !fill) return;
-
-  let frame = 0;
-  const update = () => {
-    frame = 0;
-    const r = tl.getBoundingClientRect();
-    const anchor = window.innerHeight * 0.62;
-    const p = (anchor - r.top) / r.height;
-    fill.style.height = `${Math.max(0, Math.min(1, p)) * 100}%`;
-  };
-
-  window.addEventListener('scroll', () => {
-    if (!frame) frame = requestAnimationFrame(update);
-  }, { passive: true });
-  window.addEventListener('resize', update, { passive: true });
-  update();
-}
+/* Nothing else is needed here. The values a scrub would have produced — the
+   skill bars, the timeline spine, the timeline dots — are already correct in
+   the un-armed state by construction: the bar widths are inline, and the
+   spine and dots default to their finished look, with styles.css resetting
+   them only under `.js-scroll`. That means the no-JS and
+   prefers-reduced-motion pages are correct without running a single line of
+   script, which is a stronger guarantee than repainting them from JS. */

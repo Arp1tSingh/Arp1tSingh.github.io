@@ -4,6 +4,7 @@
    ============================================================ */
 
 import { NAV_ITEMS, PROJECTS, CONFIG } from './config.js';
+import { scrollTo, stopScroll, startScroll, hasMotion } from './scroll.js';
 
 /* Subsequence match with a contiguous-run bonus.
    Exact substrings always win. Returns { score, hits } or null. */
@@ -133,7 +134,10 @@ export function initPalette() {
   function open() {
     lastFocus = document.activeElement;
     overlay.hidden = false;
-    document.body.style.overflow = 'hidden';
+    // With Lenis armed, freezing the tween is the correct lock. Without it,
+    // body overflow is the only thing that stops the page moving underneath.
+    if (hasMotion()) stopScroll();
+    else document.body.style.overflow = 'hidden';
     input.value = '';
     render('');
     input.focus();
@@ -141,7 +145,8 @@ export function initPalette() {
 
   function close() {
     overlay.hidden = true;
-    document.body.style.overflow = '';
+    if (hasMotion()) startScroll();
+    else document.body.style.overflow = '';
     lastFocus?.focus?.();
   }
 
@@ -149,7 +154,9 @@ export function initPalette() {
     if (!item) return;
     close();
     if (item.href.startsWith('#')) {
-      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
+      // Route through the same scrollTo as the nav, so a pinned section is
+      // never skipped by a raw scrollIntoView.
+      scrollTo(item.href);
     } else {
       window.open(item.href, '_blank', 'noopener');
     }

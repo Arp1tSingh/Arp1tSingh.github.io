@@ -9,35 +9,137 @@ Live site: **https://arp1tsingh.github.io/**
 
 ## Stack
 
-Zero dependencies. No `npm install`, no build step, no framework.
+No `npm install`, no build step, no framework of our own. Three third-party libraries are
+**committed to the repository** rather than loaded from a CDN, because GitHub Pages deploys the
+branch root directly and anything not committed would not ship.
 
-| Concern      | Choice                                                     |
-| ------------ | ---------------------------------------------------------- |
-| Markup       | Semantic HTML5                                              |
-| Styling      | One hand-written stylesheet, CSS custom properties          |
-| Behaviour    | Vanilla ES modules, loaded natively by the browser          |
-| Type         | Instrument Serif · Inter Tight · JetBrains Mono             |
-| Data         | `data/commits.json`, generated from the GitHub API          |
-| Hosting      | GitHub Pages, deployed straight from the branch root        |
+| Concern      | Choice                                                                     |
+| ------------ | --------------------------------------------------------------------------- |
+| Markup       | Semantic HTML5                                                              |
+| Styling      | One hand-written stylesheet, CSS custom properties                            |
+| Behaviour    | Vanilla ES modules, loaded natively by the browser                            |
+| Smooth scroll| [Lenis](https://github.com/darkroomengineering/lenis) 1.3.11 (MIT)            |
+| Sequences    | [GSAP](https://gsap.com) 3.13.0 + ScrollTrigger (vendored, see below)         |
+| Type         | Instrument Serif · Inter Tight · JetBrains Mono                              |
+| Data         | `data/commits.json`, generated from the GitHub API                           |
+| Hosting      | GitHub Pages, deployed straight from the branch root                         |
 
 ```
-index.html         markup + content + inline SVG icon sprite
-404.html           styled not-found page
-styles.css         the whole design system
+index.html          markup + content + inline SVG icon sprite
+404.html            styled not-found page
+styles.css          the whole design system
 data/commits.json   generated — per-day commit histogram
 js/
-  main.js          orchestration: boot, nav, drawer, typewriter, calendar, copy
-  config.js        editable content — name, roles, email, socials, projects
-  reveal.js        sweep-based scroll reveals, counters, skill bars, timeline
-  cursor.js        corner reticle
-  palette.js       ⌘K / Ctrl+K command palette with fuzzy search
-assets/            portrait variants, favicon, Open Graph card
+  main.js           orchestration: boot, nav, drawer, typewriter, anchors, calendar, copy
+  scroll.js         Lenis + ScrollTrigger, and the pinned sequences
+  reveal.js         entry reveals and hero counters
+  cursor.js         flat corner reticle
+  palette.js        ⌘K / Ctrl+K command palette with fuzzy search
+  config.js         editable content — name, roles, email, socials, projects
+  vendor/           pinned GSAP, ScrollTrigger and Lenis builds — see js/vendor/README.md
+assets/             portrait variants, favicon, Open Graph card
 tools/
   fetch-commits.mjs  regenerates data/commits.json
 ```
 
-The page works without JavaScript: every project, skill and bio is in the HTML. JS only adds
-motion, filtering, the calendar and the command palette.
+---
+
+## The ten-second rule
+
+Contact is the one thing a visitor must not have to hunt for. Three redundant affordances, so
+none of them depends on the others working:
+
+1. **A solid accent `Hire me` button in the fixed header**, on every breakpoint, visible from the
+   first paint. It is a `mailto:` — no form, no page load, nothing to fail.
+2. **Email leads the hero action row**, ahead of GitHub and "View work".
+3. **A floating dock** (email + copy-to-clipboard) that fades in once the hero is behind you and
+   hides again over the contact outro, so it is always a shortcut and never an obstruction.
+
+Plus a one-sentence **availability band** immediately under the hero, inside the first scroll.
+
+The verification harness asserts all of this: the header and hero CTAs must both be inside the
+first viewport, and both must be `mailto:`, at every width from 360 to 1920.
+
+---
+
+## Motion
+
+Five pinned scroll sequences, all driven by GSAP ScrollTrigger with `scrub: 1` so a fast flick
+settles rather than snapping:
+
+| Sequence      | Scroll distance | What scrubs                                                              |
+| ------------- | --------------- | ------------------------------------------------------------------------- |
+| Hero out      | `200svh`        | Portrait scales and drifts right, scrim lifts, name retreats, stats exit  |
+| About         | `200svh`        | Three-step statement sequence; each step lights as it takes the stage     |
+| Work          | `340svh`        | The rail translates by exactly its overflow width; panel counter ticks     |
+| Toolkit       | `220svh`        | Six skill bars `scaleX` against scroll progress, percentages counting up   |
+| Journey       | `320svh`        | Spine fill tied to progress, timeline dots igniting as the spine passes them |
+
+`scrub: 1` rather than `scrub: true` is the reason the motion reads like the references instead of
+like a progress bar: the timeline lags the scroll slightly and then catches up.
+
+### The arming contract
+
+`js/scroll.js` adds the class `js-scroll` to `<html>` **only after GSAP, ScrollTrigger and Lenis
+have all resolved and the visitor has not asked for reduced motion.** Every pinned rule, every
+scrubbed transform and the dock rule in `styles.css` is scoped under `.js-scroll`.
+
+So there are four states, and three of them are the plain document:
+
+| State                                    | Result                                                    |
+| ---------------------------------------- | --------------------------------------------------------- |
+| Motion allowed, vendor files present      | Sequences armed and scrubbed                               |
+| JavaScript disabled                       | Plain stacked document, fully readable                     |
+| `js/vendor/` blocked or missing           | Plain stacked document, fully readable                     |
+| `prefers-reduced-motion: reduce`          | Plain stacked document, boot screen removed from the DOM   |
+
+There is no state in which a visitor sees a pinned section whose scrub never runs, or an element
+stranded at `opacity: 0`.
+
+### Why the fallback needs no JavaScript
+
+The un-armed state is the **finished** state by construction, not something JS has to repaint:
+
+- Skill bar widths are inline on each `.bar__fill`, and the transform that GSAP scrubs is reset to
+  `scaleX(0)` only under `.js-scroll`.
+- The timeline spine defaults to `height: 100%` and the dots to lit; `.js-scroll` resets them.
+
+That is why there is no `initStaticEndState`-style compensation function: the fallback is CSS, so
+it cannot drift out of sync with the armed state.
+
+### Pin or stand still
+
+A pinned sequence needs a viewport exactly one screen tall **and** a scroll range to scrub across.
+Below these widths the sections stack and the second condition fails — and a pin with `start === end`
+silently freezes its timeline at progress `1`, which looks like a broken scrub rather than a layout
+decision. So `js/scroll.js` makes the call and marks the section `is-static`; the stylesheet keys the
+finished look off that class instead of re-deriving the same breakpoints in two places.
+
+| Breakpoint | Sections that stop pinning                         |
+| ---------- | -------------------------------------------------- |
+| ≤ 1080px   | About, Toolkit, Journey (they stack)               |
+| ≤ 860px    | Work — the rail becomes a natively swipeable row   |
+
+The hero pins at every width; it is one screen of content even at 360px. Crossing either
+breakpoint rebuilds the triggers, since `is-static` is otherwise a one-way decision made at load.
+
+### Lenis wiring
+
+Lenis owns the scroll position, ScrollTrigger must read it every frame, or pinned sections drift by
+a frame during a fast flick:
+
+```js
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time) => lenis.raf(time * 1000));
+gsap.ticker.lagSmoothing(0);
+```
+
+Every in-page link, the ⌘K palette and the footer route through one `scrollTo()` in `js/scroll.js`,
+which applies the fixed-header offset and eases through Lenis when it exists and falls back to a
+native jump when it does not. `scroll-behavior: smooth` is disabled under `.js-scroll` so the
+browser's own smoothing does not fight Lenis.
+
+---
 
 ## Design system
 
@@ -53,6 +155,17 @@ Derived from three references — `landonorris.com`, `charlesleclerc.com`,
 - **1px hairlines** at ~11% alpha as the primary structural device.
 - Sub-0.95 line-heights on display type, `0.26em` tracking on mono labels, `0.9` body leading.
 - Fluid modular scale via `clamp()` — no breakpoint jumps in type size.
+
+### Copy is deliberately thin
+
+`<main>` carries **~484 words**, down from ~1,216. Each project is a number, a title and one line.
+The Journey timeline is five dated lines, and the honest five-month gap with no public commits is
+still there — as is the real calendar, generated from the API, sitting beside it.
+
+The detail was not deleted so much as relocated: `PROJECTS` in `js/config.js` still carries the
+full one-line description of all nine projects, and ⌘K is where it now lives.
+
+---
 
 ## Running it locally
 
@@ -79,16 +192,46 @@ All asset paths are **relative** (`./styles.css`, not `/styles.css`), so the sit
 at a root domain, a subpath, or a local file server. To use a custom domain, add a `CNAME` file
 and point a CNAME record at `arp1tsingh.github.io`.
 
+## Verifying
+
+The behaviour that matters here — the ten-second rule, the arming contract, the pin ranges, the
+absence of clipped layout — is all asserted by a Playwright harness rather than eyeballed:
+
+```bash
+npm i playwright        # browsers are already cached
+python3 -m http.server 8000 &
+node tools/verify.cjs http://127.0.0.1:8000
+```
+
+It sweeps 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920 and asserts, at each one:
+
+- no horizontal document overflow **and** nothing clipped past the viewport edge
+  (`html { overflow-x: clip }` hides the second kind from the first check)
+- no unpinned section reserving scroll distance it will never spend
+- the header and hero CTAs are in the first viewport and are both `mailto:`
+- each pinned sequence has a non-zero scrub range and its transform actually changes at the
+  midpoint; each unpinned one has **no** trigger and already shows its finished values
+- the calendar renders 362 cells with 59 lit, labelled Oct 2025 onward
+- zero console errors and zero failed requests
+
+Then, as separate contexts: **no JavaScript**, **`js/vendor/` blocked**, and
+**`prefers-reduced-motion: reduce`** — each asserting the page is complete and readable, plus the
+⌘K palette, anchor navigation, clipboard copy and every external link.
+
+Note: LinkedIn hard-blocks non-browser clients (HTTP 999), so the link check asserts its URL and
+reports it as unverifiable rather than pretending to have checked it.
+
 ## Editing content
 
 Everything you'll want to change lives in `js/config.js`:
 
-- `email` — shown in the contact section and About.
+- `email` — shown in the header CTA, hero, availability band, dock, contact grid and footer.
 - `roles` — the phrases the hero typewriter cycles through.
-- `PROJECTS` — powers the ⌘K palette. The visible cards live in `index.html`.
+- `PROJECTS` — the full project descriptions, powering the ⌘K palette. The visible rail in
+  `index.html` is the deliberately cut version.
 - `GITHUB_STATS` — repo count and other headline figures.
 
-Skill percentages in the Skills section are computed from bytes of code across all public
+Skill percentages in the Toolkit section are computed from bytes of code across all public
 repositories, not hand-written. To refresh them:
 
 ```bash
@@ -134,10 +277,13 @@ viewport only 450 of 1280 rows survive, and a centred crop would cut 52px off yo
 
 ## Accessibility & performance notes
 
-- Scroll reveals use a **sweep on scroll, deliberately not IntersectionObserver**. An IO only
+- Entry reveals use a **sweep on scroll, deliberately not IntersectionObserver**. An IO only
   fires on threshold crossings: a fast scroll (deep link, restored scroll position, Find-in-page)
   can move an element from below the viewport to above it between two checks, so it never
   intersects, never fires, and stays invisible for good. A sweep cannot miss.
+- The skill bars and timeline spine are **not** in `reveal.js`. They need no entry animation, and
+  keeping them in CSS means the no-JS and reduced-motion pages are correct without running a
+  single line of script.
 - Every animation is disabled under `prefers-reduced-motion: reduce`; the boot screen is removed
   from the DOM entirely and the hero name renders statically.
 - The custom cursor and its native-pointer suppression only initialise for `(pointer: fine)`,
@@ -146,11 +292,15 @@ viewport only 450 of 1280 rows survive, and a centred crop would cut 52px off yo
 - `:focus-visible` carries a 2px accent ring, which is the only keyboard focus cue once the
   native pointer is hidden.
 - Keyboard: `⌘K` / `Ctrl+K` or `/` opens the palette, `Esc` closes, arrows navigate, focus returns
-  to the trigger on close.
+  to the trigger on close. Opening the palette freezes Lenis rather than setting
+  `body { overflow: hidden }`, which would fight it.
 - The hero image is preloaded with `fetchpriority="high"` and served at two widths.
 - External links carry `rel="noopener noreferrer"`.
+- `min-width: 0` on the sequence grid items is load-bearing. A grid item's automatic minimum size
+  is min-content, so without it the 53-column calendar refuses to shrink and pushes its card past
+  the right edge — and `overflow-x: clip` on the root hides that from a document-width check.
 
 ## Licence
 
-Hand-written, no frameworks. The project screenshots in `assets/` belong to the projects they
-depict.
+Hand-written apart from `js/vendor/`. The project screenshots in `assets/` belong to the projects
+they depict.

@@ -4,25 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Arpit Singh — Full-Stack Developer, AI/ML &amp; Systems</title>
-<meta name="description" content="Arpit Singh — Computer Engineering student in Mumbai building full-stack web apps, deepfake-detection systems and low-level graphics tools. Looking for a tech internship.">
+<meta name="description" content="Arpit Singh — Computer Engineering student in Mumbai building deepfake detection, a CPU path tracer written from scratch, and a P2P transfer network. Available for tech internships. arpitsingh8534@gmail.com">
 <meta name="author" content="Arpit Singh">
 <meta name="theme-color" content="#0b0a09">
 <link rel="canonical" href="https://arp1tsingh.github.io/">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Arpit Singh — Full-Stack Developer, AI/ML &amp; Systems">
-<meta property="og:description" content="Deepfake detection with Grad-CAM, a CPU path tracer written from scratch, an FSRS-6 spaced repetition tracker, and a BitTorrent-style P2P transfer network.">
+<meta property="og:description" content="Deepfake detection with Grad-CAM, a CPU path tracer written from scratch, and a BitTorrent-style P2P transfer network. Open to tech internships — 2026.">
 <meta property="og:url" content="https://arp1tsingh.github.io/">
 <meta property="og:image" content="./assets/og.png">
 <meta property="og:site_name" content="Arpit Singh">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Arpit Singh — Full-Stack Developer, AI/ML &amp; Systems">
-<meta name="twitter:description" content="Deepfake detection with Grad-CAM, a CPU path tracer written from scratch, an FSRS-6 spaced repetition tracker, and a BitTorrent-style P2P transfer network.">
+<meta name="twitter:description" content="Deepfake detection with Grad-CAM, a CPU path tracer written from scratch, and a BitTorrent-style P2P transfer network. Open to tech internships — 2026.">
 <meta name="twitter:image" content="./assets/og.png">
 
 <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-<!-- Progressive enhancement marker. Scroll reveals are hidden ONLY when JS is
-     running; with JS off the content must stay visible, never opacity 0. -->
+<!-- Progressive enhancement marker, two-stage.
+     `js` means scripting is available at all, so scroll-reveal hiding is legal.
+     `js-scroll` is added by js/scroll.js only once GSAP + ScrollTrigger + Lenis have all
+     resolved. Every pinned container and scrubbed transform is scoped under it, so a
+     missing or blocked vendor file degrades to the plain stacked document. -->
 <script>document.documentElement.className+=' js';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +43,7 @@
   "url": "https://arp1tsingh.github.io/",
   "image": "https://arp1tsingh.github.io/assets/portrait.jpg",
   "jobTitle": "Full-Stack Developer, AI/ML & Systems Engineer",
-  "description": "Computer Engineering student in Mumbai building full-stack web applications, AI/ML systems and low-level graphics tools.",
+  "description": "Computer Engineering student in Mumbai building deepfake detection, a CPU path tracer written from scratch, and a BitTorrent-style P2P transfer network.",
   "email": "mailto:arpitsingh8534@gmail.com",
   "address": { "@type": "PostalAddress", "addressLocality": "Mumbai", "addressCountry": "IN" },
   "alumniOf": { "@type": "CollegeOrUniversity", "name": "Vidyalankar Institute of Technology" },
@@ -80,10 +83,9 @@
 
     <nav class="nav__links" aria-label="Primary">
       <a href="#about"   data-nav>About</a>
-      <a href="#skills"  data-nav>Skills</a>
       <a href="#work"    data-nav>Work</a>
+      <a href="#toolkit" data-nav>Toolkit</a>
       <a href="#journey" data-nav>Journey</a>
-      <a href="#commits" data-nav>Commits</a>
       <a href="#contact" data-nav>Contact</a>
     </nav>
 
@@ -95,6 +97,9 @@
       <a class="nav__social" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener" aria-label="GitHub" data-cursor="github">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
       </a>
+      <!-- The 10-second rule lives here: this is reachable from the first paint,
+           on every breakpoint, without reading anything. -->
+      <a class="nav__hire" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">Hire me</a>
       <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
         <i></i><i></i><i></i>
       </button>
@@ -105,18 +110,17 @@
 <!-- ============ DRAWER ============ -->
 <div class="drawer" id="drawer" hidden>
   <div class="drawer__panel">
+    <a class="drawer__hire" href="mailto:arpitsingh8534@gmail.com">arpitsingh8534@gmail.com</a>
     <nav class="drawer__links" aria-label="Mobile">
       <a href="#about"   data-nav><span class="drawer__idx">01</span> About</a>
-      <a href="#skills"  data-nav><span class="drawer__idx">02</span> Skills</a>
-      <a href="#work"    data-nav><span class="drawer__idx">03</span> Work</a>
+      <a href="#work"    data-nav><span class="drawer__idx">02</span> Work</a>
+      <a href="#toolkit" data-nav><span class="drawer__idx">03</span> Toolkit</a>
       <a href="#journey" data-nav><span class="drawer__idx">04</span> Journey</a>
-      <a href="#commits" data-nav><span class="drawer__idx">05</span> Commits</a>
-      <a href="#contact" data-nav><span class="drawer__idx">06</span> Contact</a>
+      <a href="#contact" data-nav><span class="drawer__idx">05</span> Contact</a>
     </nav>
     <div class="drawer__foot">
       <a href="https://github.com/Arp1tSingh" target="_blank" rel="noopener">GitHub</a>
       <a href="https://www.linkedin.com/in/rpitsingh" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="mailto:arpitsingh8534@gmail.com">Email</a>
     </div>
   </div>
 </div>
@@ -125,608 +129,303 @@
 
 <!-- ============ HERO ============ -->
 <section class="hero" id="hero">
-  <div class="hero__bg">
-    <img src="./assets/portrait-1440.jpg"
-         srcset="./assets/portrait-720.jpg 720w, ./assets/portrait-1440.jpg 1440w"
-         sizes="100vw"
-         alt="Arpit Singh standing in front of a stone wall and hedge"
-         width="1440" height="2560" fetchpriority="high" decoding="async">
-  </div>
-  <div class="hero__scrim"></div>
-
-  <div class="hero__inner">
-    <div class="wrap">
-      <p class="hero__tag label label--accent reveal">
-        <span class="led"></span>Open to tech internships — 2026
-      </p>
-
-      <h1 class="hero__name" id="heroName">Arpit Singh</h1>
-
-      <p class="hero__role">
-        <span>I build</span>
-        <span class="tw" id="typewriter"></span>
-      </p>
-
-      <p class="hero__lead">
-        Computer Engineering student in Mumbai. Deepfake detection with Grad-CAM,
-        a physically based renderer written from scratch, and a peer-to-peer
-        transfer network on the standard library alone.
-      </p>
-
-      <div class="hero__actions reveal" data-delay="2">
-        <a class="btn btn--solid" href="#work">View my work</a>
-        <a class="btn" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener" data-cursor="github">
-          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>GitHub
-        </a>
-        <a class="btn" href="https://www.linkedin.com/in/rpitsingh" target="_blank" rel="noopener" data-cursor="linkedin">
-          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-linkedin"/></svg>LinkedIn
-        </a>
+  <div class="pin" data-hero-pin>
+    <div class="pin__vp hero__vp">
+      <div class="hero__bg" data-hero-media>
+        <img src="./assets/portrait-1440.jpg"
+             srcset="./assets/portrait-720.jpg 720w, ./assets/portrait-1440.jpg 1440w"
+             sizes="100vw"
+             alt="Arpit Singh standing in front of a stone wall and hedge"
+             width="1440" height="2560" fetchpriority="high" decoding="async">
       </div>
+      <div class="hero__scrim" data-hero-scrim></div>
 
-      <ul class="hero__stats reveal" data-delay="3">
-        <li><b data-count="248">0</b><span>Commits</span></li>
-        <li><b data-count="16">0</b><span>Repositories</span></li>
-        <li><b data-count="5">0</b><span>Live demos</span></li>
-        <li><b data-count="7">0</b><span>Languages</span></li>
-      </ul>
-    </div>
+      <div class="hero__inner">
+        <div class="wrap">
+          <p class="hero__tag label label--accent">
+            <span class="led"></span>Open to tech internships — 2026
+          </p>
 
-    <div class="wrap hero__foot">
-      <span>Vidyalankar Institute of Technology</span>
-      <span>24102A0014</span>
-    </div>
-  </div>
-</section>
+          <h1 class="hero__name" id="heroName">Arpit Singh</h1>
 
-<!-- ============ TICKER ============ -->
-<section class="ticker" aria-label="Technologies">
-  <div class="ticker__track" data-ticker>
-    <span class="ticker__item">Python</span><span class="ticker__item">TypeScript</span>
-    <span class="ticker__item">C++</span><span class="ticker__item">C</span>
-    <span class="ticker__item">React</span><span class="ticker__item">Next.js</span>
-    <span class="ticker__item">FastAPI</span><span class="ticker__item">PyTorch</span>
-    <span class="ticker__item">DeepfakeBench</span><span class="ticker__item">Grad-CAM</span>
-    <span class="ticker__item">Supabase</span><span class="ticker__item">PostgreSQL</span>
-    <span class="ticker__item">Tailwind</span><span class="ticker__item">Sockets</span>
-    <span class="ticker__item">BVH</span><span class="ticker__item">Ray Tracing</span>
-    <span class="ticker__item">FSRS-6</span><span class="ticker__item">Git</span>
-  </div>
-</section>
+          <p class="hero__role">
+            <span>I build</span>
+            <span class="tw" id="typewriter"></span>
+          </p>
 
-<!-- ============ ABOUT ============ -->
-<section class="section" id="about">
-  <div class="wrap">
-    <header class="sec-head reveal">
-      <p class="sec-idx"><span>01</span> About</p>
-      <h2 class="sec-title">Full-stack fundamentals,<br><em>now pointed at AI.</em></h2>
-      <p class="sec-sub">
-        I started with C and brute force, moved through full-stack web, and kept
-        pulling the thread further down — into systems, networking and models
-        that actually do something.
-      </p>
-    </header>
+          <p class="hero__lead" data-hero-lead>
+            Deepfake detection, a path tracer written from scratch, and a P2P network
+            on nothing but the standard library.
+          </p>
 
-    <div class="about">
-      <div class="about__body reveal" data-delay="1">
-        <p class="about__lead">
-          My GitHub is the honest version of this. A CPU path tracer with a bounding
-          volume hierarchy and physically based materials. A deepfake forensics platform
-          running three detection models with Grad-CAM explainability. A BitTorrent-style
-          transfer built on nothing but the Python standard library.
-        </p>
-        <p>
-          I'm not chasing a stack, I'm chasing a ceiling. Every repository is me trying to
-          see how far a topic goes before it pushes back.
-        </p>
-      </div>
+          <!-- Email leads. Contact must not be behind a decision to keep scrolling. -->
+          <div class="hero__actions">
+            <a class="btn btn--solid" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg>Email
+            </a>
+            <a class="btn" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener" data-cursor="github">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>GitHub
+            </a>
+            <a class="btn btn--sm" href="#work" data-nav>View work</a>
+          </div>
 
-      <div class="record reveal" data-delay="2">
-        <div class="record__row">
-          <span class="record__k">Name</span><span class="record__sep">:</span>
-          <span class="record__v">Arpit Singh</span>
+          <ul class="hero__stats" data-hero-stats>
+            <li><b data-count="248">0</b><span>Commits</span></li>
+            <li><b data-count="16">0</b><span>Repositories</span></li>
+            <li><b data-count="5">0</b><span>Live demos</span></li>
+            <li><b data-count="7">0</b><span>Languages</span></li>
+          </ul>
         </div>
-        <div class="record__row">
-          <span class="record__k">Programme</span><span class="record__sep">:</span>
-          <span class="record__v">B.E. Computer Engineering<small>T.E. Semester V</small></span>
-        </div>
-        <div class="record__row">
-          <span class="record__k">Institution</span><span class="record__sep">:</span>
-          <span class="record__v">Vidyalankar Institute of Technology<small>Mumbai, India</small></span>
-        </div>
-        <div class="record__row">
-          <span class="record__k">Focus</span><span class="record__sep">:</span>
-          <span class="record__v">AI/ML and systems engineering<small>Deepfake detection · CPU rendering · P2P networking</small></span>
-        </div>
-        <div class="record__row">
-          <span class="record__k">Status</span><span class="record__sep">:</span>
-          <span class="record__v"><a href="mailto:arpitsingh8534@gmail.com">arpitsingh8534@gmail.com</a><small>Available for internships</small></span>
-        </div>
-        <div class="record__row">
-          <span class="record__k">Links</span><span class="record__sep">:</span>
-          <span class="record__v">
-            <a href="https://github.com/Arp1tSingh" target="_blank" rel="noopener">GitHub</a> ·
-            <a href="https://www.linkedin.com/in/rpitsingh" target="_blank" rel="noopener">LinkedIn</a>
-          </span>
+
+        <div class="wrap hero__foot">
+          <span>Vidyalankar Institute of Technology</span>
+          <span>24102A0014</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ SKILLS ============ -->
-<section class="section" id="skills">
-  <div class="wrap">
-    <header class="sec-head reveal">
-      <p class="sec-idx"><span>02</span> Skills</p>
-      <h2 class="sec-title">The toolkit, <em>honestly weighted.</em></h2>
-      <p class="sec-sub">
-        Percentages are computed from bytes of code across every public repository,
-        not hand-written. Python dominates because I keep reaching for it first.
-      </p>
-    </header>
-
-    <div class="skills">
-      <div class="reveal">
-        <div class="bar" data-bar="58.8">
-          <div class="bar__top"><span class="bar__name">Python</span><span class="bar__pct">58.8%</span></div>
-          <div class="bar__track"><i class="bar__fill"></i></div>
-        </div>
-        <div class="bar" data-bar="25.7">
-          <div class="bar__top"><span class="bar__name">TypeScript</span><span class="bar__pct">25.7%</span></div>
-          <div class="bar__track"><i class="bar__fill"></i></div>
-        </div>
-        <div class="bar" data-bar="5.2">
-          <div class="bar__top"><span class="bar__name">CSS</span><span class="bar__pct">5.2%</span></div>
-          <div class="bar__track"><i class="bar__fill"></i></div>
-        </div>
-        <div class="bar" data-bar="4.9">
-          <div class="bar__top"><span class="bar__name">HTML</span><span class="bar__pct">4.9%</span></div>
-          <div class="bar__track"><i class="bar__fill"></i></div>
-        </div>
-        <div class="bar" data-bar="3.7">
-          <div class="bar__top"><span class="bar__name">JavaScript</span><span class="bar__pct">3.7%</span></div>
-          <div class="bar__track"><i class="bar__fill"></i></div>
-        </div>
-        <div class="bar" data-bar="1.5">
-          <div class="bar__top"><span class="bar__name">C++ / C</span><span class="bar__pct">1.5%</span></div>
-          <div class="bar__track"><i class="bar__fill"></i></div>
-        </div>
-      </div>
-
-      <div class="sgroups reveal" data-delay="1">
-        <div class="sgroup">
-          <h3>Frontend</h3>
-          <ul><li>React</li><li>Next.js 16</li><li>TypeScript</li><li>Vite</li><li>Tailwind</li><li>Vanilla JS</li><li>Canvas</li></ul>
-        </div>
-        <div class="sgroup">
-          <h3>Backend &amp; Data</h3>
-          <ul><li>Python</li><li>FastAPI</li><li>Node.js</li><li>Supabase</li><li>PostgreSQL</li><li>REST</li><li>SQLite</li></ul>
-        </div>
-        <div class="sgroup">
-          <h3>AI / ML</h3>
-          <ul><li>PyTorch</li><li>Grad-CAM</li><li>DeepfakeBench</li><li>Xception</li><li>OpenCV</li><li>FSRS-6</li></ul>
-        </div>
-        <div class="sgroup">
-          <h3>Systems</h3>
-          <ul><li>C++</li><li>C</li><li>Sockets</li><li>Multithreading</li><li>BVH</li><li>Git</li><li>Docker</li></ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ WORK ============ -->
-<section class="section" id="work">
-  <div class="wrap">
-    <header class="sec-head reveal">
-      <p class="sec-idx"><span>03</span> Work</p>
-      <h2 class="sec-title">Nine things <em>I actually shipped.</em></h2>
-      <p class="sec-sub">Each one runs. Every deployment link is live.</p>
-    </header>
-
-    <div class="filters reveal" role="tablist" aria-label="Filter projects" data-delay="1">
-      <button data-filter="all"  role="tab" aria-selected="true">All <i>9</i></button>
-      <button data-filter="ai"   role="tab" aria-selected="false">AI / ML <i>2</i></button>
-      <button data-filter="web"  role="tab" aria-selected="false">Web <i>4</i></button>
-      <button data-filter="sys"  role="tab" aria-selected="false">Systems <i>2</i></button>
-      <button data-filter="algo" role="tab" aria-selected="false">Algorithms <i>2</i></button>
-    </div>
-
-    <div class="grid">
-
-      <article class="card card--wide" data-cat="ai" reveal>
-        <div class="card__body">
-          <div class="card__meta">
-            <span class="chip chip--star">Featured</span>
-            <span class="chip">Next.js 16</span><span class="chip">FastAPI</span><span class="chip">PyTorch</span>
-          </div>
-          <h3 class="card__title">DeepGuard <span class="card__sup">v2</span></h3>
-          <p class="card__desc">
-            Full-stack deepfake forensics. Upload a video, get a verdict from
-            <b>three independently verified detectors</b> — UCF, SPSL and Xception from
-            DeepfakeBench — plus <b>Grad-CAM heatmap overlays</b> showing which face regions
-            drove the prediction, per-model signal breakdowns, a temporal confidence
-            timeline, and a downloadable PDF forensic report.
-          </p>
-          <p class="card__note">
-            Rebuilt solo after a team mini-project. Runs three models on CPU and surfaces
-            real stage labels rather than a fake spinner.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://github.com/Arp1tSingh/Deepguard-v2" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-        <figure class="card__art card__art--dg" aria-label="Stylised Grad-CAM evidence panel">
-          <svg viewBox="0 0 320 250" role="img" aria-hidden="true">
-            <defs>
-              <radialGradient id="cam" cx="50%" cy="42%" r="58%">
-                <stop offset="0%" stop-color="#ff5a1f"/>
-                <stop offset="48%" stop-color="#c2410c"/>
-                <stop offset="100%" stop-color="#ff5a1f" stop-opacity="0"/>
-              </radialGradient>
-              <linearGradient id="scan" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#ff5a1f" stop-opacity="0"/>
-                <stop offset="50%" stop-color="#ff5a1f" stop-opacity=".7"/>
-                <stop offset="100%" stop-color="#ff5a1f" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-
-            <!-- A. three detector verdicts -->
-            <g font-family="JetBrains Mono, monospace" font-size="9">
-              <g fill="#a89f94">
-                <text x="10" y="27">UCF</text>
-                <text x="10" y="51">SPSL</text>
-                <text x="10" y="75">XCN</text>
-              </g>
-              <g fill="#1c1917">
-                <rect x="44" y="18" width="150" height="10" rx="5"/>
-                <rect x="44" y="42" width="150" height="10" rx="5"/>
-                <rect x="44" y="66" width="150" height="10" rx="5"/>
-              </g>
-              <rect x="44" y="18" width="118" height="10" rx="5" fill="#ff5a1f" class="g1"/>
-              <rect x="44" y="42" width="104" height="10" rx="5" fill="#c2410c" class="g2"/>
-              <rect x="44" y="66" width="132" height="10" rx="5" fill="#ff5a1f" class="g3"/>
-              <g text-anchor="end">
-                <text x="306" y="27" fill="#ff5a1f">0.79 FAKE</text>
-                <text x="306" y="51" fill="#c2410c">0.69 FAKE</text>
-                <text x="306" y="75" fill="#ff5a1f">0.88 FAKE</text>
-              </g>
-            </g>
-
-            <line x1="8" y1="90" x2="312" y2="90" stroke="#f7f2ea" stroke-opacity=".14"/>
-
-            <!-- B. Grad-CAM face panel: the figure occupies x120-200 only,
-                 so the tags at x240 sit clear of it -->
-            <g opacity=".4" stroke="#f7f2ea" stroke-opacity=".08">
-              <path d="M110 98v86M210 98v86M8 127h304M8 156h304"/>
-            </g>
-            <ellipse cx="160" cy="141" rx="40" ry="34" fill="url(#cam)" class="dg-pulse"/>
-            <ellipse cx="160" cy="141" rx="27" ry="29" fill="none" stroke="#ff5a1f" stroke-width="1" stroke-dasharray="5 4" opacity=".9"/>
-            <g fill="#f7f2ea" opacity=".75">
-              <rect x="150" y="130" width="7" height="9"/>
-              <rect x="163" y="130" width="7" height="9"/>
-            </g>
-            <path d="M147 156q13 10 26 0" fill="none" stroke="#f7f2ea" stroke-width="1.3" opacity=".55"/>
-            <rect class="dg-scan" x="8" y="98" width="304" height="2.5" fill="url(#scan)"/>
-            <g font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7a7268">
-              <text x="238" y="116">GRAD-CAM</text>
-              <text x="238" y="130">FRAME 041</text>
-              <text x="238" y="150">XCEPTION</text>
-            </g>
-
-            <line x1="8" y1="196" x2="312" y2="196" stroke="#f7f2ea" stroke-opacity=".14"/>
-
-            <!-- C. temporal confidence -->
-            <g font-family="JetBrains Mono, monospace" font-size="8.5" fill="#7a7268">
-              <text x="8" y="212">CONFIDENCE TIMELINE</text>
-            </g>
-            <g stroke="#f7f2ea" stroke-opacity=".08">
-              <line x1="8" y1="238" x2="312" y2="238"/><line x1="8" y1="222" x2="312" y2="222"/>
-            </g>
-            <polyline points="8,236 46,232 84,234 122,224 160,228 198,218 236,222 274,214 312,217"
-                    fill="none" stroke="#ff5a1f" stroke-width="1.4"/>
-            <g font-family="JetBrains Mono, monospace" font-size="8" fill="#4a453e">
-              <text x="8" y="248">0.0</text><text x="312" y="248" text-anchor="end">1.0</text>
-            </g>
-          </svg>
-        </figure>
-      </article>
-
-      <article class="card card--wide" data-cat="web algo" reveal data-delay="1">
-        <div class="card__body">
-          <div class="card__meta">
-            <span class="chip chip--star">Featured</span>
-            <span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">FSRS-6</span>
-          </div>
-          <h3 class="card__title">LeetCode Spaced Repetition</h3>
-          <p class="card__desc">
-            Turns one-off problem solving into a review system. Schedules each problem with the
-            <b>Free Spaced Repetition Scheduler</b>, modelling memory as Stability <i>S</i> and
-            Difficulty <i>D</i> so you review at the moment retrievability decays toward target recall.
-          </p>
-          <p class="card__note">
-            Cold-start protection: imported problems are calibrated into a paced queue instead of
-            a day-one wall of two hundred cards.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://leetcode-practice-tracker.vercel.app/" target="_blank" rel="noopener" data-cursor="live">Live app<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-            <a class="link link--mute" href="https://github.com/Arp1tSingh/Leetcode-Practice-Tracker" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-        <figure class="card__art">
-          <img src="./assets/fsrs-dashboard.png" alt="LeetCode FSRS tracker dashboard showing problem totals, integrations and today's recommended queue" width="1900" height="971" loading="lazy" decoding="async">
-        </figure>
-      </article>
-
-      <article class="card" data-cat="sys" reveal data-delay="2">
-        <div class="card__body">
-          <div class="card__meta"><span class="chip">Python</span><span class="chip">stdlib only</span></div>
-          <h3 class="card__title">P2P File Sharing</h3>
-          <p class="card__desc">
-            BitTorrent-style transfers between devices on <b>different networks</b> with just a
-            link. No account, no port forwarding, no dependencies — a tracker, a magnet URI and
-            a relay mode that tunnels across NAT. Works from a phone browser with zero terminal.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://p2p-file-sharing-pjgm.onrender.com/" target="_blank" rel="noopener" data-cursor="live">Live app<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-            <a class="link link--mute" href="https://github.com/Arp1tSingh/p2p-file-sharing" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-cat="sys" reveal data-delay="3">
-        <div class="card__body">
-          <div class="card__meta"><span class="chip">C++</span><span class="chip">no graphics API</span></div>
-          <h3 class="card__title">CPU Path Tracer</h3>
-          <p class="card__desc">
-            A physically based renderer built from scratch. Recursive path tracing with up to
-            <b>ten light bounces</b>, a bounding volume hierarchy that takes ray intersection from
-            O(N) to O(log N), and Lambertian, metallic and dielectric materials — all through
-            hand-written ray maths, no OpenGL or DirectX.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://github.com/Arp1tSingh/cpp-path-tracer" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-        <figure class="card__art">
-          <img src="./assets/path-tracer.png" alt="Path-traced render of hundreds of glossy and refractive spheres with realistic reflections and shadows" width="800" height="533" loading="lazy" decoding="async">
-        </figure>
-      </article>
-
-      <article class="card" data-cat="web algo" reveal data-delay="2">
-        <div class="card__body">
-          <div class="card__meta"><span class="chip">Vanilla</span><span class="chip">single file</span></div>
-          <h3 class="card__title">BigOBoard</h3>
-          <p class="card__desc">
-            An infinite-canvas whiteboard for visualising DSA problems. Pan and pinch-zoom freely,
-            four pen types, shapes and text, full undo/redo, autosave to <b>localStorage</b>, and
-            PNG or JSON export. No build step, no dependencies, no server.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://big-o-board.vercel.app" target="_blank" rel="noopener" data-cursor="live">Live app<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-            <a class="link link--mute" href="https://github.com/Arp1tSingh/BigOBoard" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-cat="web" reveal data-delay="3">
-        <div class="card__body">
-          <div class="card__meta"><span class="chip">React</span><span class="chip">Vite</span><span class="chip">Supabase</span></div>
-          <h3 class="card__title">Wishlist Keeper</h3>
-          <p class="card__desc">
-            A sharable shopping wishlist with Supabase auth and row-level security. Track price,
-            category and priority, sort and filter, and watch a running total against a budget.
-            Images are stored as URLs, so there is no heavy media storage.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://shopping-wishlist-three.vercel.app" target="_blank" rel="noopener" data-cursor="live">Live app<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-            <a class="link link--mute" href="https://github.com/Arp1tSingh/Shopping-Wishlist" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-cat="web" reveal data-delay="2">
-        <div class="card__body">
-          <div class="card__meta"><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Tailwind</span></div>
-          <h3 class="card__title">E-Waste Passport</h3>
-          <p class="card__desc">
-            A gamified web app for a college e-waste awareness campaign. Build a digital passport,
-            log devices you have recycled, collect badges and level up — all persisted in the
-            browser with <b>localStorage</b>, so there is no backend to maintain.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://ewaste-quiz.vercel.app" target="_blank" rel="noopener" data-cursor="live">Live app<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-            <a class="link link--mute" href="https://github.com/Arp1tSingh/Ewaste-Quiz" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-cat="algo sys" reveal data-delay="3">
-        <div class="card__body">
-          <div class="card__meta"><span class="chip">C</span><span class="chip">algorithms</span></div>
-          <h3 class="card__title">Bus Route Planner</h3>
-          <p class="card__desc">
-            A console TSP solver for college bus routes. Runs <b>brute force</b> and
-            <b>branch &amp; bound</b> for provably optimal routes against <b>nearest neighbour</b>
-            as a heuristic, with dynamic stop management and file-based configuration.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://github.com/Arp1tSingh/Bus-Route-Planner-TSP" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-cat="algo" reveal data-delay="2">
-        <div class="card__body">
-          <div class="card__meta"><span class="chip">Python</span><span class="chip">DSA</span></div>
-          <h3 class="card__title">LeetCode Archive</h3>
-          <p class="card__desc">
-            Every problem I have solved, kept in one continuously synced repository. The raw
-            material that fed the FSRS tracker, so a solution written once actually gets
-            reviewed instead of quietly rotting.
-          </p>
-          <div class="card__links">
-            <a class="link" href="https://github.com/Arp1tSingh/LeetCode" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
-          </div>
-        </div>
-      </article>
-
-    </div>
-
-    <p class="reveal" style="margin-top:1.5rem;font-family:var(--font-mono);font-size:var(--t-small);color:var(--ink-60)">
-      Plus an <a class="link" style="display:inline" href="https://github.com/Arp1tSingh?tab=repositories" target="_blank" rel="noopener">ERP system</a>
-      (React + Node), a <a class="link" style="display:inline" href="https://github.com/Arp1tSingh/fintech-vit" target="_blank" rel="noopener">fintech committee site</a>,
-      a Python <a class="link" style="display:inline" href="https://github.com/Arp1tSingh/os-log-analyzer" target="_blank" rel="noopener">OS log analyzer</a>,
-      and the first DeepGuard forensics build.
+<!-- ============ AVAILABILITY ============
+     Sits inside the first scroll. Contact is therefore reachable well inside
+     ten seconds even by someone who never scrolls. -->
+<section class="avail" aria-label="Availability">
+  <div class="wrap avail__inner">
+    <p class="avail__text">
+      Open to a <b>tech internship</b> in 2026. Hiring, mentoring, or want to compare notes on
+      deepfake detection or CPU rendering —
+      <a href="mailto:arpitsingh8534@gmail.com" data-cursor="email">arpitsingh8534@gmail.com</a>
     </p>
   </div>
 </section>
 
-<!-- ============ JOURNEY ============ -->
-<section class="section" id="journey">
-  <div class="wrap">
-    <header class="sec-head reveal">
-      <p class="sec-idx"><span>04</span> Journey</p>
-      <h2 class="sec-title">How the <em>curve bent.</em></h2>
-      <p class="sec-sub">Dated from actual commit history, not vibes.</p>
-    </header>
-
-    <div class="tl" id="tl">
-      <div class="tl__fill" id="tlFill" aria-hidden="true"></div>
-
-      <div class="tl__item reveal">
-        <span class="tl__dot" aria-hidden="true"></span>
-        <p class="tl__when">October 2025</p>
-        <h3 class="tl__title">First blood</h3>
-        <p class="tl__body">
-          Started shipping instead of watching tutorials. A full-stack <b>ERP system</b> split into
-          separate frontend and backend repositories, and a console <b>TSP bus-route solver</b> in C
-          to learn brute force against branch &amp; bound. Twenty-seven commits in three weeks.
-        </p>
-        <ul class="tl__tags"><li><span class="chip">JavaScript</span></li><li><span class="chip">Node.js</span></li><li><span class="chip">C</span></li></ul>
+<!-- ============ ABOUT — pinned statement sequence ============ -->
+<section class="pin" id="about" data-seq="about">
+  <div class="pin__vp seq seq--about">
+    <div class="wrap seq__grid">
+      <div class="seq__rail">
+        <p class="sec-idx"><span>01</span> About</p>
+        <ul class="seq__steps">
+          <li data-step class="is-on"><span>Web</span><p>I stopped watching tutorials and started shipping. A full-stack ERP, split into its own frontend and backend repos.</p></li>
+          <li data-step><span>Systems</span><p>A multithreaded CPU path tracer with a BVH and dielectric materials. No graphics API, just arithmetic.</p></li>
+          <li data-step><span>Models</span><p>Real detection checkpoints running on real video, with Grad-CAM showing which face regions drove each verdict.</p></li>
+        </ul>
       </div>
-
-      <div class="tl__item reveal">
-        <span class="tl__dot" aria-hidden="true"></span>
-        <p class="tl__when">November 2025 — March 2026</p>
-        <h3 class="tl__title">A quiet stretch</h3>
-        <p class="tl__body">
-          No public commits for five months. Coursework and reading, mostly — this gap is real
-          and the calendar in the next section shows it. What came out of it was the decision to
-          stop coasting and go lower-level.
-        </p>
-      </div>
-
-      <div class="tl__item reveal">
-        <span class="tl__dot" aria-hidden="true"></span>
-        <p class="tl__when">April 2026</p>
-        <h3 class="tl__title">Down to the metal</h3>
-        <p class="tl__body">
-          Wanted to know what was actually happening underneath, so wrote a
-          <b>multithreaded path tracer in C++</b> — BVH, recursive bounces, dielectric refraction —
-          alongside a Python <b>OS log analyzer</b>.
-        </p>
-        <ul class="tl__tags"><li><span class="chip">C++</span></li><li><span class="chip">std::thread</span></li><li><span class="chip">Python</span></li></ul>
-      </div>
-
-      <div class="tl__item reveal">
-        <span class="tl__dot" aria-hidden="true"></span>
-        <p class="tl__when">August 2026</p>
-        <h3 class="tl__title">Into the models</h3>
-        <p class="tl__body">
-          Vendored <b>DeepfakeBench</b> and started running real detection checkpoints. Built the
-          <b>LeetCode archive</b>, shipped the first DeepGuard as a team mini-project, and — frustrated
-          with brute-force repetition — designed a proper review scheduler that became the FSRS tracker.
-        </p>
-        <ul class="tl__tags"><li><span class="chip">PyTorch</span></li><li><span class="chip">DeepfakeBench</span></li><li><span class="chip">Grad-CAM</span></li><li><span class="chip">FSRS-6</span></li></ul>
-      </div>
-
-      <div class="tl__item tl__item--accent reveal">
-        <span class="tl__dot" aria-hidden="true"></span>
-        <p class="tl__when">September 2026</p>
-        <h3 class="tl__title">The heavy lift</h3>
-        <p class="tl__body">
-          Five projects in one month. <b>DeepGuard</b> rebuilt solo as a three-detector forensics
-          platform with Grad-CAM evidence. <b>BigOBoard</b>. The <b>E-Waste Passport</b>. The
-          <b>Wishlist Keeper</b>. A <b>fintech committee site</b>. And a BitTorrent-style P2P
-          transfer on the Python standard library alone. One hundred and three commits.
-        </p>
-        <ul class="tl__tags"><li><span class="chip">FastAPI</span></li><li><span class="chip">Next.js 16</span></li><li><span class="chip">Supabase</span></li><li><span class="chip">Sockets</span></li></ul>
-      </div>
-
-      <div class="tl__item reveal">
-        <span class="tl__dot" aria-hidden="true"></span>
-        <p class="tl__when">Now</p>
-        <h3 class="tl__title">Next</h3>
-        <p class="tl__body">
-          Deepening model interpretability, and looking for a <b>tech internship</b> where I can
-          keep shipping on problems with real users.
-        </p>
+      <div class="seq__stage">
+        <p class="seq__statement" data-statement>Every repository is me finding out how far a topic goes before it pushes back.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ COMMITS ============ -->
-<section class="section" id="commits">
-  <div class="wrap">
-    <header class="sec-head reveal">
-      <p class="sec-idx"><span>05</span> Commits</p>
-      <h2 class="sec-title">The actual <em>commit record.</em></h2>
-      <p class="sec-sub">
-        Every commit across every public repository, read from the GitHub API. The empty stretch
-        is real and left in.
-      </p>
+<!-- ============ WORK — pinned horizontal rail ============ -->
+<section class="pin" id="work" data-seq="work">
+  <div class="pin__vp seq seq--work">
+    <header class="seq__head">
+      <p class="sec-idx"><span>02</span> Work</p>
+      <p class="seq__counter"><b id="railNow">01</b> / 06</p>
     </header>
+    <div class="rail" data-rail>
+      <div class="rail__track" data-rail-track>
 
-    <div class="commits">
-      <div class="cstats reveal">
-        <div class="cstat"><b id="cTotal">—</b><span>Total commits</span></div>
-        <div class="cstat"><b id="cDays">—</b><span>Active days</span></div>
-        <div class="cstat"><b id="cFirst">—</b><span>First commit</span></div>
-        <div class="cstat"><b id="cLast">—</b><span>Most recent</span></div>
-        <div class="cstat"><b id="cRepos">16</b><span>Repositories</span></div>
+        <article class="panel" data-cat="ai">
+          <p class="panel__idx">01</p>
+          <h3 class="panel__title">DeepGuard <span>v2</span></h3>
+          <p class="panel__desc">Deepfake forensics. Three detectors agree, then Grad-CAM shows you why.</p>
+          <p class="panel__meta">Next.js · FastAPI · PyTorch</p>
+          <div class="panel__links">
+            <a class="link" href="https://github.com/Arp1tSingh/Deepguard-v2" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+          </div>
+        </article>
+
+        <article class="panel" data-cat="algo web">
+          <p class="panel__idx">02</p>
+          <h3 class="panel__title">LeetCode <span>Tracker</span></h3>
+          <p class="panel__desc">FSRS-6 scheduling instead of re-reading the same problem for the third time.</p>
+          <p class="panel__meta">React · Supabase · FSRS-6</p>
+          <div class="panel__links">
+            <a class="link" href="https://leetcode-practice-tracker.vercel.app/" target="_blank" rel="noopener">Live<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+            <a class="link link--mute" href="https://github.com/Arp1tSingh/LeetCode" target="_blank" rel="noopener" data-cursor="code">Source</a>
+          </div>
+        </article>
+
+        <article class="panel" data-cat="sys">
+          <p class="panel__idx">03</p>
+          <h3 class="panel__title">P2P <span>Transfer</span></h3>
+          <p class="panel__desc">BitTorrent-style swarming across NAT, written with the standard library only.</p>
+          <p class="panel__meta">Python · Sockets · Threads</p>
+          <div class="panel__links">
+            <a class="link" href="https://p2p-file-sharing-pjgm.onrender.com/" target="_blank" rel="noopener">Live<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+          </div>
+        </article>
+
+        <article class="panel" data-cat="sys">
+          <p class="panel__idx">04</p>
+          <h3 class="panel__title">CPU <span>Path Tracer</span></h3>
+          <p class="panel__desc">BVH, ten bounces, dielectric refraction. Renders on a CPU, on purpose.</p>
+          <p class="panel__meta">C++ · BVH · Multithreading</p>
+          <div class="panel__links">
+            <a class="link" href="https://github.com/Arp1tSingh/cpp-path-tracer" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+          </div>
+        </article>
+
+        <article class="panel" data-cat="web algo">
+          <p class="panel__idx">05</p>
+          <h3 class="panel__title">BigOBoard</p>
+          <p class="panel__desc">An infinite canvas for working through DSA. One file, zero dependencies.</p>
+          <p class="panel__meta">Vanilla JS · Canvas</p>
+          <div class="panel__links">
+            <a class="link" href="https://github.com/Arp1tSingh/BigOBoard" target="_blank" rel="noopener" data-cursor="code">Source<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+          </div>
+        </article>
+
+        <article class="panel panel--last" data-cat="web sys">
+          <p class="panel__idx">06</p>
+          <h3 class="panel__title">And <span>everything else</span></h3>
+          <p class="panel__desc">Wishlist Keeper, E-Waste Passport, a fintech committee site, an OS log analyzer, a TSP solver in C. Sixteen repositories in all.</p>
+          <p class="panel__meta">16 repositories</p>
+          <div class="panel__links">
+            <a class="link" href="https://github.com/Arp1tSingh?tab=repositories" target="_blank" rel="noopener" data-cursor="github">All repos<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TOOLKIT — scrubbed bars ============ -->
+<section class="pin" id="toolkit" data-seq="toolkit">
+  <div class="pin__vp seq seq--toolkit">
+    <div class="wrap seq__grid seq__grid--toolkit">
+      <div class="seq__rail seq__rail--toolkit">
+        <p class="sec-idx"><span>03</span> Toolkit</p>
+        <p class="seq__lede">Weighted by bytes of code across every public repository — not by hand.</p>
+        <div class="strip" data-strip>
+          <div class="strip__track">
+            <span>Python</span><span>TypeScript</span><span>React</span><span>Next.js</span><span>FastAPI</span>
+            <span>PyTorch</span><span>DeepfakeBench</span><span>Grad-CAM</span><span>Supabase</span><span>PostgreSQL</span>
+            <span>Tailwind</span><span>Sockets</span><span>BVH</span><span>Ray Tracing</span><span>FSRS-6</span><span>C++</span><span>Git</span>
+          </div>
+        </div>
       </div>
 
-      <div class="cal reveal" data-delay="1">
-        <div class="cal__head">
-          <h3>Commit activity</h3>
-          <span class="cal__sub" id="calRange">—</span>
-        </div>
-        <div class="cal__scroll">
-          <div class="cal__grid" id="calGrid" role="img" aria-label="Calendar of commits per day"></div>
-          <div class="cal__months" id="calMonths"></div>
-          <noscript>
-            <p class="cal__ns">248 commits across 59 active days, October 2025 to date.
-              The calendar is generated from the GitHub API at build time — see
-              <code>tools/fetch-commits.mjs</code>.</p>
-          </noscript>
-        </div>
-        <div class="cal__legend">
-          <span>Less</span>
-          <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>
-          <span>More</span>
-        </div>
-        <div class="cal__foot">
-          <span id="calNote">—</span>
-          <a class="link" href="https://github.com/Arp1tSingh" target="_blank" rel="noopener" data-cursor="github">Open profile<svg class="i" viewBox="0 0 24 24"><use href="#i-arrow-up-right"/></svg></a>
+      <div class="seq__stage">
+        <div class="bars">
+          <div class="bar" data-bar="58.8">
+            <div class="bar__top"><span class="bar__name">Python</span><span class="bar__pct">58.8%</span></div>
+            <div class="bar__track"><i class="bar__fill" style="width:58.8%"></i></div>
+          </div>
+          <div class="bar" data-bar="25.7">
+            <div class="bar__top"><span class="bar__name">TypeScript</span><span class="bar__pct">25.7%</span></div>
+            <div class="bar__track"><i class="bar__fill" style="width:25.7%"></i></div>
+          </div>
+          <div class="bar" data-bar="5.2">
+            <div class="bar__top"><span class="bar__name">CSS</span><span class="bar__pct">5.2%</span></div>
+            <div class="bar__track"><i class="bar__fill" style="width:5.2%"></i></div>
+          </div>
+          <div class="bar" data-bar="4.9">
+            <div class="bar__top"><span class="bar__name">HTML</span><span class="bar__pct">4.9%</span></div>
+            <div class="bar__track"><i class="bar__fill" style="width:4.9%"></i></div>
+          </div>
+          <div class="bar" data-bar="3.7">
+            <div class="bar__top"><span class="bar__name">JavaScript</span><span class="bar__pct">3.7%</span></div>
+            <div class="bar__track"><i class="bar__fill" style="width:3.7%"></i></div>
+          </div>
+          <div class="bar" data-bar="1.5">
+            <div class="bar__top"><span class="bar__name">C++ / C</span><span class="bar__pct">1.5%</span></div>
+            <div class="bar__track"><i class="bar__fill" style="width:1.5%"></i></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ CONTACT ============ -->
-<section class="section" id="contact">
-  <div class="wrap">
-    <div class="contact reveal">
-      <p class="sec-idx" style="margin-bottom:1rem"><span>06</span> Contact</p>
+<!-- ============ JOURNEY — pinned timeline against the real commit record ============ -->
+<section class="pin" id="journey" data-seq="journey">
+  <div class="pin__vp seq seq--journey">
+    <div class="wrap seq__grid seq__grid--journey">
+      <div class="seq__rail seq__rail--journey">
+        <p class="sec-idx"><span>04</span> Journey</p>
+        <div class="tl" id="tl">
+          <div class="tl__fill" id="tlFill" aria-hidden="true"></div>
+
+          <div class="tl__item">
+            <span class="tl__dot" aria-hidden="true"></span>
+            <p class="tl__when">October 2025</p>
+            <h3 class="tl__title">First blood</h3>
+            <p class="tl__body">A full-stack ERP, and a TSP bus-route solver in C. Twenty-seven commits in three weeks.</p>
+          </div>
+
+          <div class="tl__item">
+            <span class="tl__dot" aria-hidden="true"></span>
+            <p class="tl__when">Nov 2025 — Mar 2026</p>
+            <h3 class="tl__title">A quiet stretch</h3>
+            <p class="tl__body">No public commits for five months. Coursework. The gap is real and it is on the calendar to the right.</p>
+          </div>
+
+          <div class="tl__item">
+            <span class="tl__dot" aria-hidden="true"></span>
+            <p class="tl__when">April 2026</p>
+            <h3 class="tl__title">Down to the metal</h3>
+            <p class="tl__body">A multithreaded path tracer in C++. An OS log analyzer in Python.</p>
+          </div>
+
+          <div class="tl__item">
+            <span class="tl__dot" aria-hidden="true"></span>
+            <p class="tl__when">August 2026</p>
+            <h3 class="tl__title">Into the models</h3>
+            <p class="tl__body">Vendored DeepfakeBench. Ran real checkpoints. Designed an FSRS-6 review scheduler.</p>
+          </div>
+
+          <div class="tl__item tl__item--accent">
+            <span class="tl__dot" aria-hidden="true"></span>
+            <p class="tl__when">September 2026</p>
+            <h3 class="tl__title">The heavy lift</h3>
+            <p class="tl__body">Five projects in one month, DeepGuard rebuilt solo. One hundred and three commits.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="seq__stage seq__stage--cal">
+        <div class="cal">
+          <div class="cal__head">
+            <h3>Commit activity</h3>
+            <span class="cal__sub" id="calRange">—</span>
+          </div>
+          <div class="cal__scroll">
+            <div class="cal__grid" id="calGrid" role="img" aria-label="Calendar of commits per day"></div>
+            <div class="cal__months" id="calMonths"></div>
+            <noscript>
+              <p class="cal__ns">248 commits across 59 active days, October 2025 to date.</p>
+            </noscript>
+          </div>
+          <div class="cal__legend">
+            <span>Less</span>
+            <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>
+            <span>More</span>
+          </div>
+          <dl class="cstats">
+            <div class="cstat"><dt>Total commits</dt><dd id="cTotal">—</dd></div>
+            <div class="cstat"><dt>Active days</dt><dd id="cDays">—</dd></div>
+            <div class="cstat"><dt>First commit</dt><dd id="cFirst">—</dd></div>
+            <div class="cstat"><dt>Repositories</dt><dd id="cRepos">16</dd></div>
+          </dl>
+          <p class="cal__foot" id="calNote">—</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT — pinned outro ============ -->
+<section class="pin" id="contact" data-outro>
+  <div class="pin__vp seq seq--contact">
+    <div class="wrap contact">
+      <p class="sec-idx"><span>05</span> Contact</p>
       <h2 class="contact__title">Let's build<br><em>something real.</em></h2>
-      <p class="contact__sub">
-        I am looking for a <b>tech internship</b> where I can keep shipping on problems with
-        actual users. If you are hiring, mentoring, or want to compare notes on deepfake
-        detection or CPU rendering, my door is open.
-      </p>
+      <p class="contact__sub">Looking for a tech internship where the work has actual users.</p>
 
       <div class="contact__grid">
         <a class="ccard" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">
@@ -755,15 +454,28 @@
 <!-- ============ FOOTER ============ -->
 <footer class="footer">
   <div class="wrap footer__inner">
-    <p class="footer__c">© <span id="year">2026</span> Arpit Singh — hand written, no frameworks</p>
+    <p class="footer__c">© <span id="year">2026</span> Arpit Singh — <a href="mailto:arpitsingh8534@gmail.com">arpitsingh8534@gmail.com</a></p>
     <nav class="footer__links" aria-label="Footer">
       <a href="https://github.com/Arp1tSingh" target="_blank" rel="noopener">GitHub</a>
       <a href="https://www.linkedin.com/in/rpitsingh" target="_blank" rel="noopener">LinkedIn</a>
       <a href="mailto:arpitsingh8534@gmail.com">Email</a>
-      <a href="#hero">Top ↑</a>
+      <a href="#hero" data-nav>Top ↑</a>
     </nav>
   </div>
 </footer>
+
+<!-- ============ FLOATING CONTACT DOCK ============
+     Redundant third affordance. Fades in once the hero is behind you, hides again
+     over the contact outro so it never covers the primary links. -->
+<div class="dock" id="dock" aria-hidden="true">
+  <a class="dock__mail" href="mailto:arpitsingh8534@gmail.com" data-cursor="email">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg>
+    <span>arpitsingh8534@gmail.com</span>
+  </a>
+  <button class="dock__copy" id="dockCopy" type="button" aria-label="Copy email address">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-copy"/></svg>
+  </button>
+</div>
 
 <!-- ============ COMMAND PALETTE ============ -->
 <div class="palette" id="palette" hidden>
@@ -780,14 +492,17 @@
 
 <!-- ============ SVG SPRITE ============ -->
 <svg class="sprite" aria-hidden="true" focusable="false">
-  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2 1.49 3.17 1.18 3.17 1.18.63 1.58.23 2.75.11 3.04.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></symbol>
   <symbol id="i-linkedin" viewBox="0 0 24 24"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21.4 8.65 22 11 22 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2 0-2.3 1.57-2.3 3.2V21h-4V9Z"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" d="M3 6.5h18v11H3zM3 7l9 6 9-6"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15ZM21 21l-5.2-5.2"/></symbol>
   <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7M8 7h9v9"/></symbol>
-  <symbol id="i-copy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M9 9h10v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9Z"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M9 9h10v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9Z"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M5 15H4a2 2 0 0 1-1-1V4a2 2 0 0 1 1-1h10a2 2 0 0 1 2 1v1"/></symbol>
 </svg>
 
+<script src="./js/vendor/gsap.min.js" defer></script>
+<script src="./js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="./js/vendor/lenis.min.js" defer></script>
 <script type="module" src="./js/main.js"></script>
 </body>
 </html>

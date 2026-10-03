@@ -41,6 +41,7 @@
   --t-small:   .82rem;
   --t-label:   .66rem;
   --t-micro:   .58rem;
+  --t-statement: clamp(1.9rem, 4.4vw, 4rem);
   --track-label: .26em;
 
   --wrap: 1280px;
@@ -58,9 +59,11 @@ html{
   /* `clip`, not `hidden`: hidden would make the root a scroll container
      and silently break every position:sticky on the page. */
   overflow-x:clip;
-  scroll-behavior:smooth;
   scroll-padding-top:calc(var(--nav-h) + 18px);
 }
+/* Lenis drives scrolling itself once it exists; native smooth scroll would
+   fight it. Without JS the browser default (instant) is correct. */
+html.js-scroll{scroll-behavior:auto}
 body{
   font-family:var(--font-body);
   font-size:var(--t-body);
@@ -76,7 +79,7 @@ img,svg{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 button,input{font:inherit;color:inherit;background:none;border:none;outline:none}
 button{cursor:pointer}
-ul{list-style:none}
+ul,dl{list-style:none}
 h1,h2,h3{font-weight:400;letter-spacing:-.02em;line-height:1}
 b,strong{font-weight:500;color:var(--ink-00)}
 ::selection{background:var(--accent);color:var(--ground)}
@@ -104,17 +107,6 @@ b,strong{font-weight:500;color:var(--ink-00)}
 .mono{font-family:var(--font-mono)}
 em{font-style:italic;color:var(--ink-40)}
 
-/* ---------- HAIRLINE STRUCTURE ---------- */
-.rule{height:1px;background:var(--rule);border:0}
-.rule--accent{background:var(--accent)}
-
-/* ---------- SECTION FRAME ---------- */
-.section{padding:clamp(4.5rem,10vh,7.5rem) 0;position:relative}
-.sec-head{
-  display:grid;grid-template-columns:minmax(0,.28fr) minmax(0,1fr);
-  gap:1.5rem 2.5rem;align-items:start;
-  padding-bottom:1.75rem;border-bottom:1px solid var(--rule);margin-bottom:clamp(2.5rem,5vw,3.75rem);
-}
 .sec-idx{
   font-family:var(--font-mono);font-size:var(--t-label);
   text-transform:uppercase;letter-spacing:var(--track-label);
@@ -122,15 +114,6 @@ em{font-style:italic;color:var(--ink-40)}
   display:flex;align-items:baseline;gap:.6rem;
 }
 .sec-idx span{color:var(--ink-80)}
-.sec-title{
-  font-family:var(--font-display);
-  font-size:var(--t-h2);line-height:.94;letter-spacing:-.015em;
-}
-.sec-title em{font-style:italic;color:var(--ink-40)}
-.sec-sub{
-  grid-column:2;margin-top:1.1rem;max-width:44ch;
-  color:var(--ink-40);font-size:var(--t-body);
-}
 
 /* ---------- REVEAL ----------
    Visible by default. The hidden state is scoped to .js so that with
@@ -227,6 +210,17 @@ em{font-style:italic;color:var(--ink-40)}
 }
 .nav__social:hover{border-color:var(--accent);color:var(--accent)}
 .nav__social .i{width:1rem;height:1rem}
+
+/* The permanent contact affordance. Solid accent so it never reads as
+   another quiet text link. This is the primary answer to the ten-second rule. */
+.nav__hire{
+  display:inline-flex;align-items:center;height:30px;padding:0 .8rem;
+  background:var(--accent);color:var(--ground);
+  font-family:var(--font-mono);font-size:var(--t-label);
+  text-transform:uppercase;letter-spacing:.14em;
+  transition:background var(--dur) var(--ease),color var(--dur) var(--ease);
+}
+.nav__hire:hover{background:var(--accent-dim);color:var(--ink-00)}
 .burger{display:none;width:34px;height:30px;border:1px solid var(--rule);
   grid-template-rows:repeat(3,1fr);align-items:center;justify-items:center;padding:0 8px;gap:3px}
 .burger i{display:block;width:100%;height:1px;background:var(--ink-00);
@@ -238,28 +232,277 @@ em{font-style:italic;color:var(--ink-40)}
 /* ---------- DRAWER ---------- */
 .drawer{position:fixed;inset:0;z-index:99;background:rgba(11,10,9,.96)}
 .drawer[hidden]{display:none}
-.drawer__panel{
-  height:100%;display:flex;flex-direction:column;justify-content:center;gap:2.5rem;
-  padding:0 var(--gutter);border-left:1px solid var(--rule);background:var(--ground-2);
-  animation:slideIn .35s var(--ease);
+.drawer__panel{height:100%;display:flex;flex-direction:column;justify-content:center;
+  gap:2rem;padding:var(--gutter);
+  width:min(100% - var(--gutter) * 2,var(--wrap));margin-inline:auto}
+.drawer__hire{
+  display:block;padding:1rem 1.1rem;background:var(--accent);color:var(--ground);
+  font-family:var(--font-mono);font-size:var(--t-small);
+  text-transform:uppercase;letter-spacing:.12em;word-break:break-all;
 }
-@keyframes slideIn{from{transform:translateX(100%)}to{transform:none}}
+.drawer__links{display:flex;flex-direction:column}
 .drawer__links a{
-  display:flex;align-items:baseline;gap:1rem;padding:.55rem 0;
+  display:flex;align-items:baseline;gap:1rem;padding:.7rem 0;
   border-bottom:1px solid var(--rule);
-  font-family:var(--font-display);font-size:clamp(1.6rem,7vw,2.4rem);
-  transition:color var(--dur) var(--ease),padding-left var(--dur) var(--ease);
+  font-family:var(--font-display);font-size:clamp(1.9rem,8vw,2.6rem);
+  line-height:1;transition:color var(--dur) var(--ease);
 }
-.drawer__links a:hover{color:var(--accent);padding-left:.5rem}
-.drawer__idx{font-family:var(--font-mono);font-size:var(--t-label);color:var(--ink-80)}
+.drawer__links a:hover{color:var(--accent)}
+.drawer__idx{font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-80)}
 .drawer__foot{display:flex;gap:1.25rem;font-family:var(--font-mono);font-size:var(--t-label);
   text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60)}
 .drawer__foot a:hover{color:var(--accent)}
 
+/* ============================================================
+   PINNED SCROLL SEQUENCES
+   ------------------------------------------------------------
+   Every rule in this block that depends on pinning, pinning-type
+   transforms, or the dock is scoped under `.js-scroll`, which
+   js/scroll.js adds only once GSAP + ScrollTrigger + Lenis have all
+   resolved. Without that class — no JS, blocked vendor files, or
+   prefers-reduced-motion — the markup below renders as an ordinary
+   stacked document and stays fully readable.
+
+   GSAP ScrollTrigger pins by wrapping the element in a
+   `pin-spacer` and applying `position: fixed` to the pinned node, so
+   these sections must not set their own `position` or `overflow`.
+   ============================================================ */
+
+/* Baseline: an ordinary full-height section. */
+.pin{position:relative;width:100%}
+.pin__vp{
+  position:relative;
+  min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:calc(var(--nav-h) + 2rem) 0 clamp(2rem,6vh,4rem);
+}
+
+/* --- sequence 01 · About ------------------------------------------- */
+.seq--about{background:var(--ground)}
+.seq__grid{
+  display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);
+  gap:clamp(2rem,5vw,4.5rem);align-items:center;
+}
+/* min-width:0 is load-bearing on both grid items. A grid item's automatic
+   minimum size is min-content, so without it the 53-column commit calendar
+   refuses to shrink and pushes its card past the right edge of the viewport. */
+.seq__rail{align-self:center;min-width:0}
+.seq__stage{min-width:0}
+/* .seq__stage is a flex container, so .cal is itself a flex item and inherits
+   min-width:auto — which is min-content, i.e. all 53 calendar columns. It has to
+   be reset on the child, not the parent. */
+.seq__stage>*{min-width:0;max-width:100%}
+.seq__steps{margin-top:clamp(1.5rem,4vh,2.5rem);display:flex;flex-direction:column}
+.seq__steps li{
+  border-top:1px solid var(--rule);padding:1rem 0;
+  transition:border-color var(--dur) var(--ease);
+}
+.seq__steps li:last-child{border-bottom:1px solid var(--rule)}
+.seq__steps li.is-on{border-color:var(--accent)}
+.seq__steps span{
+  display:block;font-family:var(--font-mono);font-size:var(--t-label);
+  text-transform:uppercase;letter-spacing:var(--track-label);
+  color:var(--ink-80);margin-bottom:.4rem;transition:color var(--dur) var(--ease);
+}
+.seq__steps li.is-on span{color:var(--accent)}
+.seq__steps p{
+  color:var(--ink-60);font-size:var(--t-small);line-height:1.6;
+  transition:color var(--dur) var(--ease);
+}
+.seq__steps li.is-on p{color:var(--ink-00)}
+.seq__stage{display:flex;align-items:center}
+.seq__statement{
+  font-family:var(--font-display);font-size:var(--t-statement);
+  line-height:1;letter-spacing:-.02em;text-wrap:balance;
+}
+
+/* --- sequence 02 · Work rail -------------------------------------- */
+.seq--work{justify-content:center;overflow:clip}
+.seq__head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  width:min(100% - var(--gutter) * 2, var(--wrap));margin:0 auto clamp(1.5rem,4vh,2.5rem);
+  padding-bottom:1rem;border-bottom:1px solid var(--rule);
+}
+.seq__counter{font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.18em;color:var(--ink-60);
+  font-variant-numeric:tabular-nums}
+.seq__counter b{color:var(--accent);font-weight:400}
+.rail{width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail__track{
+  display:flex;width:max-content;
+  padding-inline:var(--gutter);
+}
+.panel{
+  flex:none;width:clamp(280px,26vw,380px);
+  min-height:clamp(300px,46svh,440px);
+  display:flex;flex-direction:column;
+  padding:clamp(1.25rem,2vw,1.75rem);
+  border:1px solid var(--rule);border-right:0;
+  transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease);
+}
+.panel:first-child{border-left:0}
+.panel--last{border-right:1px solid var(--rule);border-left:0}
+.panel:hover{background:var(--surface);border-color:var(--rule-strong)}
+.panel__idx{font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-80);margin-bottom:auto;padding-bottom:2.5rem}
+.panel__title{
+  font-family:var(--font-display);font-size:clamp(1.5rem,2.4vw,2.1rem);
+  line-height:1.02;letter-spacing:-.015em;margin-bottom:.9rem;
+  /* Two lines reserved, or a one-line title shifts its whole panel down. */
+  min-height:2.04em;
+}
+.panel__title span{font-style:italic;color:var(--accent)}
+.panel__desc{color:var(--ink-40);font-size:var(--t-small);line-height:1.65;
+  margin-bottom:1.25rem;min-height:4.5em}
+.panel__meta{font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80);
+  padding-top:.9rem;border-top:1px solid var(--rule);margin-bottom:1.25rem}
+.panel__links{display:flex;gap:1rem;flex-wrap:wrap}
+.link{display:inline-flex;align-items:center;gap:.35rem;
+  font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--accent);
+  transition:gap var(--dur) var(--ease)}
+.link:hover{gap:.55rem}
+.link--mute{color:var(--ink-60)}
+.link--mute:hover{color:var(--ink-00)}
+.link .i{width:.9rem;height:.9rem}
+
+/* --- sequence 03 · Toolkit ---------------------------------------- */
+.seq--toolkit{background:var(--ground-2)}
+.seq__lede{margin-top:1rem;max-width:34ch;color:var(--ink-40);font-size:var(--t-small);line-height:1.6}
+.strip{margin-top:clamp(1.5rem,4vh,2.5rem);overflow:hidden;
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:.85rem 0}
+.strip__track{display:flex;gap:2.25rem;width:max-content;white-space:nowrap}
+.strip__track span{display:inline-flex;align-items:center;gap:2.25rem;
+  font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.16em;color:var(--ink-60)}
+.strip__track span::after{content:"";width:3px;height:3px;background:var(--accent);flex:none}
+.bars{display:flex;flex-direction:column;gap:clamp(1.15rem,3.6svh,2.6rem)}
+.bar__top{display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:.45rem;gap:1rem}
+.bar__name{font-size:var(--t-small);color:var(--ink-00)}
+.bar__pct{font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60);
+  font-variant-numeric:tabular-nums}
+/* Widths are inline on each fill, so the finished state is correct with zero
+   scripting. The transform is what GSAP scrubs, and it only starts at zero
+   when the sequences are actually armed. */
+.bar__track{height:1px;background:var(--rule)}
+.bar__fill{display:block;height:4px;margin-top:-1px;background:var(--accent);
+  transform-origin:left center;transform:scaleX(1)}
+
+/* --- sequence 04 · Journey + calendar ----------------------------- */
+.seq--journey{justify-content:center}
+.seq__grid--journey{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center}
+.seq__rail--journey{align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.tl{position:relative;padding-left:1.6rem;margin-top:clamp(1.25rem,3vh,2rem)}
+.tl::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:1px;background:var(--rule)}
+/* Lit and full by default; only reset when a scrub is going to drive it. */
+.tl__fill{position:absolute;left:0;top:6px;width:1px;height:100%;background:var(--accent)}
+.tl__item{position:relative;padding-bottom:1.5rem}
+.tl__item:last-child{padding-bottom:0}
+.tl__dot{position:absolute;left:calc(-1.6rem - 2.5px);top:6px;
+  width:6px;height:6px;background:var(--ground);border:1px solid var(--accent);
+  transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.tl__item.on .tl__dot{background:var(--accent)}
+.tl__when{font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-60);margin-bottom:.3rem}
+.tl__title{font-family:var(--font-display);font-size:1.15rem;margin-bottom:.35rem;letter-spacing:-.01em}
+.tl__item--accent .tl__when{color:var(--accent)}
+.tl__body{color:var(--ink-40);max-width:46ch;font-size:var(--t-small);line-height:1.6}
+.cal{border:1px solid var(--rule);background:var(--surface);padding:clamp(1rem,2vw,1.5rem)}
+.cal__head{display:flex;justify-content:space-between;align-items:baseline;
+  gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.cal__head h3{font-family:var(--font-mono);font-size:var(--t-label);font-weight:400;
+  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-00)}
+.cal__sub{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80);
+  text-transform:uppercase;letter-spacing:.12em}
+.cal__scroll{overflow-x:auto;padding-bottom:.35rem;scrollbar-width:none}
+.cal__scroll::-webkit-scrollbar{display:none}
+.cal__grid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);
+  gap:3px;min-width:max-content;margin-bottom:.4rem}
+.cal__cell{width:11px;height:11px;background:rgba(247,242,234,.045)}
+.cal__cell[data-l="1"]{background:rgba(255,90,31,.28)}
+.cal__cell[data-l="2"]{background:rgba(255,90,31,.5)}
+.cal__cell[data-l="3"]{background:rgba(255,90,31,.75)}
+.cal__cell[data-l="4"]{background:var(--accent)}
+.cal__months{display:grid;grid-auto-flow:column;grid-auto-columns:11px;gap:3px;
+  min-width:max-content;height:1rem}
+.cal__months span{font-family:var(--font-mono);font-size:.5rem;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ink-80);
+  white-space:nowrap;width:11px;overflow:visible}
+.cal__legend{display:flex;align-items:center;gap:.3rem;justify-content:flex-end;
+  margin-top:.85rem;font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80)}
+.cal__legend i{width:10px;height:10px}
+.cal__legend .l0{background:rgba(247,242,234,.045)}
+.cal__legend .l1{background:rgba(255,90,31,.28)}
+.cal__legend .l2{background:rgba(255,90,31,.5)}
+.cal__legend .l3{background:rgba(255,90,31,.75)}
+.cal__legend .l4{background:var(--accent)}
+.cstats{display:flex;flex-wrap:wrap;gap:0 1.75rem;margin-top:1rem;
+  padding-top:.85rem;border-top:1px solid var(--rule)}
+.cstat{display:flex;flex-direction:column;gap:.15rem}
+.cstat dt{font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80)}
+.cstat dd{font-size:1.05rem;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.cal__foot{font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.12em;color:var(--ink-60);margin-top:.85rem}
+.cal__ns{font-family:var(--font-mono);font-size:var(--t-small);color:var(--ink-60);
+  line-height:1.7;margin-top:.75rem}
+/* the empty grid box is meaningless until JS fills it */
+.cal__grid:empty,.cal__months:empty{display:none}
+
+/* --- sequence 05 · Contact ---------------------------------------- */
+/* Never pinned, so it never gets .is-static — but it is meant to land as a
+   full-screen close, so it asks for its own viewport. */
+.pin__vp.seq--contact{justify-content:center;min-height:100svh}
+.contact{border:1px solid var(--rule);background:var(--surface);padding:clamp(1.75rem,5vw,3.5rem)}
+.contact__title{font-family:var(--font-display);font-size:var(--t-h2);
+  line-height:.92;letter-spacing:-.02em;margin:1.1rem 0 1.1rem;max-width:16ch}
+.contact__title em{font-style:italic;color:var(--accent)}
+.contact__sub{max-width:52ch;color:var(--ink-40);margin-bottom:2rem}
+.contact__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--rule)}
+.ccard{
+  display:flex;flex-direction:column;gap:.2rem;padding:1.1rem 1.2rem;
+  background:var(--surface);text-align:left;
+  transition:background var(--dur) var(--ease);
+}
+.ccard:hover{background:var(--ground-2)}
+.ccard__t{display:flex;align-items:center;gap:.5rem;font-size:1rem}
+.ccard__t .i{width:1rem;height:1rem;color:var(--accent)}
+.ccard__s{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-60);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ccard:hover .ccard__s{color:var(--ink-00)}
+
+/* ---------- FLOATING CONTACT DOCK ----------
+   Third, redundant affordance. Hidden by default in CSS so it cannot appear
+   before the scripts have decided the page is motion-capable. */
+.dock{
+  position:fixed;left:var(--gutter);bottom:var(--gutter);z-index:95;
+  display:flex;align-items:stretch;gap:1px;
+  border:1px solid var(--rule-strong);background:var(--rule);
+  opacity:0;visibility:hidden;transform:translateY(10px);
+  transition:opacity .35s var(--ease),transform .35s var(--ease),visibility .35s;
+}
+.dock.on{opacity:1;visibility:visible;transform:none}
+.dock__mail{display:flex;align-items:center;gap:.55rem;padding:.6rem .9rem;
+  background:var(--ground-2);
+  font-family:var(--font-mono);font-size:var(--t-micro);
+  text-transform:uppercase;letter-spacing:.12em;color:var(--ink-00)}
+.dock__mail .i{width:.9rem;height:.9rem;color:var(--accent)}
+.dock__mail:hover{color:var(--accent)}
+.dock__copy{display:grid;place-items:center;padding:0 .7rem;background:var(--ground-2);
+  color:var(--ink-60);transition:color var(--dur) var(--ease)}
+.dock__copy .i{width:.9rem;height:.9rem}
+.dock__copy:hover{color:var(--accent)}
+.dock__copy.done{color:var(--accent)}
+
 /* ---------- HERO ---------- */
-.hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;
-  padding:calc(var(--nav-h) + 3rem) 0 clamp(2rem,6vh,4rem);overflow:clip}
-.hero__bg{position:absolute;inset:0;z-index:-3}
+.hero{position:relative}
+.hero__vp{justify-content:flex-end;overflow:clip}
+.hero__bg{position:absolute;inset:0;z-index:-3;will-change:transform}
 .hero__bg img{width:100%;height:100%;object-fit:cover;object-position:50% 15.4%;
   filter:brightness(1.12) contrast(1.04)}
 /* two warm-black scrims: vertical for overall falloff, horizontal for the
@@ -291,7 +534,7 @@ em{font-style:italic;color:var(--ink-40)}
 }
 .hero__role .tw{color:var(--accent);letter-spacing:.16em}
 .hero__lead{
-  max-width:46ch;color:var(--ink-00);font-size:var(--t-lead);
+  max-width:42ch;color:var(--ink-00);font-size:var(--t-lead);
   line-height:1.5;margin-bottom:2rem;font-weight:300;
 }
 .hero__actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2.5rem}
@@ -306,10 +549,21 @@ em{font-style:italic;color:var(--ink-40)}
   text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60)}
 .hero__foot{
   display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  margin-top:clamp(2rem,6vh,4rem);
   border-top:1px solid var(--rule);padding-top:1rem;
   font-family:var(--font-mono);font-size:var(--t-micro);
   text-transform:uppercase;letter-spacing:.2em;color:var(--ink-80);
 }
+
+/* ---------- AVAILABILITY ----------
+   The single sentence that puts contact inside the first scroll. */
+.avail{border-block:1px solid var(--rule);background:var(--ground-2)}
+.avail__inner{padding:clamp(1.25rem,3vh,2rem) 0}
+.avail__text{max-width:74ch;color:var(--ink-40);font-size:var(--t-lead);
+  line-height:1.5;font-weight:300}
+.avail__text a{border-bottom:1px solid var(--accent);color:var(--accent);
+  transition:opacity var(--dur) var(--ease)}
+.avail__text a:hover{opacity:.75}
 
 /* ---------- BUTTONS ---------- */
 .btn{
@@ -326,219 +580,13 @@ em{font-style:italic;color:var(--ink-40)}
 .btn--solid:hover{background:var(--accent-dim);border-color:var(--accent-dim);color:var(--ink-00)}
 .btn--sm{padding:.45rem .75rem;font-size:var(--t-micro)}
 
-/* ---------- TICKER ---------- */
-.ticker{border-block:1px solid var(--rule);padding:.85rem 0;overflow:hidden;background:var(--ground-2)}
-.ticker__track{display:flex;gap:2.5rem;width:max-content;animation:slide 40s linear infinite}
-.ticker:hover .ticker__track{animation-play-state:paused}
-@keyframes slide{to{transform:translateX(-50%)}}
-.ticker__item{display:inline-flex;align-items:center;gap:.6rem;
-  font-family:var(--font-mono);font-size:var(--t-label);
-  text-transform:uppercase;letter-spacing:.16em;color:var(--ink-60);white-space:nowrap}
-.ticker__item::before{content:"";width:3px;height:3px;background:var(--accent);flex:none}
-
-/* ---------- ABOUT ---------- */
-.about{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
-  gap:clamp(2rem,5vw,4rem);align-items:start}
-.about__lead{font-size:var(--t-lead);line-height:1.5;font-weight:300;margin-bottom:1.25rem}
-.about__body p{color:var(--ink-40);margin-bottom:1rem}
-.about__body p:last-child{margin-bottom:0}
-
-/* spec-sheet record table, straight out of the aahana-surya pattern */
-.record{border-top:1px solid var(--rule)}
-.record__row{
-  display:grid;grid-template-columns:minmax(110px,.4fr) auto minmax(0,1fr);
-  gap:.9rem;align-items:baseline;padding:.7rem 0;
-  border-bottom:1px solid var(--rule);
-  transition:background var(--dur) var(--ease);
-}
-.record__row:hover{background:rgba(247,242,234,.03)}
-.record__k{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-80)}
-.record__sep{color:var(--accent)}
-.record__v{color:var(--ink-00);font-size:var(--t-small)}
-.record__v small{display:block;color:var(--ink-40);font-size:var(--t-small);margin-top:.1rem}
-.record__v a{border-bottom:1px solid var(--rule-strong);transition:color var(--dur),border-color var(--dur)}
-.record__v a:hover{color:var(--accent);border-color:var(--accent)}
-
-/* ---------- SKILLS ---------- */
-.skills{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
-  gap:clamp(2rem,5vw,4rem);align-items:start}
-.bar{margin-bottom:1.15rem}
-.bar__top{display:flex;justify-content:space-between;align-items:baseline;
-  margin-bottom:.45rem}
-.bar__name{font-size:var(--t-small);color:var(--ink-00)}
-.bar__pct{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60);
-  font-variant-numeric:tabular-nums}
-.bar__track{height:1px;background:var(--rule)}
-.bar__fill{display:block;height:3px;width:0;background:var(--accent);margin-top:-1px;
-  transition:width 1.2s var(--ease) var(--bd,0s)}
-.sgroups{display:grid;grid-template-columns:1fr 1fr;gap:0}
-.sgroup{padding:1.1rem 0;border-top:1px solid var(--rule)}
-.sgroup:nth-child(odd){padding-right:1.5rem}
-.sgroup:nth-child(even){padding-left:1.5rem;border-left:1px solid var(--rule)}
-.sgroup h3{font-family:var(--font-mono);font-size:var(--t-micro);font-weight:400;
-  text-transform:uppercase;letter-spacing:.2em;color:var(--accent);margin-bottom:.7rem}
-.sgroup ul{display:flex;flex-wrap:wrap;gap:.35rem}
-.sgroup li{font-family:var(--font-mono);font-size:var(--t-micro);
-  padding:.2rem .45rem;border:1px solid var(--rule);color:var(--ink-40);
-  transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease)}
-.sgroup li:hover{color:var(--ink-00);border-color:var(--rule-strong)}
-
-/* ---------- FILTERS ---------- */
-.filters{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.5rem}
-.filters button{
-  display:inline-flex;align-items:center;gap:.45rem;padding:.4rem .75rem;
-  border:1px solid var(--rule);font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60);
-  transition:all var(--dur) var(--ease);
-}
-.filters button i{font-style:normal;color:var(--ink-80)}
-.filters button:hover{border-color:var(--rule-strong);color:var(--ink-00)}
-.filters button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--ground)}
-.filters button[aria-selected="true"] i{color:rgba(11,10,9,.6)}
-
-/* ---------- PROJECTS ---------- */
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule)}
-.card{
-  position:relative;display:flex;flex-direction:column;background:var(--ground);
-  transition:background var(--dur) var(--ease);
-}
-.card:hover{background:var(--ground-2)}
-.card--wide{grid-column:1/-1;flex-direction:row;align-items:stretch}
-.card.hide{display:none}
-.card__body{padding:1.5rem;display:flex;flex-direction:column;flex:1;min-width:0}
-.card--wide .card__body{flex:1 1 54%}
-.card__meta{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.9rem}
-.chip{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.12em;color:var(--ink-60);
-  padding:.18rem .45rem;border:1px solid var(--rule)}
-.chip--star{color:var(--accent);border-color:var(--accent-dim)}
-.card__title{font-family:var(--font-display);font-size:var(--t-h3);
-  line-height:1.1;letter-spacing:-.01em;margin-bottom:.65rem;display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
-.card__sup{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.16em;color:var(--accent)}
-.card__desc{color:var(--ink-40);font-size:var(--t-small);line-height:1.65;margin-bottom:1rem}
-.card__note{font-size:var(--t-small);color:var(--ink-80);
-  border-left:1px solid var(--rule-strong);padding-left:.75rem;margin-bottom:1rem;line-height:1.55}
-.card__links{display:flex;gap:1rem;margin-top:auto;flex-wrap:wrap}
-.link{display:inline-flex;align-items:center;gap:.35rem;
-  font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--accent);
-  transition:gap var(--dur) var(--ease)}
-.link:hover{gap:.55rem}
-.link--mute{color:var(--ink-60)}
-.link--mute:hover{color:var(--ink-00)}
-.link .i{width:.9rem;height:.9rem}
-.card__art{position:relative;overflow:hidden;flex:1 1 46%;
-  border-left:1px solid var(--rule);background:var(--ground-2)}
-.card__art img{width:100%;height:100%;object-fit:cover;object-position:left top}
-.card__art--dg{border-left:1px solid var(--rule);display:grid;place-items:center;padding:1.5rem;
-  background-image:linear-gradient(rgba(247,242,234,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(247,242,234,.035) 1px,transparent 1px);
-  background-size:34px 34px}
-.card__art--dg svg{width:100%;height:auto}
-.dg-pulse{animation:dgPulse 3.6s ease-in-out infinite;transform-origin:160px 141px}
-@keyframes dgPulse{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:.45;transform:scale(1.07)}}
-.dg-scan{animation:dgScan 3.6s linear infinite}
-@keyframes dgScan{from{transform:translateY(0)}to{transform:translateY(86px)}}
-.g1{animation:dgGrow 1.6s var(--ease) both .3s}
-.g2{animation:dgGrow 1.6s var(--ease) both .5s}
-.g3{animation:dgGrow 1.6s var(--ease) both .7s}
-@keyframes dgGrow{from{width:0}}
-
-/* ---------- COMMITS ---------- */
-.commits{display:grid;grid-template-columns:minmax(0,.42fr) minmax(0,1fr);
-  gap:clamp(2rem,4vw,3rem);align-items:start}
-.cstats{display:flex;flex-direction:column}
-.cstat{padding:.85rem 0;border-bottom:1px solid var(--rule);
-  display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
-.cstat:first-child{border-top:1px solid var(--rule)}
-.cstat b{font-size:clamp(1.2rem,2.4vw,1.5rem);font-weight:400;letter-spacing:-.02em;
-  font-variant-numeric:tabular-nums}
-.cstat span{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60);text-align:right}
-.cal{padding:1.25rem;border:1px solid var(--rule);background:var(--surface)}
-.cal__head{display:flex;justify-content:space-between;align-items:baseline;
-  gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
-.cal__head h3{font-family:var(--font-mono);font-size:var(--t-label);font-weight:400;
-  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-00)}
-.cal__sub{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80);
-  text-transform:uppercase;letter-spacing:.12em}
-.cal__scroll{overflow-x:auto;padding-bottom:.35rem}
-.cal__grid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);
-  gap:3px;min-width:max-content;margin-bottom:.4rem}
-.cal__cell{width:11px;height:11px;background:rgba(247,242,234,.045);
-  transition:transform .18s var(--ease)}
-.cal__cell[data-l="1"]{background:rgba(255,90,31,.28)}
-.cal__cell[data-l="2"]{background:rgba(255,90,31,.5)}
-.cal__cell[data-l="3"]{background:rgba(255,90,31,.75)}
-.cal__cell[data-l="4"]{background:var(--accent)}
-.cal__cell:hover{transform:scale(1.6);box-shadow:0 0 0 1px var(--ink-00)}
-.cal__months{display:grid;grid-auto-flow:column;grid-auto-columns:11px;gap:3px;
-  min-width:max-content;height:1rem}
-.cal__months span{font-family:var(--font-mono);font-size:.5rem;
-  text-transform:uppercase;letter-spacing:.1em;color:var(--ink-80);
-  white-space:nowrap;width:11px;overflow:visible}
-.cal__legend{display:flex;align-items:center;gap:.3rem;justify-content:flex-end;
-  margin-top:.85rem;font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80)}
-.cal__legend i{width:10px;height:10px}
-.cal__legend .l0{background:rgba(247,242,234,.045)}
-.cal__legend .l1{background:rgba(255,90,31,.28)}
-.cal__legend .l2{background:rgba(255,90,31,.5)}
-.cal__legend .l3{background:rgba(255,90,31,.75)}
-.cal__legend .l4{background:var(--accent)}
-.cal__foot{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
-  margin-top:1rem;padding-top:.85rem;border-top:1px solid var(--rule);
-  font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80);
-  text-transform:uppercase;letter-spacing:.12em}
-.cal__ns{font-family:var(--font-mono);font-size:var(--t-small);color:var(--ink-60);
-  line-height:1.7;margin-top:.75rem}
-.cal__ns code{color:var(--accent)}
-/* the empty grid box is meaningless until JS fills it */
-.cal__grid:empty,.cal__months:empty{display:none}
-
-/* ---------- TIMELINE ---------- */
-.tl{position:relative;padding-left:2rem}
-.tl::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:1px;background:var(--rule)}
-.tl__fill{position:absolute;left:0;top:6px;width:1px;height:0;background:var(--accent)}
-.tl__item{position:relative;padding-bottom:2.5rem}
-.tl__item:last-child{padding-bottom:0}
-.tl__dot{position:absolute;left:calc(-2rem - 2.5px);top:6px;
-  width:6px;height:6px;background:var(--ground);border:1px solid var(--ink-80);
-  transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease)}
-.tl__item.show .tl__dot{border-color:var(--accent);background:var(--accent)}
-.tl__when{font-family:var(--font-mono);font-size:var(--t-micro);
-  text-transform:uppercase;letter-spacing:.2em;color:var(--ink-60);margin-bottom:.35rem}
-.tl__title{font-family:var(--font-display);font-size:1.35rem;margin-bottom:.5rem;letter-spacing:-.01em}
-.tl__item--accent .tl__when{color:var(--accent)}
-.tl__body{color:var(--ink-40);max-width:52ch;margin-bottom:.75rem;font-size:var(--t-small);line-height:1.65}
-.tl__tags{display:flex;flex-wrap:wrap;gap:.35rem}
-
-/* ---------- CONTACT ---------- */
-.contact{border:1px solid var(--rule);background:var(--surface);padding:clamp(1.75rem,5vw,3.5rem)}
-.contact__title{font-family:var(--font-display);font-size:var(--t-h2);
-  line-height:.92;letter-spacing:-.02em;margin-bottom:1.1rem;max-width:16ch}
-.contact__title em{font-style:italic;color:var(--accent)}
-.contact__sub{max-width:52ch;color:var(--ink-40);margin-bottom:2rem}
-.contact__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--rule)}
-.ccard{
-  display:flex;flex-direction:column;gap:.2rem;padding:1.1rem 1.2rem;
-  background:var(--surface);text-align:left;
-  transition:background var(--dur) var(--ease);
-}
-.ccard:hover{background:var(--ground-2)}
-.ccard__t{display:flex;align-items:center;gap:.5rem;font-size:1rem}
-.ccard__t .i{width:1rem;height:1rem;color:var(--accent)}
-.ccard__s{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-60);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ccard:hover .ccard__s{color:var(--ink-00)}
-
 /* ---------- FOOTER ---------- */
 .footer{border-top:1px solid var(--rule);padding:2rem 0;background:var(--ground-2)}
 .footer__inner{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap}
 .footer__c{font-family:var(--font-mono);font-size:var(--t-micro);
   text-transform:uppercase;letter-spacing:.14em;color:var(--ink-80)}
+.footer__c a{color:var(--ink-60);border-bottom:1px solid var(--rule);transition:color var(--dur) var(--ease)}
+.footer__c a:hover{color:var(--accent)}
 .footer__links{display:flex;gap:1.5rem;font-family:var(--font-mono);font-size:var(--t-micro);
   text-transform:uppercase;letter-spacing:.14em;color:var(--ink-60)}
 .footer__links a{transition:color var(--dur) var(--ease)}
@@ -575,52 +623,107 @@ em{font-style:italic;color:var(--ink-40)}
   font-family:var(--font-mono);font-size:var(--t-micro);color:var(--ink-80);
   text-transform:uppercase;letter-spacing:.12em}
 
+/* ============================================================
+   SEQUENCES, ARMED
+   Everything below only applies once js/scroll.js has confirmed
+   GSAP + ScrollTrigger + Lenis are present and motion is allowed.
+   ============================================================ */
+
+/* Hero grows one extra viewport so the portrait has somewhere to travel. */
+/* The hero pins at every width — it is one screen of content even at 360 — so it
+   keeps its viewport regardless of the media queries below. */
+.js-scroll .hero .pin{height:200svh}
+.js-scroll .hero .pin__vp{height:100svh;min-height:100svh}
+.pin__vp.hero__vp{height:100svh;min-height:100svh}
+
+/* Pinned sequences. `pinType: 'fixed'` makes ScrollTrigger position:fixed the
+   inner viewport for the length of the pinned range, so the inner viewport has
+   to be exactly one screen tall or the pin visibly jitters at the boundaries. */
+/* `:not(.is-static)` on every one of these is load-bearing. The heights reserve
+   scroll distance for a pin; a section that js/scroll.js declined to pin has no
+   pin to spend it on, and reserving it anyway leaves a 1200px hole in the page. */
+.js-scroll [data-seq]:not(.is-static){height:auto}
+.js-scroll [data-seq]:not(.is-static) .pin__vp{height:100svh}
+.js-scroll [data-seq="about"]:not(.is-static){height:200svh}
+.js-scroll [data-seq="work"]:not(.is-static){height:340svh}
+.js-scroll [data-seq="toolkit"]:not(.is-static){height:220svh}
+.js-scroll [data-seq="journey"]:not(.is-static){height:320svh}
+
+/* Bars are scrubbed via scaleX against an inline width, so the armed state has
+   to start the transform at zero. The same applies to the timeline spine and
+   its dots: the un-armed default is the finished, lit look. */
+/* A scrubbed rail owns its own horizontal offset; leaving it scrollable would
+   let a trackpad scroll the panels sideways independently of scroll progress. */
+.js-scroll .pin:not(.is-static) .rail{overflow:hidden}
+.js-scroll .bar__fill{transform:scaleX(0)}
+.js-scroll .tl__fill{height:0}
+.js-scroll .tl__dot{border-color:var(--ink-80);background:var(--ground)}
+.js-scroll .tl__item.on .tl__dot{border-color:var(--accent);background:var(--accent)}
+
+/* A section js/scroll.js chose NOT to pin — a stacked viewport has no room for
+   a meaningful pin, and a pin with no scroll range would leave its scrub frozen
+   at progress 1. The class is the single source of truth, so the finished look
+   is restored here rather than guessed at three breakpoints.
+
+   Not scoped to .js-scroll on purpose: an unpinned section must hug its content
+   in every state, including no-JS and reduced motion. Reserving an empty
+   viewport for a 400px-tall block of content is the same bug three times. */
+.pin.is-static .pin__vp{height:auto;min-height:0}
+.js-scroll .pin.is-static .bar__fill{transform:scaleX(1)}
+.js-scroll .pin.is-static .tl__fill{height:100%}
+.js-scroll .pin.is-static .tl__dot{border-color:var(--accent)}
+.js-scroll .pin.is-static .tl__item.on .tl__dot{background:var(--accent)}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width:1080px){
-  .about,.skills,.commits{grid-template-columns:1fr}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .card--wide{flex-direction:column}
-  .card--wide .card__body{flex:1 1 auto}
-  .card__art{border-left:0;border-top:1px solid var(--rule)}
-  .card__art--dg{border-top:1px solid var(--rule);border-left:0}
-  .card__art img{max-height:300px}
-  .sec-head{grid-template-columns:1fr}
-  .sec-sub{grid-column:1}
+  .seq__grid,.seq__grid--journey{grid-template-columns:1fr;gap:clamp(1.5rem,4vh,2.5rem);
+    align-items:start}
+  .seq--about,.seq--toolkit,.seq--journey{justify-content:flex-start;
+    padding-top:calc(var(--nav-h) + 2.5rem)}
+  .seq__stage--cal{align-self:stretch}
+  .seq__rail--journey{align-self:auto}
+  .tl{padding-bottom:1rem}
+  .tl__body{max-width:none}
 }
 @media (max-width:860px){
+  /* Nothing but the hero pins here, so nothing else should reserve a viewport.
+     `.hero .pin__vp` outranks this and keeps its own. */
+  .pin__vp{min-height:0}
   .nav__links,.nav__search span,.nav__search kbd{display:none}
   .nav__search{display:grid;place-items:center;width:30px;height:30px;padding:0}
   .burger{display:grid}
-  .grid{grid-template-columns:1fr}
   .hero__stats{grid-template-columns:1fr 1fr;gap:1.25rem}
+  .seq--work{justify-content:flex-start;padding-top:calc(var(--nav-h) + 2.5rem)}
+  .seq--work .rail{margin-top:clamp(1.5rem,4vh,2rem)}
+  .panel{width:min(78vw,340px)}
+  .panel__desc{min-height:0}
+  .js-scroll .dock{left:var(--gutter);right:var(--gutter)}
+  .dock__mail{flex:1}
 }
 @media (max-width:560px){
-  .sgroups{grid-template-columns:1fr}
-  .sgroup:nth-child(odd){padding-right:0}
-  .sgroup:nth-child(even){padding-left:0;border-left:0}
   .hero__bg img{object-position:50% 0}
   .hero__stats{gap:1rem 1.5rem}
-  .record__row{grid-template-columns:1fr;gap:.15rem}
-  .record__sep{display:none}
+  .hero__actions .btn{flex:1 1 auto;justify-content:center}
   .contact{padding:1.5rem 1.15rem}
-  .ticker__track{gap:1.75rem}
+  .seq__statement{font-size:clamp(1.7rem,8vw,2.4rem)}
+  .strip__track{gap:1.75rem}
 }
 
-/* ---------- REDUCED MOTION ---------- */
+/* ---------- REDUCED MOTION ----------
+   Sequences never arm, so the above never applies. This block additionally
+   neutralises the reveal/hero entry states and hides the dock. */
 @media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
   *,*::before,*::after{
     animation-duration:.001ms !important;animation-iteration-count:1 !important;
     transition-duration:.001ms !important;scroll-behavior:auto !important;
   }
   .js .reveal{opacity:1;transform:none}
   .js .hero__name .ch{opacity:1;transform:none}
-  .cursor{display:none}
-  .boot{display:none}
+  .cursor,.dock,.boot{display:none}
 }
 
 /* ---------- PRINT ---------- */
 @media print{
-  .nav,.drawer,.palette,.cursor,.boot,.ticker,.hero__bg,.hero__scrim{display:none!important}
+  .nav,.drawer,.palette,.cursor,.boot,.dock,.hero__bg,.hero__scrim{display:none!important}
   body{background:#fff;color:#000}
 }

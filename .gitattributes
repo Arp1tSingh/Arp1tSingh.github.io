@@ -1,0 +1,17 @@
+# Normalise line endings to LF everywhere, so the same file has the same
+# bytes on Windows and on the Linux runner.
+* text=auto eol=lf
+
+# Binary assets: never touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.woff2 binary
+*.woff binary
+*.ico binary
+*.glb binary
+*.gltf binary
+*.mp4 binary
+*.webm binary

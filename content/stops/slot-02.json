@@ -1,0 +1,48 @@
+{
+  "id": "slot-02",
+  "kind": "project",
+  "title": "CPU Path Tracer",
+  "oneLiner": "A physically accurate renderer written from scratch in C++.",
+  "tier": "express",
+  "domain": "systems",
+  "role": "solo",
+  "stack": [
+    "C++",
+    "std::thread",
+    "BVH",
+    "Ray tracing",
+    "SSAA"
+  ],
+  "claim": "Renders global illumination on the CPU alone, with no graphics API underneath it.",
+  "proof": {
+    "metrics": [
+      "BVH traversal cuts ray intersection from O(N) to O(log N)",
+      "Up to 100+ primary rays per pixel for stochastic supersampling",
+      "10 light bounces tracked recursively with per-hit material attenuation",
+      "The image buffer is split into horizontal chunks across cores with std::thread"
+    ],
+    "media": [
+      {
+        "src": "media/path-tracer.png",
+        "width": 800,
+        "height": 533,
+        "alt": "A CPU path-traced render of a test scene, showing soft shadows, refracted glass and coloured light bounce",
+        "kind": "image",
+        "caption": "Rendered on the CPU. The only dependency is the C++ standard library."
+      }
+    ],
+    "architecture": "A custom vector maths library feeds a look-at camera that mimics a real lens. Rays hit a bounding volume hierarchy of axis-aligned boxes; on a hit the path either scatters by material - Lambertian, metallic or dielectric through Snell's law - or attenuates and continues, up to ten bounces deep."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/cpp-path-tracer",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-04",
+    "end": "2026-04"
+  },
+  "station": "Ghatkopar",
+  "prop": "glass prism",
+  "badge": "02 / EXPRESS"
+}

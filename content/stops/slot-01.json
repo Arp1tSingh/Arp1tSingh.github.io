@@ -1,0 +1,40 @@
+{
+  "id": "slot-01",
+  "kind": "project",
+  "title": "MeshStream",
+  "oneLiner": "Live video streaming where the viewers become the CDN.",
+  "tier": "express",
+  "domain": "systems",
+  "role": "solo",
+  "stack": [
+    "TypeScript",
+    "WebRTC",
+    "MediaMTX",
+    "LL-HLS",
+    "Caddy",
+    "PostgreSQL"
+  ],
+  "claim": "Turns concurrent viewers into a self-organising P2P mesh, so the origin server stops carrying every byte.",
+  "proof": {
+    "metrics": [
+      "WHIP ingest (RFC 9725) over UDP, transmuxed to low-latency HLS with no transcoding step",
+      "16 KB DataChannel chunks with SCTP backpressure and a bounded in-memory LRU segment cache",
+      "Every resolved byte is counted as p2pBytes or httpBytes, so the offload ratio is measured rather than claimed",
+      "Bounded peer-set selection keeps the swarm k-regular instead of exploding into a full mesh"
+    ],
+    "media": [],
+    "architecture": "A broadcaster ingests with WHIP into MediaMTX, which transmuxes to LL-HLS. A WebSocket tracker hands each viewer a bounded set of peers and relays SDP and ICE. A custom hls.js loader then races the swarm against the origin for every segment and falls back to HTTP the moment a peer misses the playback deadline."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/meshstream",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-10",
+    "end": "present"
+  },
+  "station": "Kurla",
+  "prop": "signal mast",
+  "badge": "01 / EXPRESS"
+}

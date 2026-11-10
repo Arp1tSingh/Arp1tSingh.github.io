@@ -1,0 +1,28 @@
+{
+  "id": "badlapur",
+  "kind": "terminus",
+  "title": "Terminus",
+  "oneLiner": "The end of the line, and the fastest way to reach me.",
+  "tier": "express",
+  "domain": "tools",
+  "role": "solo",
+  "stack": [],
+  "claim": "One address, no form. If something here is worth a conversation, email is the shortest path to it.",
+  "proof": {
+    "metrics": [],
+    "media": [],
+    "architecture": "The tickets you kept while riding the line are collected here. Nothing you saved leaves your browser: the wallet lives in local storage and this page just reads it back."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-11",
+    "end": "present"
+  },
+  "station": "Badlapur",
+  "prop": "ticket machine",
+  "badge": "BADLAPUR / TERMINUS"
+}

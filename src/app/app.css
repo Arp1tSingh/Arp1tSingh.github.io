@@ -1,0 +1,255 @@
+/**
+ * The app frame: header, footer, the journey stage and the overlays.
+ *
+ * The UI layer and the renderers bring their own stylesheets. This one is the
+ * chrome around them.
+ */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app__main {
+  flex: 1;
+  padding-top: var(--header-h);
+}
+
+/* ---------------------------------------------------------------- header */
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  background: var(--navy);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.site-header__bar {
+  height: var(--header-h);
+  padding-inline: var(--page-pad);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.site-header__mark {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.site-header__name {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 480;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.site-header__handle {
+  color: var(--grey);
+  white-space: nowrap;
+}
+
+.site-header__nav {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-4);
+}
+
+.site-header__link {
+  color: var(--grey);
+  font-size: var(--step--1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding-block: var(--space-1);
+  border-bottom: 1px solid transparent;
+}
+
+.site-header__link:hover,
+.site-header__link[aria-current='page'] {
+  color: var(--paper);
+  border-bottom-color: var(--hairline-strong);
+}
+
+/* The one accent in the chrome: red means "actionable". */
+.site-header__cta {
+  margin-left: var(--space-4);
+  padding: 0.5rem 1rem;
+  background: var(--red);
+  color: var(--paper);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.site-header__cta:hover {
+  background: var(--paper);
+  color: var(--navy);
+}
+
+@media (max-width: 720px) {
+  .site-header__handle,
+  .site-header__nav {
+    display: none;
+  }
+
+  .site-header__cta {
+    margin-left: auto;
+  }
+}
+
+/* ---------------------------------------------------------------- journey */
+
+.journey-view {
+  position: relative;
+}
+
+.journey-view__track {
+  width: 100%;
+}
+
+.journey-view__stage {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding: var(--page-pad);
+  pointer-events: none;
+}
+
+.station-card {
+  pointer-events: auto;
+  max-width: 34rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--hairline);
+  background: var(--navy);
+}
+
+.station-card__station {
+  color: var(--grey);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.station-card__title {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  letter-spacing: -0.025em;
+  margin-block: var(--space-1) var(--space-2);
+}
+
+.station-card__next {
+  color: var(--grey);
+}
+
+.station-card__rail {
+  margin-top: var(--space-3);
+  height: 1px;
+  background: var(--hairline);
+  overflow: hidden;
+}
+
+.station-card__fill {
+  display: block;
+  height: 100%;
+  background: var(--paper);
+  transform-origin: left center;
+}
+
+/* The progress dots: one per stop, so a visitor always knows what is left. */
+.journey-view__dots {
+  position: fixed;
+  left: var(--page-pad);
+  bottom: var(--space-4);
+  z-index: 30;
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.journey-view__dot {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--grey-dim);
+  background: transparent;
+  padding: 0;
+}
+
+.journey-view__dot[aria-current='true'] {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.journey-view__dot:hover {
+  border-color: var(--paper);
+}
+
+/* --------------------------------------------------------------- overlays */
+
+.app__overlay,
+.app__wallet {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow-y: auto;
+  background: var(--navy);
+  padding: calc(var(--header-h) + var(--space-4)) var(--page-pad) var(--space-6);
+}
+
+.app__wallet {
+  inset: auto 0 0 0;
+  top: auto;
+  max-height: 70vh;
+  border-top: 1px solid var(--hairline);
+  z-index: 45;
+}
+
+/* ----------------------------------------------------------------- footer */
+
+.site-footer {
+  border-top: 1px solid var(--hairline);
+  padding: var(--space-5) var(--page-pad);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.site-footer__line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.site-footer__label {
+  color: var(--grey);
+}
+
+.site-footer__sep {
+  color: var(--grey-dim);
+}
+
+.site-footer__links {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--step--1);
+}
+
+.site-footer__links a:hover {
+  color: var(--red);
+}
+
+.site-footer__note {
+  color: var(--grey-dim);
+  width: 100%;
+}

@@ -1,0 +1,37 @@
+{
+  "id": "slot-08",
+  "kind": "project",
+  "title": "College Bus Route Planner",
+  "oneLiner": "A console TSP solver that plans the optimal bus route across college stops.",
+  "tier": "local",
+  "domain": "tools",
+  "role": "solo",
+  "stack": [
+    "C",
+    "Console",
+    "TSP",
+    "File I/O"
+  ],
+  "claim": "Solves the same route three ways - brute force, nearest neighbour and branch and bound - and lets you compare them.",
+  "proof": {
+    "metrics": [
+      "Three algorithms side by side: brute-force exact, greedy nearest-neighbour heuristic, and branch and bound",
+      "Stops and the distance matrix can be edited at runtime",
+      "Configurations save to and load from a file"
+    ],
+    "media": [],
+    "architecture": "A distance matrix and a stop list drive the solver. Exact and heuristic methods are written behind the same interface so a route can be recomputed under each and compared directly, with the matrix persisted so a scenario survives a restart."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/Bus-Route-Planner-TSP",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2025-10",
+    "end": "2025-10"
+  },
+  "station": "Ulhasnagar",
+  "prop": "bus model",
+  "badge": "08 / LOCAL"
+}

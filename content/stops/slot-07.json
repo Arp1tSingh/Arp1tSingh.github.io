@@ -1,0 +1,48 @@
+{
+  "id": "slot-07",
+  "kind": "project",
+  "title": "Fintech VIT 3D Vault",
+  "oneLiner": "A scroll-driven 3D vault journey for the college fintech committee.",
+  "tier": "local",
+  "domain": "hardware",
+  "role": "lead",
+  "stack": [
+    "Three.js",
+    "React Three Fiber",
+    "GSAP",
+    "ScrollTrigger",
+    "TypeScript",
+    "Vite"
+  ],
+  "claim": "Turns a committee page into a journey you move through, and ships every asset inside a budget.",
+  "proof": {
+    "metrics": [
+      "React Three Fiber over Three.js, driven by GSAP ScrollTrigger",
+      "One 1024 px atlas and an instanced city keep the draw call count down",
+      "The site ships with a scripted camera audit and a motion diagnostic in CI"
+    ],
+    "media": [
+      {
+        "src": "media/portrait.png",
+        "width": 720,
+        "height": 960,
+        "alt": "Cut-out portrait of the author, background removed, in the committee site's member-photography style",
+        "kind": "image",
+        "caption": "The committee's own asset export: eleven members cut out to a transparent background."
+      }
+    ],
+    "architecture": "A camera path is defined in scroll space and the scene is drawn from it, so the journey is authored once and replayed at any speed. Reduced-motion visitors get cuts instead of sweeps. The same content model also renders as plain HTML, which is why the text is legible with the scene removed."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/fintech-websiteV2",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-09",
+    "end": "2026-10"
+  },
+  "station": "Diva",
+  "prop": "vault door",
+  "badge": "07 / LOCAL"
+}

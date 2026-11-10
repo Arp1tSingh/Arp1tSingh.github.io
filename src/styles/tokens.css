@@ -1,0 +1,83 @@
+/**
+ * Design tokens.
+ *
+ * One accent colour means one thing: red is actionable, or you are here.
+ * There is no decorative red anywhere else on the page.
+ */
+
+:root {
+  /* Palette */
+  --navy: #000016;
+  --navy-raise: #080820;
+  --navy-panel: #0c0c26;
+  --paper: #f1f1f1;
+  --grey: #9797a5;
+  --grey-dim: #6b6b78;
+  --red: #e4032e;
+
+  /* Structure: hairlines are the only structural device */
+  --hairline: rgba(241, 241, 241, 0.13);
+  --hairline-strong: rgba(241, 241, 241, 0.26);
+
+  /* Type */
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-text: 'Inter Tight Variable', 'Inter Tight', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --step--2: clamp(0.68rem, 0.66rem + 0.1vw, 0.76rem);
+  --step--1: clamp(0.8rem, 0.77rem + 0.16vw, 0.92rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.14rem);
+  --step-1: clamp(1.25rem, 1.18rem + 0.35vw, 1.5rem);
+  --step-2: clamp(1.6rem, 1.42rem + 0.9vw, 2.2rem);
+  --step-3: clamp(2.1rem, 1.72rem + 1.9vw, 3.4rem);
+  --step-4: clamp(2.6rem, 1.9rem + 3.4vw, 5rem);
+  --step-5: clamp(3rem, 1.8rem + 6vw, 8rem);
+
+  /* Space */
+  --space-1: 0.35rem;
+  --space-2: 0.7rem;
+  --space-3: 1.1rem;
+  --space-4: 1.8rem;
+  --space-5: 3rem;
+  --space-6: 5rem;
+  --space-7: 8rem;
+
+  --measure: 34rem;
+  --page-pad: clamp(1.1rem, 4vw, 3.5rem);
+  --header-h: 4.25rem;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 420ms;
+
+  /* The sky cycle: dawn to night across the journey. */
+  --sky-top: #05052a;
+  --sky-mid: #16163f;
+  --sky-horizon: #3a2a4e;
+  --sky-ground: #000016;
+}
+
+/* Journey progress drives the sky. Set on <html> by the journey controller. */
+:root[data-journey='dawn'] {
+  --sky-top: #0a0a33;
+  --sky-mid: #4a2a4a;
+  --sky-horizon: #b0472f;
+}
+
+:root[data-journey='day'] {
+  --sky-top: #000016;
+  --sky-mid: #16163f;
+  --sky-horizon: #3a2a4e;
+}
+
+:root[data-journey='dusk'] {
+  --sky-top: #05052a;
+  --sky-mid: #2a1a3e;
+  --sky-horizon: #7a2a3a;
+}
+
+:root[data-journey='night'] {
+  --sky-top: #020210;
+  --sky-mid: #080820;
+  --sky-horizon: #141432;
+}

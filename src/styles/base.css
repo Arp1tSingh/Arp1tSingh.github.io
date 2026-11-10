@@ -1,0 +1,157 @@
+/**
+ * Base layer: reset, page frame, and the shared type scale.
+ *
+ * Flat colour throughout. No shadows, no blur, no glass, no rounded corners.
+ * Hairlines at 13% white are the only structural device.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--navy);
+  color: var(--paper);
+  font-family: var(--font-text);
+  font-size: var(--step-0);
+  font-weight: 380;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 460;
+  font-variation-settings: 'SOFT' 20, 'WONK' 1;
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+  border-radius: 0;
+}
+
+/* Machine readouts only: a percentage, a date, a stack. */
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* The single accent. Used for the things a visitor can act on. */
+.accent {
+  color: var(--red);
+}
+
+.page {
+  padding-inline: var(--page-pad);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The journey body is tall: the scroll distance is the clock. */
+.journey {
+  position: relative;
+}
+
+/*
+ * The classic view is the finished state by construction, not something
+ * JavaScript repaints. It is hidden only once the app has actually booted
+ * and taken over the page.
+ */
+.classic-view {
+  display: block;
+}
+
+.js-armed .classic-view {
+  display: none;
+}
+
+/* The Classic view replaces the journey rather than sitting under it. */
+.js-armed.classic-open .classic-view {
+  display: block;
+}
+
+.js-armed.classic-open .app__main,
+.js-armed.classic-open .journey-view,
+.js-armed.classic-open .site-footer {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

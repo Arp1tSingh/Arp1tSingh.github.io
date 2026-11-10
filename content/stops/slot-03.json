@@ -1,0 +1,58 @@
+{
+  "id": "slot-03",
+  "kind": "project",
+  "title": "RegimeTrader",
+  "oneLiner": "A regime-aware Nifty 50 predictor on a SQLite star schema, built to report its own failures.",
+  "tier": "express",
+  "domain": "ai",
+  "role": "solo",
+  "stack": [
+    "Python",
+    "SQLite",
+    "scikit-learn",
+    "XGBoost",
+    "Streamlit",
+    "pytest"
+  ],
+  "claim": "Locks the test period before running it, then reports that the strategy has no reliable edge.",
+  "proof": {
+    "metrics": [
+      "565 passing tests across 26 test modules",
+      "144,105 daily OHLCV rows over 2,910 trading dates in a star-schema warehouse",
+      "Frozen test period of 685 trading days guarded by a one-time run lock and config hashes",
+      "Classifier ROC-AUC between 0.5140 and 0.5201 across 34,200 test stock-days - barely above a coin flip",
+      "Sharpe 0.4848 with a 95% block-bootstrap CI of [-0.4561, 1.5437], so the edge is not distinguishable from zero"
+    ],
+    "media": [
+      {
+        "src": "media/regime-bands.png",
+        "width": 1680,
+        "height": 600,
+        "alt": "A chart of detected market regime bands plotted over time across the backtest window",
+        "kind": "image",
+        "caption": "Regimes detected by the frozen K-Means model."
+      },
+      {
+        "src": "media/regime-k-selection.png",
+        "width": 1200,
+        "height": 480,
+        "alt": "A chart comparing candidate values of k for the regime clustering model",
+        "kind": "image",
+        "caption": "Choosing k, then freezing it on the training window."
+      }
+    ],
+    "architecture": "Everything lands in one relational warehouse with foreign keys on: raw bars, indicators, regimes, model probabilities, trades and daily marks. Preprocessors and the unsupervised regime model are fitted only on data up to 2022-12-31 and frozen. Classifiers retrain annually on an expanding window with a five-day embargo. Backtest and paper-trading call the same signal-to-weight code, so the two cannot disagree."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/regimetrader",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-10",
+    "end": "present"
+  },
+  "station": "Mulund",
+  "prop": "ticker tape",
+  "badge": "03 / EXPRESS"
+}

@@ -1,0 +1,21 @@
+import { expect, type Page } from '@playwright/test';
+
+/**
+ * Wait for the app to have booted.
+ *
+ * The inline script in `index.html` arms the page before React mounts, so
+ * `js-armed` alone is not proof that the keyboard shortcuts and the journey
+ * controller are listening. `__local3dBooted` is set by the app itself, once
+ * it is alive.
+ */
+export async function waitForApp(page: Page): Promise<void> {
+  await page.waitForFunction(() => window.__local3dBooted === true, undefined, {
+    timeout: 15_000,
+  });
+  await expect(page.locator('html')).toHaveClass(/js-armed/);
+}
+
+/** The site header, which is the one that carries the Hire me button. */
+export function headerCta(page: Page) {
+  return page.locator('.site-header a[href^="mailto:"]');
+}

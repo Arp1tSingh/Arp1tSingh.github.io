@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arpit Singh — The Local 3D</title>
+    <meta
+      name="description"
+      content="Arpit Singh — computer engineering student in Mumbai. Nine projects on a train line: one dataset, three renderers."
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#000016" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://arp1tsingh.github.io/" />
+    <meta property="og:title" content="Arpit Singh — The Local 3D" />
+    <meta
+      property="og:description"
+      content="Nine projects on a train line. One dataset, three renderers."
+    />
+    <meta property="og:image" content="https://arp1tsingh.github.io/og/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script>
+      // Arm the app, and keep a way back to the static page.
+      // If the app never boots, the timer puts the classic view back.
+      document.documentElement.classList.add('js-armed');
+      window.__local3dFallback = window.setTimeout(function () {
+        if (!window.__local3dBooted) {
+          document.documentElement.classList.remove('js-armed');
+        }
+      }, 2500);
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript><div id="classic-fallback" class="classic-view">__CLASSIC_HTML__</div></noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

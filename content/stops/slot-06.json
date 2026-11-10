@@ -1,0 +1,41 @@
+{
+  "id": "slot-06",
+  "kind": "project",
+  "title": "DictateIt",
+  "oneLiner": "Text-to-speech dictation for people who write while listening.",
+  "tier": "local",
+  "domain": "tools",
+  "role": "solo",
+  "stack": [
+    "Python",
+    "tkinter",
+    "pyttsx3",
+    "Piper",
+    "edge-tts",
+    "LaTeX AST"
+  ],
+  "claim": "Reads every chunk twice - once naturally, once slowly and explicitly - and leaves a silent gap sized to what you have to write.",
+  "proof": {
+    "metrics": [
+      "Prose chunked into 3 to 8 word groups at natural pause points, math into 6 token or fewer groups split on the AST",
+      "LaTeX, plain text and Unicode all reach the same AST, including fractions, roots, matrices and multi-line derivations",
+      "Write gaps scale with words or tokens, plus extra time for structures you have to draw",
+      "Three voice backends behind one interface: pyttsx3 offline, Piper offline neural, edge-tts online neural",
+      "Reads .docx equation objects directly, converting OMML to LaTeX into the same AST"
+    ],
+    "media": [],
+    "architecture": "An input is normalised to one AST, the AST is chunked, and each chunk becomes a speech plan: a natural pass, an explicit pass that names every structure, then a measured silence. A tkinter control window shows the rendered formula, switches profiles and toggles the source text."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/dictateit",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-11",
+    "end": "present"
+  },
+  "station": "Sion",
+  "prop": "microphone",
+  "badge": "06 / LOCAL"
+}

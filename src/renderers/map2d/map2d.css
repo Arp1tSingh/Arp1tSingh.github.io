@@ -1,0 +1,507 @@
+/**
+ * The network map.
+ *
+ * Flat colour, hairline structure, no shadows and no rounded corners, the
+ * same as the rest of the site. The only accent is red, and red means
+ * "you are here" or "this is the filter you picked".
+ *
+ * The layout has two jobs.
+ *
+ *   1. The drawing scales, the type does not. The station labels are HTML
+ *      positioned over the SVG, so the names stay the same size at 360px and
+ *      at 1920px. The plot is `position: relative` and the SVG fills it, so a
+ *      label placed at `left: 32%` lands exactly on the station it belongs
+ *      to at every width.
+ *   2. Nothing overlaps. The labels are one column on the right of the
+ *      spine, the transfer lines bow into the gutter on the left of them,
+ *      and the spacing between two stations is larger than the tallest
+ *      label.
+ */
+
+.map2d {
+  max-width: 78rem;
+  margin-inline: auto;
+  padding: var(--space-4) var(--page-pad) var(--space-6);
+}
+
+/* ------------------------------------------------------------------ *
+ * The head
+ * ------------------------------------------------------------------ */
+
+.map2d__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.map2d__title {
+  font-size: var(--step-2);
+}
+
+.map2d__blurb {
+  color: var(--grey);
+  max-width: var(--measure);
+}
+
+.map2d__count {
+  color: var(--grey-dim);
+  margin-left: auto;
+}
+
+/* ------------------------------------------------------------------ *
+ * The body: the drawing on one side, the panels on the other
+ * ------------------------------------------------------------------ */
+
+.map2d__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+@media (min-width: 60rem) {
+  .map2d__body {
+    grid-template-columns: minmax(0, 28rem) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .map2d__side {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-4);
+    align-items: start;
+  }
+}
+
+.map2d__column {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ *
+ * The plot
+ *
+ * The wrapper is the positioning context of the labels. The SVG fills it
+ * exactly, so a percentage on a label is the same percentage of the
+ * drawing.
+ * ------------------------------------------------------------------ */
+
+.map2d__plot {
+  position: relative;
+  max-width: 28rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 60rem) {
+  .map2d__plot {
+    margin-inline: 0;
+  }
+}
+
+.map2d__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* The spine: the line itself. */
+.map2d__spine {
+  fill: none;
+  stroke: var(--grey);
+  stroke-width: 1.5;
+}
+
+/* The transfer lines: one per skill, always faint. */
+.map2d__chord {
+  fill: none;
+  stroke: var(--grey-dim);
+  stroke-width: 1;
+  opacity: 0.42;
+}
+
+.map2d__chord--active {
+  stroke: var(--red);
+  stroke-width: 1.5;
+  opacity: 1;
+}
+
+.map2d__station {
+  cursor: pointer;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.map2d__station--dim {
+  opacity: 0.22;
+}
+
+.map2d__hit {
+  fill: transparent;
+  pointer-events: all;
+}
+
+/* Express is solid and larger, local is hollow and smaller. */
+.map2d__dot {
+  fill: var(--paper);
+  stroke: none;
+}
+
+.map2d__station--local .map2d__dot {
+  fill: none;
+  stroke: var(--paper);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.map2d__here {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 1.5;
+}
+
+.map2d__station:focus {
+  outline: none;
+}
+
+.map2d__station:focus-visible .map2d__dot {
+  stroke: var(--red);
+  stroke-width: 2;
+}
+
+.map2d__station:focus-visible .map2d__station--local .map2d__dot,
+.map2d__station:focus-visible .map2d__dot {
+  stroke: var(--red);
+}
+
+/* ------------------------------------------------------------------ *
+ * The labels
+ *
+ * HTML, not SVG text: the names must not shrink with the drawing.
+ * ------------------------------------------------------------------ */
+
+.map2d__labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.map2d__label {
+  position: absolute;
+  transform: translateY(-50%);
+  width: min(30ch, 66%);
+  display: grid;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.map2d__label-station {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.map2d__label-title {
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  font-variation-settings: 'SOFT' 20, 'WONK' 1;
+  color: var(--paper);
+}
+
+.map2d__label--dim {
+  opacity: 0.3;
+}
+
+.map2d__label--here .map2d__label-station {
+  color: var(--red);
+}
+
+/* ------------------------------------------------------------------ *
+ * The legend
+ * ------------------------------------------------------------------ */
+
+.map2d__legend {
+  margin-top: var(--space-4);
+  border-top: 1px solid var(--hairline);
+  padding-top: var(--space-3);
+}
+
+.map2d__legend-title {
+  font-size: var(--step--1);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
+  margin-bottom: var(--space-2);
+}
+
+.map2d__legend-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.map2d__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--grey);
+}
+
+.map2d__legend-item strong {
+  color: var(--paper);
+  font-weight: 500;
+}
+
+.map2d__legend-mark {
+  flex: none;
+}
+
+/* ------------------------------------------------------------------ *
+ * The panels
+ * ------------------------------------------------------------------ */
+
+.map2d__panel {
+  border: 1px solid var(--hairline);
+  padding: var(--space-3);
+  min-width: 0;
+}
+
+.map2d__panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.map2d__panel-title {
+  font-size: var(--step-0);
+}
+
+.map2d__panel-count {
+  color: var(--grey-dim);
+}
+
+.map2d__panel-note {
+  font-size: var(--step--1);
+  color: var(--grey);
+  margin-bottom: var(--space-3);
+}
+
+.map2d__here-chip {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+/* ------------------------------------------------------------------ *
+ * The skill filter
+ * ------------------------------------------------------------------ */
+
+.map2d__skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+}
+
+.map2d__skill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  border: 1px solid var(--hairline);
+  padding: 2px 8px;
+  font-size: var(--step--1);
+  color: var(--paper);
+}
+
+.map2d__skill:hover {
+  border-color: var(--hairline-strong);
+}
+
+.map2d__skill[aria-pressed='true'] {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.map2d__skill-count {
+  font-size: var(--step--2);
+  color: var(--grey-dim);
+}
+
+.map2d__skill[aria-pressed='true'] .map2d__skill-count {
+  color: var(--red);
+}
+
+/* ------------------------------------------------------------------ *
+ * The station card
+ * ------------------------------------------------------------------ */
+
+.map2d__detail-title {
+  font-size: var(--step-1);
+  margin-bottom: var(--space-1);
+}
+
+.map2d__detail-station {
+  color: var(--grey);
+  margin-bottom: var(--space-3);
+}
+
+.map2d__detail-oneliner {
+  color: var(--grey);
+  margin-bottom: var(--space-2);
+}
+
+.map2d__detail-claim {
+  font-weight: 500;
+  margin-bottom: var(--space-3);
+}
+
+.map2d__facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 2px var(--space-3);
+  font-size: var(--step--1);
+  margin-bottom: var(--space-3);
+}
+
+.map2d__facts dt {
+  color: var(--grey-dim);
+}
+
+.map2d__facts dd {
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+.map2d__subhead {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.map2d__stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.map2d__stack-chip {
+  border: 1px solid var(--hairline);
+  padding: 1px 6px;
+  font-size: var(--step--1);
+  color: var(--paper);
+}
+
+.map2d__stack-chip:hover {
+  border-color: var(--hairline-strong);
+}
+
+.map2d__stack-chip[aria-pressed='true'] {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.map2d__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.map2d__link {
+  font-size: var(--step--1);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--hairline-strong);
+}
+
+.map2d__link:hover {
+  text-decoration-color: var(--paper);
+}
+
+.map2d__empty {
+  font-size: var(--step--1);
+  color: var(--grey-dim);
+}
+
+.map2d__sep {
+  color: var(--grey-dim);
+}
+
+/* ------------------------------------------------------------------ *
+ * The text version of the map
+ * ------------------------------------------------------------------ */
+
+.map2d__fallback {
+  margin-top: var(--space-4);
+  border-top: 1px solid var(--hairline);
+  padding-top: var(--space-2);
+}
+
+.map2d__fallback-summary {
+  cursor: pointer;
+  font-size: var(--step--1);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--grey);
+}
+
+.map2d__fallback-summary:hover {
+  color: var(--paper);
+}
+
+.map2d__fallback-list {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.map2d__fallback-item {
+  display: grid;
+  gap: 2px;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.map2d__fallback-button {
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  color: var(--paper);
+}
+
+.map2d__fallback-button:hover {
+  color: var(--grey);
+}
+
+.map2d__fallback-button[aria-current='true'] {
+  color: var(--red);
+}
+
+.map2d__fallback-meta {
+  color: var(--grey-dim);
+  font-size: var(--step--2);
+}
+
+.map2d__fallback-oneliner {
+  color: var(--grey);
+  font-size: var(--step--1);
+}
+
+.map2d__fallback-stack {
+  color: var(--grey-dim);
+  font-size: var(--step--2);
+}

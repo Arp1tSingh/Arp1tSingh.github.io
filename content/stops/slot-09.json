@@ -1,0 +1,36 @@
+{
+  "id": "slot-09",
+  "kind": "project",
+  "title": "LeetCode Archive",
+  "oneLiner": "Every problem solved, backed up the moment it is accepted.",
+  "tier": "local",
+  "domain": "tools",
+  "role": "solo",
+  "stack": [
+    "Python",
+    "Java",
+    "SyncLeet",
+    "Git"
+  ],
+  "claim": "A continuous sync from the LeetCode account into a repository, so the archive never drifts from what was actually submitted.",
+  "proof": {
+    "metrics": [
+      "Solutions stored per problem directory, keyed by the platform problem id",
+      "Backed up by the SyncLeet extension, so the push happens on acceptance rather than by hand"
+    ],
+    "media": [],
+    "architecture": "The browser extension reads accepted submissions from LeetCode and writes them into a repository with one directory per problem. Nothing is copied by hand, which is the only way an archive stays honest."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/LeetCode",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-08",
+    "end": "present"
+  },
+  "station": "Ambernath",
+  "prop": "spiral notebook",
+  "badge": "09 / LOCAL"
+}

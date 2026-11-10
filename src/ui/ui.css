@@ -1,0 +1,719 @@
+/**
+ * The UI layer.
+ *
+ * Four surfaces: the gate, the ticket, the indicator and the wallet.
+ *
+ * Flat colour throughout. No shadows, no blur, no glass, no rounded corners.
+ * Hairlines are the only structural device. Red appears exactly twice, and
+ * both times it means something: the line the visitor is on, and the thing
+ * they can act on.
+ */
+
+/* ================================================================== the gate */
+
+.gate {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: var(--space-5) var(--space-7);
+  align-content: center;
+  min-height: 100%;
+  padding: var(--space-5) var(--page-pad) var(--space-6);
+}
+
+.gate__identity {
+  min-width: 0;
+}
+
+.gate__handle {
+  color: var(--grey);
+  letter-spacing: 0.06em;
+}
+
+.gate__name {
+  font-size: var(--step-5);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  margin-top: var(--space-2);
+}
+
+.gate__role {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.2;
+  margin-top: var(--space-3);
+  max-width: var(--measure);
+}
+
+.gate__summary {
+  font-size: var(--step-0);
+  color: var(--grey);
+  margin-top: var(--space-2);
+  max-width: var(--measure);
+}
+
+.gate__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--hairline);
+}
+
+.gate__fact {
+  min-width: 0;
+}
+
+.gate__fact-label {
+  color: var(--grey-dim);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.gate__fact-value {
+  margin-top: var(--space-1);
+  font-size: var(--step--1);
+}
+
+/* Red means "actionable". A mailto is the most actionable thing here. */
+.gate__email {
+  color: var(--red);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  overflow-wrap: anywhere;
+}
+
+.gate__email:hover {
+  color: var(--paper);
+}
+
+.gate__choose {
+  min-width: 0;
+  align-self: center;
+}
+
+.gate__ask {
+  font-size: var(--step-2);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-3);
+}
+
+.gate__lines {
+  border-top: 1px solid var(--hairline);
+}
+
+.gate__line {
+  display: grid;
+  gap: var(--space-1);
+  width: 100%;
+  text-align: left;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-3);
+  border-bottom: 1px solid var(--hairline);
+  border-left: 2px solid transparent;
+}
+
+.gate__line:hover {
+  background: var(--navy-raise);
+}
+
+.gate__line-label {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  line-height: 1.1;
+  color: var(--paper);
+}
+
+.gate__line-blurb {
+  font-size: var(--step--1);
+  color: var(--grey);
+}
+
+/* Red means "you are here": the line the visitor is riding. */
+.gate__line[aria-current='true'] {
+  border-left-color: var(--red);
+  padding-left: calc(var(--space-3) - 2px);
+}
+
+@media (max-width: 62rem) {
+  .gate {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+}
+
+/* ================================================================ the ticket */
+
+.ticket-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--page-pad);
+  overflow-y: auto;
+  background: var(--navy);
+}
+
+.ticket {
+  width: 100%;
+  max-width: 62rem;
+  max-height: calc(100vh - 2 * var(--page-pad));
+  overflow-y: auto;
+  /* Not `contain`: the wheel has to be able to leave the ticket and move the
+     line. The ticket closes as soon as it has been read to the end. */
+  overscroll-behavior: auto;
+  background: var(--navy-panel);
+  border: 1px solid var(--hairline);
+}
+
+@supports (height: 100svh) {
+  .ticket {
+    max-height: calc(100svh - 2 * var(--page-pad));
+  }
+}
+
+.ticket__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.ticket__front,
+.ticket__back {
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+.ticket__front {
+  border-right: 1px solid var(--hairline);
+}
+
+@media (max-width: 52rem) {
+  .ticket__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ticket__front {
+    border-right: 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+}
+
+/* The station board: where this is, and what class of stop it is. */
+.ticket__board {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.ticket__station {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.ticket__tier {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper);
+  border: 1px solid var(--hairline-strong);
+  padding: 0.15em 0.6em;
+}
+
+.ticket__title {
+  font-size: var(--step-3);
+  margin-top: var(--space-3);
+  overflow-wrap: anywhere;
+}
+
+.ticket__oneline {
+  color: var(--grey);
+  font-size: var(--step--1);
+  margin-top: var(--space-1);
+}
+
+.ticket__claim {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.25;
+  margin-top: var(--space-3);
+  overflow-wrap: break-word;
+}
+
+.ticket__stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+}
+
+.ticket__tag {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--grey);
+  border: 1px solid var(--hairline);
+  padding: 0.2em 0.6em;
+}
+
+.ticket__section + .ticket__section {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--hairline);
+}
+
+.ticket__label {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
+  margin-bottom: var(--space-2);
+}
+
+.ticket__metrics li {
+  position: relative;
+  padding-left: var(--space-3);
+  font-size: var(--step--1);
+  margin-top: var(--space-2);
+  overflow-wrap: break-word;
+}
+
+.ticket__metrics li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 6px;
+  height: 1px;
+  background: var(--hairline-strong);
+}
+
+.ticket__figures {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ticket__figure {
+  margin: 0;
+}
+
+.ticket__figure img {
+  width: 100%;
+  border: 1px solid var(--hairline);
+  background: var(--navy-raise);
+}
+
+.ticket__figure figcaption {
+  font-size: var(--step--2);
+  color: var(--grey-dim);
+  margin-top: var(--space-1);
+}
+
+.ticket__architecture {
+  font-size: var(--step--1);
+  color: var(--grey);
+  overflow-wrap: break-word;
+}
+
+.ticket__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.ticket__fact {
+  min-width: 0;
+}
+
+.ticket__fact-label {
+  color: var(--grey-dim);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ticket__fact-value {
+  margin-top: var(--space-1);
+  font-size: var(--step--1);
+  text-transform: capitalize;
+}
+
+.ticket__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ticket__action {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--paper);
+  border: 1px solid var(--hairline-strong);
+  padding: 0.45em 0.9em;
+}
+
+.ticket__action:hover {
+  border-color: var(--paper);
+}
+
+/* The stub: the part that leaves the browser with the visitor. */
+.ticket__stub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--hairline);
+  /* The stub is the part that leaves with you, so it stays put: the proof
+     scrolls under it and the QR code, the serial and the Keep action are
+     always on screen. */
+  position: sticky;
+  bottom: 0;
+  background: var(--navy-panel);
+}
+
+.ticket__stub-code {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.ticket__qr {
+  display: block;
+  flex: none;
+  background: var(--paper);
+  padding: 4px;
+}
+
+.ticket__qr-svg {
+  display: block;
+  width: 6.5rem;
+  height: 6.5rem;
+}
+
+.ticket__qr-svg rect {
+  fill: var(--navy);
+}
+
+.ticket__serial {
+  font-size: var(--step--2);
+  letter-spacing: 0.16em;
+  color: var(--grey);
+  white-space: nowrap;
+}
+
+.ticket__stub-detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+
+.ticket__url {
+  font-size: var(--step--2);
+  color: var(--grey);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.ticket__url:hover {
+  color: var(--paper);
+}
+
+/* Red means "actionable": keeping the ticket is the action. */
+.ticket__keep {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.04em;
+  color: var(--red);
+  border: 1px solid var(--red);
+  padding: 0.45em 0.9em;
+  white-space: nowrap;
+}
+
+.ticket__keep:hover {
+  background: var(--red);
+  color: var(--paper);
+}
+
+.ticket__keep[aria-pressed='true'] {
+  color: var(--grey);
+  border-color: var(--hairline-strong);
+}
+
+.ticket__keep[aria-pressed='true']:hover {
+  background: none;
+  color: var(--paper);
+}
+
+.ticket__close {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.ticket__close:hover {
+  color: var(--paper);
+  border-bottom-color: var(--hairline-strong);
+}
+
+/* ============================================================= the indicator */
+
+.indicator {
+  position: fixed;
+  top: calc(var(--header-h) + var(--space-3));
+  right: var(--page-pad);
+  z-index: 35;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--navy-panel);
+  border: 1px solid var(--hairline);
+  max-width: calc(100vw - 2 * var(--page-pad));
+}
+
+.indicator__board {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.indicator__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.indicator__row-label {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
+  flex: none;
+}
+
+.indicator[data-sky='day'] .indicator__row-label {
+  color: var(--grey);
+}
+
+.indicator[data-sky='night'] .indicator__row-label {
+  color: var(--grey-dim);
+}
+
+.indicator__meta {
+  display: grid;
+  justify-items: end;
+  gap: var(--space-1);
+}
+
+.indicator__phase {
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.indicator__count {
+  font-size: var(--step--2);
+  color: var(--grey-dim);
+}
+
+.indicator__dots {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--hairline);
+}
+
+/* Red means "you are here": the stop the train is standing at. */
+.indicator__dot {
+  width: 6px;
+  height: 6px;
+  background: var(--grey-dim);
+}
+
+.indicator__dot.is-current {
+  background: var(--red);
+}
+
+/* The dot matrix itself. */
+.dm {
+  --dm-cell: 2px;
+  --dm-gap: 1px;
+  display: grid;
+  gap: var(--dm-gap);
+  align-content: start;
+}
+
+.dm__cell {
+  width: var(--dm-cell);
+  height: var(--dm-cell);
+  background: transparent;
+}
+
+.dm__cell.is-on {
+  background: var(--paper);
+}
+
+@media (max-width: 40rem) {
+  .indicator {
+    left: var(--page-pad);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .indicator__meta {
+    justify-items: start;
+  }
+}
+
+/* ================================================================= the wallet */
+
+.wallet {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.wallet__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.wallet__title {
+  font-size: var(--step-2);
+}
+
+.wallet__count {
+  font-size: var(--step--2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.wallet__empty {
+  font-size: var(--step--1);
+  color: var(--grey);
+}
+
+.wallet__list {
+  border-top: 1px solid var(--hairline);
+}
+
+.wallet__row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.wallet__jump {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  text-align: left;
+  padding: var(--space-2) 0;
+}
+
+.wallet__jump:hover .wallet__stop-title {
+  color: var(--red);
+}
+
+.wallet__stop-title {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wallet__stop-station {
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
+  white-space: nowrap;
+}
+
+.wallet__remove {
+  flex: none;
+  align-self: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: var(--step-1);
+  line-height: 1;
+  color: var(--grey-dim);
+}
+
+.wallet__remove:hover {
+  color: var(--paper);
+}
+
+.wallet__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.wallet__clear {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+  border-bottom: 1px solid var(--hairline-strong);
+  padding-bottom: 0.15em;
+}
+
+.wallet__clear:hover:not(:disabled) {
+  color: var(--paper);
+}
+
+.wallet__clear:disabled {
+  color: var(--grey-dim);
+  border-bottom-color: transparent;
+  cursor: default;
+}
+
+/* Red means "actionable": sending the shortlist. */
+.wallet__send {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--red);
+  border-bottom: 1px solid var(--red);
+  padding-bottom: 0.15em;
+}
+
+.wallet__send:hover {
+  color: var(--paper);
+  border-bottom-color: var(--paper);
+}

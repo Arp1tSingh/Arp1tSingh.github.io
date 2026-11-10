@@ -1,0 +1,50 @@
+{
+  "id": "slot-04",
+  "kind": "project",
+  "title": "LeetCode Spaced Repetition Tracker",
+  "oneLiner": "An FSRS-6 review queue that schedules each problem for when you are about to forget it.",
+  "tier": "express",
+  "domain": "web",
+  "role": "solo",
+  "stack": [
+    "TypeScript",
+    "React",
+    "Next.js",
+    "FSRS-6",
+    "PostgreSQL",
+    "ts-fsrs"
+  ],
+  "claim": "Replaces brute-force repetition with a memory model, then paces the backlog so a first import does not become a wall.",
+  "proof": {
+    "metrics": [
+      "Retrievability modelled as R(t) = exp(ln(0.9) * t / S) over stability and difficulty",
+      "Daily quota of 6 cards by default, adjustable to 4, 6, 8, 10 or 15",
+      "Cards sorted by mathematical urgency, lowest retrievability first",
+      "Imported problems start with raised stability, pushing first reviews 8 to 15 days out",
+      "Rich CSV imports bypass external lookups and insert in under a second"
+    ],
+    "media": [
+      {
+        "src": "media/fsrs-dashboard.png",
+        "width": 1900,
+        "height": 971,
+        "alt": "The tracker dashboard showing the daily spaced-repetition review queue with a progress bar and due cards",
+        "kind": "image",
+        "caption": "The daily review queue. Six cards, then the backlog rests."
+      }
+    ],
+    "architecture": "Submissions sync from LeetCode in the background on a fifteen-minute cooldown, or in one click through a bookmarklet that hands over solved history through a stateless JWT exchange. Grades of Again, Hard, Good and Easy update stability and difficulty, and the schedule is recalculated against the retention target."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/Leetcode-Practice-Tracker",
+    "demo": "https://leetcode-practice-tracker.vercel.app/",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-08",
+    "end": "present"
+  },
+  "station": "Thane",
+  "prop": "flashcard",
+  "badge": "04 / EXPRESS"
+}

@@ -1,0 +1,58 @@
+{
+  "id": "slot-05",
+  "kind": "project",
+  "title": "BillBox",
+  "oneLiner": "A household receipt shelf: capture a bill once, find it by merchant, tag, amount or date.",
+  "tier": "express",
+  "domain": "web",
+  "role": "solo",
+  "stack": [
+    "React 19",
+    "Vite",
+    "TypeScript",
+    "FastAPI",
+    "Supabase",
+    "PostgreSQL",
+    "Docker"
+  ],
+  "claim": "Only the API writes. The browser reads rows the household owns and every write is checked against membership.",
+  "proof": {
+    "metrics": [
+      "Sections 1 to 6 implemented: auth and households, capture, extraction, tagging, search, export, offline queue",
+      "Backend tests and the frontend typecheck and build pass; a Playwright suite covers all six section checkpoints in CI",
+      "The API is the only writer - browsers get the anon key and can select rows the household owns",
+      "15 seeded system bill-type tags and RLS-enforced storage"
+    ],
+    "media": [
+      {
+        "src": "media/billbox-electricity.png",
+        "width": 800,
+        "height": 1100,
+        "alt": "The BillBox app showing a captured electricity bill with its extracted fields",
+        "kind": "image",
+        "caption": "Capture once. The fields come out already readable."
+      },
+      {
+        "src": "media/billbox-water.png",
+        "width": 800,
+        "height": 1100,
+        "alt": "The BillBox app showing a captured water bill alongside the household receipt list",
+        "kind": "image",
+        "caption": "The shelf, searchable by merchant, tag, amount or date."
+      }
+    ],
+    "architecture": "A React PWA talks to a FastAPI service on Cloud Run. Supabase holds Postgres, private storage and auth. Extraction is mocked in tests and handled by Gemini in production, with rule-based tagging in front of it. Offline captures queue locally and drain when the connection returns."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh/BillBox",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2026-11",
+    "end": "present"
+  },
+  "station": "Dombivli",
+  "prop": "receipt roll",
+  "badge": "05 / EXPRESS"
+}

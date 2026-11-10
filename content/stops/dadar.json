@@ -1,0 +1,36 @@
+{
+  "id": "dadar",
+  "kind": "about",
+  "title": "About",
+  "oneLiner": "A computer engineering student in Mumbai who would rather build it than describe it.",
+  "tier": "express",
+  "domain": "tools",
+  "role": "solo",
+  "stack": [],
+  "claim": "I like the part of a project where the idea stops being a plan and starts being something you can break.",
+  "proof": {
+    "metrics": [],
+    "media": [
+      {
+        "src": "media/arpit-landscape.jpg",
+        "width": 1280,
+        "height": 960,
+        "alt": "Arpit Singh standing by the sea at sunset",
+        "kind": "image"
+      }
+    ],
+    "architecture": "Most of what is on this line was built outside of class: a renderer with no graphics API, a streaming protocol in TypeScript, a warehouse that reports its own negative results. The through-line is systems work that has to survive contact with real traffic."
+  },
+  "links": {
+    "repo": "https://github.com/Arp1tSingh",
+    "demo": "",
+    "caseStudy": ""
+  },
+  "period": {
+    "start": "2025-10",
+    "end": "present"
+  },
+  "station": "Dadar",
+  "prop": "the platform",
+  "badge": "DADAR / ABOUT"
+}

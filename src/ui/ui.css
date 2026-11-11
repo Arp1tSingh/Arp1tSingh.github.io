@@ -11,13 +11,37 @@
 
 /* ================================================================== the gate */
 
+/**
+ * The gate is a panel over the line, not a page in front of it.
+ *
+ * The scene is already running behind this, so the first thing a visitor sees
+ * is the train standing at the first station while they are asked where to
+ * go. The panel is the same shape as the ticket, on the same side, so the
+ * two read as one piece of the interface.
+ */
 .gate {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 65;
+  width: min(40rem, 96vw);
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  gap: var(--space-5) var(--space-7);
-  align-content: center;
-  min-height: 100%;
-  padding: var(--space-5) var(--page-pad) var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-5);
+  padding: calc(var(--header-h) + var(--space-4)) var(--page-pad) var(--space-5);
+  background: var(--navy-panel);
+  border-left: 1px solid var(--hairline);
+  overflow-y: auto;
+}
+
+@media (max-width: 720px) {
+  .gate {
+    width: 100%;
+    border-left: 0;
+    background: var(--navy);
+  }
 }
 
 .gate__identity {
@@ -30,7 +54,7 @@
 }
 
 .gate__name {
-  font-size: var(--step-5);
+  font-size: var(--step-4);
   line-height: 0.92;
   letter-spacing: -0.035em;
   margin-top: var(--space-2);

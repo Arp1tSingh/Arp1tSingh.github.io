@@ -58,10 +58,21 @@ export function useJourney(): JourneyApi {
   /** The last position read, so a dismissal knows where the train was. */
   const positionRef = useRef<Position | null>(null);
 
-  const routeStops = useMemo<Stop[]>(
-    () => state.route.map((id) => getStop(id)).filter((stop): stop is Stop => Boolean(stop)),
-    [state.route],
-  );
+  /**
+   * The stops on the current route.
+   *
+   * Before a line has been chosen there is no route yet, but the scene still
+   * has to have something to draw: the default line waits behind the gate, so
+   * the first thing a visitor sees is the line itself rather than a flat
+   * screen with a question on it.
+   */
+  const routeStops = useMemo<Stop[]>(() => {
+    const ids =
+      state.route.length > 0
+        ? state.route
+        : routeIdsForLine(CONTENT.stops, CONTENT.route, CONTENT.route.defaultLine);
+    return ids.map((id) => getStop(id)).filter((stop): stop is Stop => Boolean(stop));
+  }, [state.route]);
 
   const segments = useMemo(
     () => buildSegments(routeStops, CONTENT.route.pacing, state.line),

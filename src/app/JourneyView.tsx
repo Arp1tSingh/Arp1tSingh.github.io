@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Indicator, Ticket } from '../ui';
 import { CONTENT } from '../data/content';
@@ -51,6 +51,7 @@ export function JourneyView({
 
   const container = useRef<HTMLDivElement>(null);
   const [contextLost, setContextLost] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const detail = useMemo(() => profileDevice().detail, []);
   /**
    * Whether this browser can run the scene at all.
@@ -61,6 +62,21 @@ export function JourneyView({
    */
   const [canRenderScene] = useState(() => profileDevice().webgl);
   const s = position?.s ?? 0;
+
+  /**
+   * Whether the visitor has moved the line yet.
+   *
+   * "Scroll is the only clock" is a rule about the scene, not about the
+   * interface: the page has to say so, or the train looks parked.
+   */
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > 60) setScrolled(true);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <div className="journey-view" ref={container}>
@@ -130,6 +146,16 @@ export function JourneyView({
       </div>
 
       <Indicator stops={stops} currentIndex={state.stopIndex} phase={state.phase} />
+
+      {/*
+        The line only moves when the visitor moves it. The page says so, once,
+        and then stops saying it.
+      */}
+      {state.phase !== 'gate' && !scrolled ? (
+        <p className="journey-view__cue">
+          Scroll to ride <span aria-hidden="true">↓</span>
+        </p>
+      ) : null}
 
       {current ? (
         <Ticket

@@ -3,8 +3,15 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
+  /**
+   * Every page creates a WebGL context for the scene, so a run with more
+   * workers than the machine has cores spends its time fighting over the GPU
+   * and the tests start failing on timeouts rather than on behaviour. Three
+   * is the most a laptop gives reliably.
+   */
+  workers: process.env.CI ? 2 : 3,
   forbidOnly: Boolean(process.env.CI),
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1,
   reporter: process.env.CI ? [['github'], ['list']] : 'list',
   timeout: 45_000,
   expect: { timeout: 10_000 },

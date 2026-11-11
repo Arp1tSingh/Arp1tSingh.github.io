@@ -172,6 +172,21 @@ button {
 }
 
 /*
+ * The gate is up: the page cannot scroll, and the journey's own furniture is
+ * hidden behind the panel. The scene behind it is still there.
+ */
+html.gate-open {
+  overflow: hidden;
+}
+
+html.gate-open .journey-view__dots,
+html.gate-open .journey-view__stage,
+html.gate-open .journey-view__cue,
+html.gate-open .indicator {
+  display: none;
+}
+
+/*
  * The classic view is the finished state by construction, not something
  * JavaScript repaints. It is hidden only once the app has actually booted
  * and taken over the page.

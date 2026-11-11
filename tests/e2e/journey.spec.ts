@@ -40,18 +40,23 @@ test('scrolling on closes the ticket and moves the line', async ({ page }) => {
 
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('Kurla');
 
-  // Read the ticket to the end, then keep scrolling: the ticket closes and the
-  // train moves on to the next station.
-  for (let attempt = 0; attempt < 8; attempt += 1) {
-    await page.mouse.move(720, 400);
-    await page.mouse.wheel(0, 1400);
-    await page.waitForTimeout(120);
-    if ((await dialog.count()) === 0) break;
-  }
+  // Scroll, and the line moves under the visitor. The ticket at the first
+  // station gives way to the ticket at the next one.
+  //
+  // The wheel goes over the scene, on the left of the ticket: over the ticket
+  // itself the wheel reads the proof, which is what it is for.
+  const viewport = page.viewportSize();
+  expect(viewport).not.toBeNull();
 
-  await expect(dialog).toBeHidden();
-  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  await page.mouse.move(200, 300);
+  await page.mouse.wheel(0, viewport!.height * 2);
+
+  await expect
+    .poll(async () => page.evaluate(() => window.scrollY), { timeout: 15_000 })
+    .toBeGreaterThan(viewport!.height);
+  await expect(dialog).toContainText('Ghatkopar');
 });
 
 test('the map opens with M and closes with M again', async ({ page }) => {

@@ -27,9 +27,14 @@ export function App() {
   const [contextLost, setContextLost] = useState(false);
   const savedScroll = useRef(0);
 
-  // Boot. The inline script in index.html has already armed the app; this
-  // only tells the safety timer that it can stand down.
+  // Boot.
+  //
+  // The inline script in index.html arms the page before the app loads, and
+  // puts it back to the static page if the app has not booted in time. The
+  // app therefore has to arm it again when it does boot: a slow machine must
+  // not end up with the static copy and the live app at the same time.
   useEffect(() => {
+    document.documentElement.classList.add('js-armed');
     window.__local3dBooted = true;
     if (window.__local3dFallback) {
       window.clearTimeout(window.__local3dFallback);
@@ -37,11 +42,20 @@ export function App() {
     }
   }, []);
 
+  const atGate = journey.state.phase === 'gate';
+
   // The sky cycle: dawn to night across the journey.
   useEffect(() => {
     const stage = SKY_STAGES[Math.min(SKY_STAGES.length - 1, Math.floor(journey.progress * 4))];
     document.documentElement.dataset.journey = stage;
   }, [journey.progress]);
+
+  // While the gate is up the page cannot scroll: the visitor has not chosen a
+  // line yet, and the line behind it is standing still. The classic view and
+  // the map are their own surfaces, so the gate steps aside for them.
+  useEffect(() => {
+    document.documentElement.classList.toggle('gate-open', atGate && view === 'journey');
+  }, [atGate, view]);
 
   // If the graphics context is lost and cannot be restored, the Classic view
   // is the finished state and the visitor goes there rather than to a hole.
@@ -78,8 +92,7 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const selectLine = useCallback(
-    (line: 'express' | 'all' | 'map') => {
+  const selectLine = useCallback(    (line: 'express' | 'all' | 'map') => {
       if (line === 'map') {
         setView('map');
         return;
@@ -97,7 +110,6 @@ export function App() {
     onSelectLine: (line) => selectLine(line),
   });
 
-  const atGate = journey.state.phase === 'gate';
   const mapStops = lineStops('all');
 
   return (
@@ -113,19 +125,24 @@ export function App() {
       />
 
       <main className="app__main">
-        {atGate ? (
+        {/*
+          The line is always mounted. At the gate it waits behind the panel,
+          so the first thing a visitor sees is the train at the first station
+          rather than a flat screen with a question on it.
+        */}
+        <JourneyView
+          journey={journey}
+          wallet={wallet}
+          paused={paused}
+          reducedMotion={reducedMotion}
+          onContextLost={() => setContextLost(true)}
+        />
+
+        {atGate && view === 'journey' ? (
           <Gate
             lines={CONTENT.route.lines}
             profile={CONTENT.profile}
             onSelect={(line) => selectLine(line)}
-          />
-        ) : view === 'journey' ? (
-          <JourneyView
-            journey={journey}
-            wallet={wallet}
-            paused={paused}
-            reducedMotion={reducedMotion}
-            onContextLost={() => setContextLost(true)}
           />
         ) : null}
       </main>

@@ -168,8 +168,28 @@
   transform-origin: left center;
 }
 
-/* The progress dots: one per stop, so a visitor always knows what is left. */
-.journey-view__dots {
+/* The scroll cue: the line only moves when the visitor moves it. */
+.journey-view__cue {
+  position: fixed;
+  left: var(--page-pad);
+  bottom: calc(var(--space-4) + 1.6rem);
+  z-index: 45;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--hairline-strong);
+  background: var(--navy-panel);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+.journey-view__cue span {
+  color: var(--red);
+  margin-left: 0.4rem;
+}
+
+/* The progress dots: one per stop, so a visitor always knows what is left. */.journey-view__dots {
   position: fixed;
   left: var(--page-pad);
   bottom: var(--space-4);

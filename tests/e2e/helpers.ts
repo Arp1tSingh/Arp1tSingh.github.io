@@ -13,6 +13,14 @@ export async function waitForApp(page: Page): Promise<void> {
     timeout: 15_000,
   });
   await expect(page.locator('html')).toHaveClass(/js-armed/);
+
+  // The first paint of the app can lag behind the flag while the scene chunk
+  // and the WebGL context are set up, so wait for the interface itself
+  // rather than for a class that is already there.
+  await page.waitForSelector('.gate, .journey-view', {
+    state: 'visible',
+    timeout: 15_000,
+  });
 }
 
 /** The site header, which is the one that carries the Hire me button. */

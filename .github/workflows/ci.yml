@@ -79,8 +79,16 @@ jobs:
       - name: Build
         run: npm run build
 
+      # The runner image already carries Chromium and Firefox. Only WebKit
+      # needs its system libraries, and only one job may ask apt for them at
+      # a time: three parallel `apt-get` runs deadlock on the same lock.
       - name: Install Playwright
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        run: |
+          if [ "${{ matrix.browser }}" = "webkit" ]; then
+            npx playwright install --with-deps webkit
+          else
+            npx playwright install ${{ matrix.browser }}
+          fi
 
       - name: End-to-end tests
         run: npx playwright test --project=${{ matrix.browser }}

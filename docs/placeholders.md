@@ -77,6 +77,25 @@ The terminus renders the resume action **only** when this is a non-empty
 string, so an unreleased PDF never becomes a dead link. Drop the file in
 `public/resume.pdf` and set the field to `resume.pdf`.
 
+#### When the PDF arrives
+
+Everything is already in place. Two steps:
+
+1. Put the file at `public/resume.pdf`.
+2. Set `"resume": "resume.pdf"` in `content/profile.json`.
+
+Then:
+
+```
+npm run generate:content
+npm run validate      # refuses a resume that points at a file which is not there
+npm test
+```
+
+The resume appears as a **Résumé** action in the terminus ticket, next to
+the Repository link, and as a download link in the Classic view. Nothing else
+changes, and the build fails loudly if the field and the file ever disagree.
+
 ### Media still missing
 
 `content/stops/*.json` reference eight images, all present in `public/media/`.

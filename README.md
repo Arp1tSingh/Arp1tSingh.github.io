@@ -18,7 +18,7 @@ Route(i, b) = order({ e ∈ E : relevance(e, i) ≥ τ(b) })
 
 This buys three things. The 3D line, a flat Classic view and a network map become interchangeable renderers of one route. The metaphor can change later without touching content. And every design choice gets a test: does it help a visitor reach evidence faster, or judge it better?
 
-The full brief is in [`docs/blueprint.md`](docs/blueprint.md).
+The full brief is in [`docs/blueprint.md`](docs/blueprint.md). What is still open - the résumé, the Kalyan Junction card, the two clips that only Arpit can record - is in [`docs/placeholders.md`](docs/placeholders.md).
 
 ## One dataset, many renderers
 

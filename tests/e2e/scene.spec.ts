@@ -9,18 +9,41 @@ import { waitForApp } from './helpers';
  * view, with identical content at every step."
  */
 
-test('the scene renders on a canvas behind the journey', async ({ page }) => {
+/**
+ * Whether this browser can run WebGL here.
+ *
+ * A headless browser on a machine with no GPU may not, and then the poster
+ * is the correct outcome rather than a failure.
+ */
+async function hasWebGL(page: import('@playwright/test').Page): Promise<boolean> {
+  return page.evaluate(`(() => {
+    var canvas = document.createElement('canvas');
+    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+  })()`);
+}
+
+test('the scene renders, or the poster stands in for it', async ({ page }) => {
   await page.goto('/');
   await waitForApp(page);
   await page.getByRole('button', { name: /express/i }).first().click();
 
   const canvas = page.locator('.scene3d__canvas canvas');
-  await expect(canvas).toHaveCount(1);
+  const poster = page.locator('.poster');
 
-  const box = await canvas.boundingBox();
-  expect(box).not.toBeNull();
-  expect(box!.width).toBeGreaterThan(600);
-  expect(box!.height).toBeGreaterThan(400);
+  if (await hasWebGL(page)) {
+    await expect(canvas).toHaveCount(1);
+    await expect(poster).toHaveCount(0);
+
+    const box = await canvas.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeGreaterThan(600);
+    expect(box!.height).toBeGreaterThan(400);
+  } else {
+    // No WebGL: the poster takes over and the journey still works.
+    await expect(poster).toHaveCount(1);
+    await expect(canvas).toHaveCount(0);
+    await expect(page.getByRole('dialog')).toContainText('Kurla');
+  }
 });
 
 test('the scene does not swallow the clicks meant for the page', async ({ page }) => {
@@ -81,6 +104,16 @@ test.describe('without WebGL', () => {
 
     await expect(page.locator('.poster')).toHaveCount(1);
     await expect(page.locator('.scene3d__canvas canvas')).toHaveCount(0);
+
+    // And three.js is never fetched: a visitor without WebGL does not pay
+    // for the scene.
+    const sceneChunk = await page.evaluate(`(() => {
+      return performance.getEntriesByType('resource')
+        .map(function (r) { return r.name; })
+        .filter(function (n) { return /Scene/.test(n); })
+        .length;
+    })()`);
+    expect(sceneChunk).toBe(0);
 
     // The journey still works: the ticket still opens at the first station.
     await expect(page.getByRole('dialog')).toContainText('Kurla');

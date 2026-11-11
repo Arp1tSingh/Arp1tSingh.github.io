@@ -140,6 +140,8 @@ The scene is a separate chunk. The first paint is the poster and the page, and t
 
 The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 155 KB of it; the rest is the train, and it arrives after the visitor can already read the page.
 
+A visitor whose browser cannot run WebGL never downloads the scene chunk at all. The check happens before the import, so three.js is not fetched and the poster scene stands in.
+
 ## The ten-second contract
 
 Within ten seconds a visitor knows who you are, what you do and how to reach you. Contact is the one thing nobody should have to hunt for, so there are three redundant affordances and none of them depends on the others working:

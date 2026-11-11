@@ -51,6 +51,14 @@ export function JourneyView({
   const container = useRef<HTMLDivElement>(null);
   const [contextLost, setContextLost] = useState(false);
   const detail = useMemo(() => profileDevice().detail, []);
+  /**
+   * Whether this browser can run the scene at all.
+   *
+   * The answer is taken before the scene is loaded, so a visitor without
+   * WebGL never downloads three.js: they get the poster, which is the whole
+   * point of having one.
+   */
+  const [canRenderScene] = useState(() => profileDevice().webgl);
   const s = position?.s ?? 0;
 
   return (
@@ -58,7 +66,7 @@ export function JourneyView({
       <div className="scene3d" aria-hidden="true">
         {contextLost ? (
           <Poster reason="the graphics context was lost" />
-        ) : (
+        ) : canRenderScene ? (
           <Suspense fallback={<Poster reason="loading the scene" />}>
             <Scene3D
               stops={stops}
@@ -74,6 +82,8 @@ export function JourneyView({
               }}
             />
           </Suspense>
+        ) : (
+          <Poster reason="this browser cannot run WebGL" />
         )}
       </div>
 

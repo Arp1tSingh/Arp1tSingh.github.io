@@ -20,6 +20,9 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      // Firefox's defaults are left alone on purpose. A headless browser on
+      // a machine with no GPU turns WebGL off, and the site is built to
+      // answer that with the poster scene rather than with an error.
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },

@@ -36,12 +36,11 @@ function hasWebGL(): boolean {
       canvas.getContext('webgl2') ??
       canvas.getContext('webgl') ??
       canvas.getContext('experimental-webgl');
-    if (!gl) return false;
-    // Release the probe context straight away: some drivers cap how many
-    // contexts a page may hold.
-    const lose = (gl as WebGLRenderingContext).getExtension('WEBGL_lose_context');
-    lose?.loseContext();
-    return true;
+    // The probe canvas is never added to the document, so the browser
+    // collects it and its context with it. Asking for it to be lost would
+    // print a context-lost message in some browsers, and this site asserts
+    // that it prints no console errors at all.
+    return Boolean(gl);
   } catch {
     return false;
   }

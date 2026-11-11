@@ -11,6 +11,8 @@ import './scene3d.css';
 export { Scene, Scene3D, useDocumentHidden } from './Scene';
 export type { SceneProps, Scene3DProps } from './Scene';
 export { Poster } from './Poster';
+export { Bloom } from './Bloom';
+export type { BloomProps } from './Bloom';
 export { Track, buildTrack } from './Track';
 export type { TrackProps } from './Track';
 export { Train, buildTrain } from './Train';

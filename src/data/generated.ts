@@ -14,7 +14,7 @@ export const PROFILE_RAW: unknown = {
   "role": "Computer Engineering student, Vidyalankar Institute of Technology, Mumbai",
   "location": "Mumbai, India",
   "email": "arpitsingh8534@gmail.com",
-  "resume": "",
+  "resume": "resume.pdf",
   "summary": "I build things that run on a CPU, survive a NAT, and get opened every day.",
   "social": {
     "github": "https://github.com/Arp1tSingh",

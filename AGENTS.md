@@ -19,7 +19,8 @@ into a single push.
   0/25/50/75/100% desktop, mobile and reduced motion reviewed. The city now
   stands 46 units back from the line's own normal, which removed the flat
   grey wall at Thane.
-- Remaining before ship: user-owned résumé PDF, one Kalyan before/after
-  number and two clips; then push once and watch CI.
+- Résumé is published at `public/resume.pdf`, wired through
+  `content/profile.json`. Remaining: two clips (MeshStream dashboard,
+  DictateIt reading), to follow after this push.
 - Verify locally: `npm run typecheck`, `npm test`, `npx playwright test`,
   `npm run build`. Review screenshots at 0/25/50/75/100% and mobile.

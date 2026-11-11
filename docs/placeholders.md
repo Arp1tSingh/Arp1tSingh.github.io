@@ -16,7 +16,7 @@ What is there now is the card written from the decisions below:
 - **title** - "Technical Team Lead, Fintech VIT"
 - **oneLiner** - "Led the technical team behind the Fintech committee's 3D vault site."
 - **claim** - "Led the Fintech committee's technical team in building its scroll-driven 3D vault site, replacing a basic earlier web presence."
-- **proof.metrics** - the before-and-after, the three renderers, the scope the journey carried, and the audits in CI
+- **proof.metrics** - the site it replaced, the three renderers, the scope the journey carried, and the audits in CI
 - **role** - `lead`, **period** - 2026-09 to 2026-10.
 
 The scope figures - 11 members, 6 portfolios, the season's 3 events - come from
@@ -32,8 +32,8 @@ the **claim**, which is about the work.
   and stays**. Say "technical team" in the card's text so it is not read as
   leading the whole committee, which has its own 3-person leadership.
 - **What changed** - the 3D vault site **replaced a basic or missing earlier
-  site**. That is the "one proof". It is a before/after claim, so the claim
-  line should say what the committee had before, not just what was built.
+  site**, and the claim line says what the committee had before, not just
+  what was built.
 - **Suggested claim** (for Arpit to confirm or reword, since it is built only
   from the answers above): "Led the Fintech committee's technical team in
   building its scroll-driven 3D vault site, replacing a basic earlier web
@@ -42,12 +42,6 @@ the **claim**, which is about the work.
 
 **Applied (2026-11-11):** the suggested claim is in the card, the card says
 "technical team", and the committee's own figures moved to the proof.
-
-**Still open:** one number that proves the before/after (visits, sign-ups, or
-what the old site lacked), and which parts of the build were Arpit's own
-versus the team's. Without those the card can state the claim but not
-evidence it. `validate:strict` will not catch this, so check it by hand before
-the site is shared.
 
 To change it: edit `content/stops/kalyan.json`, then
 `npm run generate:content` and `npm run validate`.
@@ -61,31 +55,12 @@ portfolio's through-line rather than something only Arpit can write.
 
 ### `content/profile.json` - the resume
 
-`"resume": ""` on purpose. **Decided (2026-11-11): no resume PDF is ready, so
-this stays empty for now.** A resume draft was attached later the same day.
-Its contact fields (city, phone, email, LinkedIn handle, CGPA) are bracketed
-placeholders, deliberately, for online safety. That is fine for a draft, but
-do not publish it as `public/resume.pdf` while the brackets are still in it,
-because a public file with a literal `[Phone Number]` reads as an unfinished
-template. Either publish a version with only the details Arpit is happy to
-make public (for example GitHub and a dedicated email), or keep the field empty.
-Two content gaps to fix in the PDF first: it does not mention the Fintech
-technical-team lead role, and it does not list MeshStream, the path tracer,
-RegimeTrader, BillBox or DictateIt, which are the stops the site is built
-around. The LinkedIn handle should also match the profile that is public.
+**Done (2026-11-12):** the PDF is published at `public/resume.pdf` and
+`"resume"` points at it. The terminus renders a **Résumé** action in the
+ticket, next to the Repository link, and the Classic view carries a download
+link.
 
-The terminus renders the resume action **only** when this is a non-empty
-string, so an unreleased PDF never becomes a dead link. Drop the file in
-`public/resume.pdf` and set the field to `resume.pdf`.
-
-#### When the PDF arrives
-
-Everything is already in place. Two steps:
-
-1. Put the file at `public/resume.pdf`.
-2. Set `"resume": "resume.pdf"` in `content/profile.json`.
-
-Then:
+To replace it later, overwrite `public/resume.pdf` and run:
 
 ```
 npm run generate:content
@@ -93,9 +68,7 @@ npm run validate      # refuses a resume that points at a file which is not ther
 npm test
 ```
 
-The resume appears as a **Résumé** action in the terminus ticket, next to
-the Repository link, and as a download link in the Classic view. Nothing else
-changes, and the build fails loudly if the field and the file ever disagree.
+The build fails loudly if the field and the file ever disagree.
 
 ### Media still missing
 

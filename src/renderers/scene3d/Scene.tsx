@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 
 import { CameraRig } from './CameraRig';
+import { Bloom } from './Bloom';
 import { Diorama } from './Dioramas';
 import { Poster } from './Poster';
 import { Sky } from './Sky';
@@ -60,6 +61,9 @@ export function Scene({ stops, s, activeIndex, progress, reducedMotion, detail }
 
       <Sky progress={progress} />
       <CameraRig s={s} reducedMotion={reducedMotion} />
+
+      {/* Bloom is the high tier's job and only pays off after dark. */}
+      {detail === 'high' && progress > 0.45 ? <Bloom /> : null}
 
       <Track stations={stops.length} detail={detail} />
 

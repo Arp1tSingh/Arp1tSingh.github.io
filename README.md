@@ -113,6 +113,7 @@ The scene is built entirely from primitives. There is no glTF, no texture map an
 - **The stations** are a modular kit: a platform, a canopy, a board, a bench and a lamp.
 - **The dioramas** are one prop per stop, chosen from the project's domain, so a station is recognisable before its name is read.
 - **The sky** is one inverted sphere and one shader with no texture. It runs from dawn to night across the journey, and the fog is the horizon colour so the city dissolves into it.
+- **The bloom** is on at night and on the high tier only: the train's window band, the station lamps and the platform edges glow, and nothing else does.
 
 The camera obeys three rules: it eases behind the train rather than being rigidly attached to it, its **angular velocity is capped** so a sweep never exceeds a gentle turn rate, and the horizon stays level - there is no roll, ever.
 

@@ -134,10 +134,17 @@ not, and the mute button that would come with it is not in the interface.
 
 ### Bloom
 
-The blueprint's art direction asks for "bloom at night on the high tier
-only". It is **not** implemented. The night sky and the train's emissive
-window band carry the mood instead, and the saving is a whole post-processing
-pass. It is the one item in the art direction that is outstanding.
+**Done (2026-11-11).** The blueprint's art direction asks for "bloom at night
+on the high tier only", and that is what it does: the composer's bloom pass
+runs once the journey is more than half way through and the sky has gone
+dark, and only on the high tier.
+
+The threshold is high on purpose. The rails are the brightest mark on the
+ground and they should not turn into a laser beam; only the train's window
+band, the station lamps and the platform edges are meant to glow.
+
+The cost is one extra pass and a render target, so the scene is still a lazy
+chunk and a visitor without WebGL never fetches it.
 
 ### A modelled train
 

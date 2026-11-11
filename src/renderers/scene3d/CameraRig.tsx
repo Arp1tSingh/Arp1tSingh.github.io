@@ -92,7 +92,10 @@ export function CameraRig({ s, reducedMotion }: CameraRigProps) {
       camera.lookAt(x + LOOK_AHEAD, LOOK_HEIGHT, 0);
       position.current.copy(camera.position);
       look.current.set(x + LOOK_AHEAD, LOOK_HEIGHT, 0);
-      yaw.current = 0;
+      yaw.current = Math.atan2(
+        look.current.x - camera.position.x,
+        look.current.z - camera.position.z,
+      );
       initialised.current = true;
       return;
     }
@@ -100,6 +103,13 @@ export function CameraRig({ s, reducedMotion }: CameraRigProps) {
     if (!initialised.current) {
       position.current.copy(wantedPosition);
       look.current.copy(wantedLook);
+      // The yaw has to start where the camera is already pointing, or the
+      // turn-rate cap would spend the first seconds of the journey turning
+      // the camera away from the line.
+      yaw.current = Math.atan2(
+        wantedLook.x - wantedPosition.x,
+        wantedLook.z - wantedPosition.z,
+      );
       initialised.current = true;
     }
 

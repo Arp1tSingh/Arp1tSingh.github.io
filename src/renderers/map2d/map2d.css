@@ -123,7 +123,7 @@
 }
 
 .map2d__chord--active {
-  stroke: var(--red);
+  stroke: var(--accent);
   stroke-width: 1.5;
   opacity: 1;
 }
@@ -157,7 +157,7 @@
 
 .map2d__here {
   fill: none;
-  stroke: var(--red);
+  stroke: var(--accent);
   stroke-width: 1.5;
 }
 
@@ -166,13 +166,13 @@
 }
 
 .map2d__station:focus-visible .map2d__dot {
-  stroke: var(--red);
+  stroke: var(--accent);
   stroke-width: 2;
 }
 
 .map2d__station:focus-visible .map2d__station--local .map2d__dot,
 .map2d__station:focus-visible .map2d__dot {
-  stroke: var(--red);
+  stroke: var(--accent);
 }
 
 /* ------------------------------------------------------------------ *
@@ -216,7 +216,7 @@
 }
 
 .map2d__label--here .map2d__label-station {
-  color: var(--red);
+  color: var(--accent-text);
 }
 
 /* ------------------------------------------------------------------ *
@@ -301,7 +301,7 @@
   font-size: var(--step--2);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--accent-text);
 }
 
 /* ------------------------------------------------------------------ *
@@ -329,8 +329,8 @@
 }
 
 .map2d__skill[aria-pressed='true'] {
-  border-color: var(--red);
-  color: var(--red);
+  border-color: var(--accent);
+  color: var(--accent-text);
 }
 
 .map2d__skill-count {
@@ -339,7 +339,7 @@
 }
 
 .map2d__skill[aria-pressed='true'] .map2d__skill-count {
-  color: var(--red);
+  color: var(--accent-text);
 }
 
 /* ------------------------------------------------------------------ *
@@ -411,8 +411,8 @@
 }
 
 .map2d__stack-chip[aria-pressed='true'] {
-  border-color: var(--red);
-  color: var(--red);
+  border-color: var(--accent);
+  color: var(--accent-text);
 }
 
 .map2d__links {
@@ -488,7 +488,7 @@
 }
 
 .map2d__fallback-button[aria-current='true'] {
-  color: var(--red);
+  color: var(--accent-text);
 }
 
 .map2d__fallback-meta {

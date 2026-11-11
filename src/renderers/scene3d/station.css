@@ -21,10 +21,11 @@
   transform: translate(-50%, -50%);
   box-sizing: border-box;
 
-  /* The board's panel is `--paper`, so the label is ink on paper. */
+  /* The board's panel is `--board`, so the label is ink on yellow. */
   padding: 0.3rem 0.5rem;
-  background: var(--paper);
-  color: var(--navy);
+  background: var(--board);
+  color: var(--ink);
+  font-weight: 600;
 
   font-family: var(--font-mono);
   font-size: var(--step--1);

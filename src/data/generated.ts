@@ -49,17 +49,17 @@ export const ROUTE_RAW: unknown = {
     }
   ],
   "order": [
+    "dadar",
+    "slot-06",
     "slot-01",
     "slot-02",
     "slot-03",
     "slot-04",
-    "slot-05",
-    "slot-06",
     "slot-07",
+    "slot-05",
+    "kalyan",
     "slot-08",
     "slot-09",
-    "kalyan",
-    "dadar",
     "badlapur"
   ],
   "pacing": {

@@ -110,11 +110,11 @@ If the app fails to boot, an inline timer puts the static page back. There is no
 
 The scene is built entirely from primitives. There is no glTF, no texture map and no model file, so **the whole 3D payload is 0 bytes** and the geometry budget is the only budget that matters.
 
-- **The train** is three articulated cars sharing one body style: a chassis, a roof, an emissive window band, a skirt, six wheels and a red lamp at each end. Parts that share a material are merged, so the whole set is a handful of draw calls.
-- **The track** is two rails and a ballast ribbon, with the sleepers, the catenary masts and the city behind them as `InstancedMesh`. Six draw calls for the whole line.
+- **The train** is three articulated cars in the metro livery: a silver shell, a blue band, a red line under the windows, a lit window band, tapered cab ends and a third-rail shoe on each bogie. Parts that share a material are merged, so the set is eight draw calls.
+- **The track** weaves between two lanes. The ballast, both running rails, the third rail and its cover are ribbons extruded along the smoothed path; the sleepers and the city are `InstancedMesh`. Seven draw calls for the whole line, with no catenary and no pantograph.
 - **The stations** are a modular kit: a platform, a canopy, a board, a bench and a lamp.
 - **The dioramas** are one prop per stop, chosen from the project's domain, so a station is recognisable before its name is read.
-- **The sky** is one inverted sphere and one shader with no texture. It runs from dawn to night across the journey, and the fog is the horizon colour so the city dissolves into it.
+- **The sky** is one inverted sphere and one shader with no texture. Six keys take it from dawn through day, golden hour and dusk to night, and the fog is the horizon colour so the city dissolves into it.
 - **The bloom** is on at night and on the high tier only: the train's window band, the station lamps and the platform edges glow, and nothing else does.
 
 The camera obeys three rules: it eases behind the train rather than being rigidly attached to it, its **angular velocity is capped** so a sweep never exceeds a gentle turn rate, and the horizon stays level - there is no roll, ever.
@@ -123,8 +123,8 @@ The budgets are asserted by the unit tests, not by convention. These are the num
 
 | Element | Blueprint budget | Built | Draw calls |
 | --- | --- | --- | --- |
-| The train | 12,000 to 20,000 triangles | 15,076 | 10 |
-| The track and the city | under 60 draw calls | 6 | 6 |
+| The train | 12,000 to 20,000 triangles | 16,788 | 8 |
+| The track and the city | under 60 draw calls | 7 | 7 |
 | A station | under 8,000 triangles | 212 (worst) | 6 |
 | A diorama prop | under 3,000 triangles | 748 (worst) | 1 |
 | The whole scene | under 60 draw calls | about 51 | |
@@ -139,7 +139,7 @@ Nothing is loaded that the visitor has not asked for. The chunks are:
 | Chunk | Raw | Gzipped | When |
 | --- | --- | --- | --- |
 | The app | 277 KB | **87 KB** | With the page |
-| The 3D scene | 964 KB | 257 KB | With the line, on a wide screen |
+| The 3D scene | 965 KB | 258 KB | With the line, on a wide screen |
 | The Classic view | 7 KB | 2 KB | When `C` is pressed |
 | The network map | 11 KB | 3 KB | When `M` is pressed |
 | The QR encoder | 5 KB | 2 KB | When a ticket opens |
@@ -174,17 +174,17 @@ The layout shift was the web fonts arriving after the first paint and reflowing 
 
 Within ten seconds a visitor knows who you are, what you do and how to reach you. Contact is the one thing nobody should have to hunt for, so there are three redundant affordances and none of them depends on the others working:
 
-1. A solid accent **Hire me** button in the fixed header — painted on frame one, at every width, never scrolls away. It is a `mailto:`, so there is no form and nothing to fail.
+1. A solid board-yellow **Hire me** button in the fixed header — painted on frame one, at every width, never scrolls away. It is a `mailto:`, so there is no form and nothing to fail.
 2. The email address itself, in the gate, as a real `mailto:` link.
 3. The footer, on every page.
 
 ## Design system
 
-- **Palette** is `#000016` navy, `#f1f1f1` off-white, `#9797a5` grey and `#e4032e` signal red.
-- One accent colour means one thing: red is *actionable*, or you are *here*. No decorative red anywhere else.
+- **Palette** is the concept's own: `#101216` ink, `#fdf3d0` paper, `#ffc52e` board yellow and `#d92d3a` signal red. `--accent-text` is the readable tint of the red on ink.
+- Board yellow means *act*, or *you are here*: the contact button, the ticket board, the current stop and the progress fill. Red is the signal: focus rings, map lines and the live marker. There is no decorative colour in either.
 - **Fraunces** for everything that matters. **Inter Tight** for text. **JetBrains Mono** only where it is genuinely a machine readout — a serial number, a dot-matrix board, a stack.
 - `border-radius: 0` throughout. Flat colour: no shadows, no blur, no glass.
-- Hairlines at 13% white are the only structural device.
+- Hairlines at 14% cream are the only structural device.
 
 ## Stack
 

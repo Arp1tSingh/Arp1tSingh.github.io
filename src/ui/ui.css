@@ -31,7 +31,7 @@
   align-content: start;
   gap: var(--space-5);
   padding: calc(var(--header-h) + var(--space-4)) var(--page-pad) var(--space-5);
-  background: var(--navy-panel);
+  background: var(--ink-panel);
   border-left: 1px solid var(--hairline);
   overflow-y: auto;
 }
@@ -40,7 +40,7 @@
   .gate {
     width: 100%;
     border-left: 0;
-    background: var(--navy);
+    background: var(--ink);
   }
 }
 
@@ -102,7 +102,7 @@
 
 /* Red means "actionable". A mailto is the most actionable thing here. */
 .gate__email {
-  color: var(--red);
+  color: var(--accent-text);
   text-decoration: underline;
   text-underline-offset: 0.25em;
   overflow-wrap: anywhere;
@@ -138,7 +138,7 @@
 }
 
 .gate__line:hover {
-  background: var(--navy-raise);
+  background: var(--ink-raise);
 }
 
 .gate__line-label {
@@ -153,9 +153,9 @@
   color: var(--grey);
 }
 
-/* Red means "you are here": the line the visitor is riding. */
+/* The board means "you are here": the line the visitor is riding. */
 .gate__line[aria-current='true'] {
-  border-left-color: var(--red);
+  border-left-color: var(--board);
   padding-left: calc(var(--space-3) - 2px);
 }
 
@@ -195,7 +195,7 @@
   /* Not `contain`: the wheel has to be able to leave the ticket and move the
      line. The ticket closes as soon as it has been read to the end. */
   overscroll-behavior: auto;
-  background: var(--navy-panel);
+  background: var(--ink-panel);
   border-left: 1px solid var(--hairline);
   padding-top: var(--header-h);
 }
@@ -249,25 +249,28 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--hairline);
+  padding: var(--space-2) var(--space-3);
+  background: var(--board);
+  color: var(--ink);
 }
 
 .ticket__station {
   font-family: var(--font-mono);
   font-size: var(--step--1);
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--grey);
+  color: var(--ink);
 }
 
 .ticket__tier {
   font-family: var(--font-mono);
   font-size: var(--step--2);
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--paper);
-  border: 1px solid var(--hairline-strong);
+  color: var(--ink);
+  border: 1px solid var(--ink);
   padding: 0.15em 0.6em;
 }
 
@@ -352,7 +355,7 @@
 .ticket__figure img {
   width: 100%;
   border: 1px solid var(--hairline);
-  background: var(--navy-raise);
+  background: var(--ink-raise);
 }
 
 .ticket__figure figcaption {
@@ -421,7 +424,7 @@
      always on screen. */
   position: sticky;
   bottom: 0;
-  background: var(--navy-panel);
+  background: var(--ink-panel);
 }
 
 .ticket__stub-code {
@@ -445,7 +448,7 @@
 }
 
 .ticket__qr-svg rect {
-  fill: var(--navy);
+  fill: var(--ink);
 }
 
 .ticket__serial {
@@ -475,20 +478,21 @@
   color: var(--paper);
 }
 
-/* Red means "actionable": keeping the ticket is the action. */
+/* The board means "actionable": keeping the ticket is the action. */
 .ticket__keep {
   font-family: var(--font-mono);
   font-size: var(--step--1);
+  font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--red);
-  border: 1px solid var(--red);
+  color: var(--board);
+  border: 1px solid var(--board);
   padding: 0.45em 0.9em;
   white-space: nowrap;
 }
 
 .ticket__keep:hover {
-  background: var(--red);
-  color: var(--paper);
+  background: var(--board);
+  color: var(--ink);
 }
 
 .ticket__keep[aria-pressed='true'] {
@@ -528,7 +532,7 @@
   align-items: center;
   gap: var(--space-2) var(--space-3);
   padding: var(--space-2) var(--space-3);
-  background: var(--navy-panel);
+  background: var(--ink-panel);
   border: 1px solid var(--hairline);
   max-width: calc(100vw - 2 * var(--page-pad));
 }
@@ -598,7 +602,7 @@
 }
 
 .indicator__dot.is-current {
-  background: var(--red);
+  background: var(--accent);
 }
 
 /* The dot matrix itself. */
@@ -687,7 +691,7 @@
 }
 
 .wallet__jump:hover .wallet__stop-title {
-  color: var(--red);
+  color: var(--accent-text);
 }
 
 .wallet__stop-title {
@@ -752,8 +756,8 @@
   margin-left: auto;
   font-family: var(--font-mono);
   font-size: var(--step--1);
-  color: var(--red);
-  border-bottom: 1px solid var(--red);
+  color: var(--accent-text);
+  border-bottom: 1px solid var(--accent);
   padding-bottom: 0.15em;
 }
 

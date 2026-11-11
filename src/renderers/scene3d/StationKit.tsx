@@ -33,7 +33,7 @@ import {
   PLATFORM_LENGTH,
   SCENE_COLORS,
   TRACK_Y,
-  stationX,
+  stationAnchor,
 } from './constants';
 
 /* ------------------------------------------------------------------ *
@@ -73,14 +73,14 @@ const PLATFORM_DEPTH = 6;
 /** The platform's edge: the side the train runs along. */
 const EDGE = 2.4;
 
-/** The canopy: a flat roof on four posts, over the middle of the platform. */
-const CANOPY_LENGTH = 8;
+/** The canopy: a long roof on four posts, over the platform. */
+const CANOPY_LENGTH = 30;
 const CANOPY_DEPTH = 4.2;
 const CANOPY_THICKNESS = 0.3;
 /** How far the roof's underside sits above the platform. */
 const CANOPY_CLEARANCE = 3.2;
 /** Where the four posts stand: along the track, and across it. */
-const CANOPY_POST_X = 3.4;
+const CANOPY_POST_X = 12;
 const CANOPY_POST_Z = [3.6, 7.0];
 
 /** The board: a panel on two legs, standing at the platform's edge. */
@@ -116,13 +116,11 @@ const HEADER_GLOW = 0.35;
 const LAMP_GLOW = 0.85;
 
 /**
- * Paper, darkened.
- *
  * The canopy is the one big pale shape in the frame, so it is a shade below
- * `--paper` rather than `--paper` itself: still the same colour family, just
- * held back so the board and the platform read in front of it.
+ * the cream paper: still the same colour family, just held back so the board
+ * and the platform read in front of it.
  */
-const CANOPY_PAPER = '#cfcfcf';
+const CANOPY_PAPER = SCENE_COLORS.canopy;
 
 /* ------------------------------------------------------------------ *
  * The board
@@ -180,7 +178,8 @@ export function boardLabelAnchor(stop: Stop): LabelAnchor {
  */
 export function boardLabelWorld(index: number, stop: Stop): [number, number, number] {
   const anchor = boardLabelAnchor(stop);
-  return [stationX(index) + anchor.x, TRACK_Y + anchor.y, anchor.z];
+  const station = stationAnchor(index);
+  return [station.x + anchor.x, TRACK_Y + anchor.y, station.z + anchor.z];
 }
 
 /* ------------------------------------------------------------------ *
@@ -202,8 +201,8 @@ interface CylinderPart {
 
 type Part = BoxPart | CylinderPart;
 
-/** The six materials, and so the six draw calls. */
-const MATERIAL_KEYS = ['navy', 'paper', 'canopy', 'edge', 'header', 'lamp'] as const;
+/** The seven materials, and so the seven draw calls. */
+const MATERIAL_KEYS = ['structure', 'paper', 'board', 'canopy', 'edge', 'header', 'lamp'] as const;
 type MaterialKey = (typeof MATERIAL_KEYS)[number];
 
 /** One primitive, placed. */
@@ -253,31 +252,38 @@ function mergeParts(parts: Part[]): THREE.BufferGeometry {
 function makeMaterial(key: MaterialKey, active: boolean): THREE.MeshLambertMaterial {
   const flat = { flatShading: true } as const;
   switch (key) {
-    case 'navy':
-      return new THREE.MeshLambertMaterial({ ...flat, color: SCENE_COLORS.navyRaise });
+    case 'structure':
+      return new THREE.MeshLambertMaterial({ ...flat, color: SCENE_COLORS.grey });
     case 'paper':
       return new THREE.MeshLambertMaterial({ ...flat, color: SCENE_COLORS.paper });
+    case 'board':
+      return new THREE.MeshLambertMaterial({
+        ...flat,
+        color: SCENE_COLORS.board,
+        emissive: SCENE_COLORS.board,
+        emissiveIntensity: active ? 0.18 : 0.06,
+      });
     case 'canopy':
       return new THREE.MeshLambertMaterial({ ...flat, color: CANOPY_PAPER });
     case 'edge':
       return new THREE.MeshLambertMaterial({
         ...flat,
-        color: SCENE_COLORS.red,
-        emissive: SCENE_COLORS.red,
+        color: SCENE_COLORS.board,
+        emissive: SCENE_COLORS.board,
         emissiveIntensity: active ? EDGE_GLOW : 0,
       });
     case 'header':
       return new THREE.MeshLambertMaterial({
         ...flat,
-        color: SCENE_COLORS.red,
-        emissive: SCENE_COLORS.red,
+        color: SCENE_COLORS.ink,
+        emissive: SCENE_COLORS.ink,
         emissiveIntensity: active ? HEADER_GLOW : 0,
       });
     case 'lamp':
       return new THREE.MeshLambertMaterial({
         ...flat,
-        color: SCENE_COLORS.paper,
-        emissive: SCENE_COLORS.paper,
+        color: SCENE_COLORS.lamp,
+        emissive: SCENE_COLORS.lamp,
         emissiveIntensity: LAMP_GLOW,
       });
   }
@@ -317,8 +323,8 @@ export function buildStation(
   /** Everything that is one colour, in the order it is merged. */
   const parts: Record<MaterialKey, Part[]> = {
     /* The platform slab, the legs under the board, the bench legs and the
-     * lamp post: all of it is the same dark navy, so all of it is one mesh. */
-    navy: [
+     * lamp post: all of it is the same structural grey, so it is one mesh. */
+    structure: [
       part('box', [PLATFORM_LENGTH, PLATFORM_HEIGHT, PLATFORM_DEPTH], [
         0,
         PLATFORM_HEIGHT / 2,
@@ -351,13 +357,17 @@ export function buildStation(
       ]),
     ],
 
-    /* The board's panel and the bench's seat: the two white surfaces. */
-    paper: [
+    /* The board's yellow panel. */
+    board: [
       part('box', [width, BOARD_HEIGHT, BOARD_THICKNESS], [
         BOARD_X,
         boardBottom + BOARD_HEIGHT / 2,
         boardZ,
       ]),
+    ],
+
+    /* The bench's seat: the one cream surface on the platform. */
+    paper: [
       part('box', [BENCH_LENGTH, BENCH_SEAT_THICKNESS, BENCH_DEPTH], [
         BENCH_X,
         PLATFORM_HEIGHT + BENCH_SEAT_HEIGHT + BENCH_SEAT_THICKNESS / 2,

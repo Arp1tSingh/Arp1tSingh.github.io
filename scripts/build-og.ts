@@ -28,10 +28,10 @@ type Rgb = readonly [number, number, number];
 const CARD_WIDTH = 1200;
 const CARD_HEIGHT = 630;
 
-const BACKGROUND: Rgb = [0x00, 0x00, 0x16];
-const FOREGROUND: Rgb = [0xf1, 0xf1, 0xf1];
-const ACCENT: Rgb = [0xe4, 0x03, 0x2e];
-const MUTED: Rgb = [0x97, 0x97, 0xa5];
+const BACKGROUND: Rgb = [0x10, 0x12, 0x16];
+const FOREGROUND: Rgb = [0xfd, 0xf3, 0xd0];
+const ACCENT: Rgb = [0xff, 0xc5, 0x2e];
+const MUTED: Rgb = [0xb9, 0xb2, 0xa2];
 
 const TITLE_TEXT = 'ARPIT SINGH';
 const SUBTITLE_TEXT = 'THE LOCAL 3D - THREE RENDERERS';
@@ -312,10 +312,10 @@ function buildSvg(): string {
     `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" role="img" aria-labelledby="og-title og-desc">`,
     '  <title id="og-title">Arpit Singh - The Local 3D</title>',
     '  <desc id="og-desc">The social card for arpit singh, a portfolio and project archive.</desc>',
-    `  <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" fill="#000016"/>`,
-    `  <text x="${MARGIN_X}" y="${titleBaseline}" font-family="Georgia, serif" font-size="${titleSize}" letter-spacing="${TITLE_SCALE}" fill="#f1f1f1">${TITLE_TEXT}</text>`,
-    `  <rect x="${MARGIN_X}" y="${RULE_TOP}" width="${RULE_WIDTH}" height="${RULE_HEIGHT}" fill="#e4032e"/>`,
-    `  <text x="${MARGIN_X}" y="${subtitleBaseline}" font-family="Georgia, serif" font-size="${subtitleSize}" letter-spacing="${SUBTITLE_SCALE}" fill="#9797a5">${SUBTITLE_TEXT}</text>`,
+    `  <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" fill="#101216"/>`,
+    `  <text x="${MARGIN_X}" y="${titleBaseline}" font-family="Georgia, serif" font-size="${titleSize}" letter-spacing="${TITLE_SCALE}" fill="#fdf3d0">${TITLE_TEXT}</text>`,
+    `  <rect x="${MARGIN_X}" y="${RULE_TOP}" width="${RULE_WIDTH}" height="${RULE_HEIGHT}" fill="#ffc52e"/>`,
+    `  <text x="${MARGIN_X}" y="${subtitleBaseline}" font-family="Georgia, serif" font-size="${subtitleSize}" letter-spacing="${SUBTITLE_SCALE}" fill="#b9b2a2">${SUBTITLE_TEXT}</text>`,
     '</svg>',
     '',
   ].join('\n');

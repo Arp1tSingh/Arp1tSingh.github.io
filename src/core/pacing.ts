@@ -104,10 +104,28 @@ export function stopScrollPosition(segments: Segment[], stopId: string): number 
 }
 
 /**
+ * The travel curve.
+ *
+ * A travel segment between two real halts eases out of the origin and into
+ * the destination, so a train arriving at a platform settles instead of
+ * hitting a wall. If a stop is skipped (a local on the Express line), that
+ * end has no halt and keeps its line speed; two travel segments through a
+ * skipped stop therefore meet at full speed and stay continuous.
+ */
+export function travelEase(progress: number, fromHalt: boolean, toHalt: boolean): number {
+  const v = Math.min(1, Math.max(0, progress));
+  if (fromHalt && toHalt) return v * v * (3 - 2 * v);
+  if (fromHalt) return v * v;
+  if (toHalt) return 1 - (1 - v) * (1 - v);
+  return v;
+}
+
+/**
  * Map a scroll position X to a route position.
  *
- * Travel is linear: a constant speed between stations. The easing the blueprint
- * asks for happens at the halts themselves, which the dwell plateaus provide.
+ * Scroll is still the only clock: `s` is a function of X and nothing else.
+ * The travel curve only changes the shape between two halts, not the
+ * endpoints, so every stop still lands on its integer position.
  */
 export function positionAt(x: number, segments: Segment[]): Position {
   if (segments.length === 0) {
@@ -122,8 +140,12 @@ export function positionAt(x: number, segments: Segment[]): Position {
   const progress = segment.length > 0 ? Math.min(1, Math.max(0, (clamped - segment.start) / segment.length)) : 1;
 
   const previous = segments[index - 1];
+  const following = segments[index + 1];
   const fromIndex = segment.kind === 'travel' && previous ? previous.stopIndex : segment.stopIndex;
-  const s = segment.kind === 'travel' ? fromIndex + progress : segment.stopIndex;
+  const fromHalt = previous?.kind === 'dwell';
+  const toHalt = following?.kind === 'dwell';
+  const eased = segment.kind === 'travel' ? travelEase(progress, fromHalt, toHalt) : progress;
+  const s = segment.kind === 'travel' ? fromIndex + eased : segment.stopIndex;
 
   return {
     stopIndex: segment.stopIndex,

@@ -24,7 +24,7 @@
   /* Above the ticket panel: the contact button is the one thing a visitor
      must never have to hunt for, so it never disappears. */
   z-index: 70;
-  background: var(--navy);
+  background: var(--ink);
   border-bottom: 1px solid var(--hairline);
 }
 
@@ -77,21 +77,21 @@
   border-bottom-color: var(--hairline-strong);
 }
 
-/* The one accent in the chrome: red means "actionable". */
+/* The board is the one loud surface in the chrome: it means "act". */
 .site-header__cta {
   margin-left: var(--space-4);
   padding: 0.5rem 1rem;
-  background: var(--red);
-  color: var(--paper);
+  background: var(--board);
+  color: var(--ink);
   font-size: var(--step--1);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
 .site-header__cta:hover {
   background: var(--paper);
-  color: var(--navy);
+  color: var(--ink);
 }
 
 @media (max-width: 720px) {
@@ -134,7 +134,7 @@
   max-width: 34rem;
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--hairline);
-  background: var(--navy);
+  background: var(--ink);
 }
 
 .station-card__station {
@@ -164,7 +164,7 @@
 .station-card__fill {
   display: block;
   height: 100%;
-  background: var(--paper);
+  background: var(--board);
   transform-origin: left center;
 }
 
@@ -176,7 +176,7 @@
   z-index: 45;
   padding: 0.4rem 0.9rem;
   border: 1px solid var(--hairline-strong);
-  background: var(--navy-panel);
+  background: var(--ink-panel);
   font-family: var(--font-mono);
   font-size: var(--step--1);
   letter-spacing: 0.06em;
@@ -185,7 +185,7 @@
 }
 
 .journey-view__cue span {
-  color: var(--red);
+  color: var(--accent-text);
   margin-left: 0.4rem;
 }
 
@@ -208,8 +208,8 @@
 }
 
 .journey-view__dot[aria-current='true'] {
-  background: var(--red);
-  border-color: var(--red);
+  background: var(--board);
+  border-color: var(--board);
 }
 
 .journey-view__dot:hover {
@@ -224,7 +224,7 @@
   inset: 0;
   z-index: 50;
   overflow-y: auto;
-  background: var(--navy);
+  background: var(--ink);
   padding: calc(var(--header-h) + var(--space-4)) var(--page-pad) var(--space-6);
 }
 
@@ -275,7 +275,7 @@
 }
 
 .site-footer__links a:hover {
-  color: var(--red);
+  color: var(--accent-text);
 }
 
 .site-footer__note {

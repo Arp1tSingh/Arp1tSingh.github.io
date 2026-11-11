@@ -26,13 +26,13 @@ export function Poster({ reason }: PosterProps) {
       >
         <defs>
           <linearGradient id="poster-sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0a0a33" />
-            <stop offset="55%" stopColor="#4a2a4a" />
-            <stop offset="100%" stopColor="#b0472f" />
+            <stop offset="0%" stopColor="#4a5f97" />
+            <stop offset="55%" stopColor="#c78a7a" />
+            <stop offset="100%" stopColor="#f2a36b" />
           </linearGradient>
           <linearGradient id="poster-ground" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0c0c26" />
-            <stop offset="100%" stopColor="#000016" />
+            <stop offset="0%" stopColor="#4b4f55" />
+            <stop offset="100%" stopColor="#2a2b2c" />
           </linearGradient>
         </defs>
 
@@ -40,7 +40,7 @@ export function Poster({ reason }: PosterProps) {
         <rect y="470" width="1200" height="230" fill="url(#poster-ground)" />
 
         {/* The city, flat blocks in the fog. */}
-        <g fill="#9797a5" opacity="0.28">
+        <g fill="#b9b2a2" opacity="0.28">
           <rect x="40" y="330" width="90" height="140" />
           <rect x="150" y="290" width="64" height="180" />
           <rect x="240" y="360" width="120" height="110" />
@@ -54,19 +54,20 @@ export function Poster({ reason }: PosterProps) {
         </g>
 
         {/* The platform edge and the rails. */}
-        <rect x="0" y="470" width="1200" height="6" fill="#e4032e" />
-        <rect x="0" y="540" width="1200" height="10" fill="#f1f1f1" opacity="0.75" />
-        <rect x="0" y="600" width="1200" height="10" fill="#f1f1f1" opacity="0.55" />
+        <rect x="0" y="470" width="1200" height="6" fill="#ffc52e" />
+        <rect x="0" y="540" width="1200" height="10" fill="#fdf3d0" opacity="0.75" />
+        <rect x="0" y="600" width="1200" height="10" fill="#fdf3d0" opacity="0.55" />
 
         {/* The train, seen head on. */}
         <g transform="translate(600 400)">
-          <rect x="-96" y="-120" width="192" height="240" fill="#000016" />
-          <rect x="-96" y="-120" width="192" height="240" fill="none" stroke="#f1f1f1" strokeWidth="4" />
-          <rect x="-70" y="-92" width="140" height="62" fill="#e4032e" />
-          <rect x="-56" y="10" width="46" height="14" fill="#9797a5" />
-          <rect x="10" y="10" width="46" height="14" fill="#9797a5" />
-          <circle cx="-56" cy="86" r="12" fill="#e4032e" />
-          <circle cx="56" cy="86" r="12" fill="#e4032e" />
+          <rect x="-96" y="-120" width="192" height="240" fill="#e6e9ee" />
+          <rect x="-70" y="-92" width="140" height="62" fill="#101216" />
+          <rect x="-96" y="60" width="192" height="26" fill="#1f4fb0" />
+          <rect x="-96" y="92" width="192" height="7" fill="#d92d3a" />
+          <rect x="-56" y="112" width="46" height="14" fill="#8a9099" />
+          <rect x="10" y="112" width="46" height="14" fill="#8a9099" />
+          <circle cx="-62" cy="34" r="12" fill="#fff2c2" />
+          <circle cx="62" cy="34" r="12" fill="#fff2c2" />
         </g>
       </svg>
 

@@ -7,6 +7,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import type { MutableRefObject } from 'react';
 import { CONTENT, getStop } from '../data/content';
 import {
   buildSegments,
@@ -24,6 +25,7 @@ import {
   type JourneyState,
 } from '../core/journey';
 import { routeIdsForLine } from '../core/route';
+import { skyStageAt, type SkyStage } from '../core/sky';
 import type { LineId, Stop } from '../core/types';
 
 export interface JourneyApi {
@@ -34,7 +36,16 @@ export interface JourneyApi {
   /** Total scroll length of the line, in viewport heights. */
   totalVh: number;
   position: Position | null;
-  /** 0..1 along the whole line. */
+  /**
+   * The live scroll position.
+   *
+   * The scene reads this every frame. It is a ref on purpose: a scroll frame
+   * must not re-render the React tree.
+   */
+  positionRef: MutableRefObject<Position | null>;
+  /** The named sky stage, for the page's ambient tokens. */
+  stage: SkyStage;
+  /** 0..1 along the whole line. Updates at segment boundaries. */
   progress: number;
   current: Stop | null;
   next: Stop | null;
@@ -54,6 +65,7 @@ export function useJourney(): JourneyApi {
     initialState(CONTENT.route.defaultLine),
   );
   const [position, setPosition] = useState<Position | null>(null);
+  const [stage, setStage] = useState<SkyStage>('dawn');
   const pendingJump = useRef<string | null>(null);
   /** The last position read, so a dismissal knows where the train was. */
   const positionRef = useRef<Position | null>(null);
@@ -81,33 +93,44 @@ export function useJourney(): JourneyApi {
 
   const totalVh = useMemo(() => totalLength(segments), [segments]);
 
-  // Scroll is the clock: one listener, one dispatch, nothing else.
+  // Scroll is the clock. Read it once per frame, but only tell React when
+  // the segment or the sky stage actually changes. The continuous value is
+  // in `positionRef`, where the scene can read it without a re-render.
   useEffect(() => {
     if (state.phase === 'gate') return undefined;
 
     let frame = 0;
+    let lastSegment = -1;
+    let lastStage: SkyStage | null = null;
+
     const read = () => {
-      frame = 0;
       const next = positionAt(scrollVh(), segments);
       positionRef.current = next;
-      setPosition(next);
-      dispatch({ type: 'scroll', position: next });
-    };
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(read);
+
+      if (next.segmentIndex !== lastSegment) {
+        lastSegment = next.segmentIndex;
+        setPosition(next);
+        dispatch({ type: 'scroll', position: next });
+      }
+
+      const nextStage = skyStageAt(next.s, routeStops.length);
+      if (nextStage !== lastStage) {
+        lastStage = nextStage;
+        setStage(nextStage);
+      }
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    read();
+    const tick = () => {
+      read();
+      frame = requestAnimationFrame(tick);
+    };
+
+    tick();
 
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [state.phase, segments]);
+  }, [state.phase, segments, routeStops.length]);
 
   // Boarding: the train waits at the first stop.
   useEffect(() => {
@@ -177,6 +200,8 @@ export function useJourney(): JourneyApi {
     segments,
     totalVh,
     position,
+    positionRef,
+    stage,
     progress,
     current,
     next,

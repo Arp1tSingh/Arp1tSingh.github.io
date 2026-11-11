@@ -9,6 +9,7 @@ import {
   positionAt,
   stopScrollPosition,
   totalLength,
+  travelEase,
 } from '../../src/core/pacing';
 
 const pacing = CONTENT.route.pacing;
@@ -125,6 +126,52 @@ describe('position', () => {
       expect(position.atStop).toBe(true);
       expect(position.stopId).toBe(stop.id);
     }
+  });
+});
+
+describe('the travel curve', () => {
+  const shapes = [
+    [true, true],
+    [true, false],
+    [false, true],
+    [false, false],
+  ] as const;
+
+  it('still starts and ends at the stops', () => {
+    for (const [fromHalt, toHalt] of shapes) {
+      expect(travelEase(0, fromHalt, toHalt)).toBe(0);
+      expect(travelEase(1, fromHalt, toHalt)).toBe(1);
+    }
+  });
+
+  it('never runs backwards', () => {
+    for (const [fromHalt, toHalt] of shapes) {
+      let previous = -1;
+      for (let t = 0; t <= 1; t += 0.01) {
+        const eased = travelEase(t, fromHalt, toHalt);
+        expect(eased).toBeGreaterThanOrEqual(previous - 1e-12);
+        previous = eased;
+      }
+    }
+  });
+
+  it('pulls out of a halt more slowly than a straight line', () => {
+    expect(travelEase(0.25, true, true)).toBeLessThan(0.25);
+    expect(travelEase(0.25, true, false)).toBeLessThan(0.25);
+  });
+
+  it('settles into a halt more slowly than a straight line', () => {
+    expect(travelEase(0.75, true, true)).toBeGreaterThan(0.75);
+    expect(travelEase(0.75, false, true)).toBeGreaterThan(0.75);
+  });
+
+  it('keeps line speed between two skipped stops', () => {
+    expect(travelEase(0.37, false, false)).toBeCloseTo(0.37, 12);
+  });
+
+  it('clamps outside the segment', () => {
+    expect(travelEase(-2, true, true)).toBe(0);
+    expect(travelEase(7, true, true)).toBe(1);
   });
 });
 

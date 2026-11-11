@@ -1,29 +1,43 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { MutableRefObject } from 'react';
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 
+import { Atmosphere } from './Atmosphere';
 import { CameraRig } from './CameraRig';
 import { Bloom } from './Bloom';
 import { Diorama } from './Dioramas';
 import { Poster } from './Poster';
+import { RideDriver, type RideClockValue } from './RideDriver';
 import { Sky } from './Sky';
 import { Station, zOnPlatform } from './StationKit';
 import { StationSigns } from './StationSigns';
 import { Track } from './Track';
 import { Train } from './Train';
-import { PLATFORM_HEIGHT, SCENE_COLORS, STATION_SPACING, FOG_NEAR, FOG_FAR, stationX } from './constants';
+import {
+  CAMERA_FOV,
+  FOG_FAR,
+  FOG_NEAR,
+  PLATFORM_HEIGHT,
+  SCENE_COLORS,
+  stationAnchor,
+} from './constants';
+import { buildLine } from './path';
 import { profileDevice, type Detail } from './tier';
+import type { Position } from '../../core/pacing';
 import type { Stop } from '../../core/types';
 
 export interface SceneProps {
   /** The stops on the current line, in line order. */
   stops: Stop[];
-  /** The route position: a fractional stop index. */
-  s: number;
+  /** The live scroll target. The scene reads it without re-rendering. */
+  targetSRef: MutableRefObject<Position | null>;
   /** The index of the stop the train is at. */
   activeIndex: number;
-  /** Journey progress, 0 to 1. */
-  progress: number;
+  /** The train is holding at a platform. */
+  dwelling: boolean;
+  /** The far end of the journey. Gates the expensive bloom pass. */
+  night: boolean;
   reducedMotion: boolean;
   detail: Detail;
 }
@@ -32,54 +46,55 @@ export interface SceneProps {
  * The scene.
  *
  * One directional light and one hemisphere light. No shadows, no textures,
- * no post-processing. Everything else is geometry.
+ * no post-processing by day. Everything else is geometry.
  */
-export function Scene({ stops, s, activeIndex, progress, reducedMotion, detail }: SceneProps) {
-  const trainX = s * STATION_SPACING;
-  const dwelling = Number.isInteger(s);
+export function Scene({
+  stops,
+  targetSRef,
+  activeIndex,
+  dwelling,
+  night,
+  reducedMotion,
+  detail,
+}: SceneProps) {
+  const clock = useRef<RideClockValue>({ s: 0 });
+  const line = useMemo(() => buildLine(stops.length), [stops.length]);
 
   return (
     <>
-      <fog attach="fog" args={['#3a2a4e', FOG_NEAR, FOG_FAR]} />
-      <color attach="background" args={[SCENE_COLORS.navy]} />
+      <fog attach="fog" args={['#f2a36b', FOG_NEAR, FOG_FAR]} />
+      <color attach="background" args={[SCENE_COLORS.ink]} />
 
-      <hemisphereLight args={['#f1f1f1', '#0a0a22', 0.85]} />
-      <directionalLight position={[40, 60, 30]} intensity={1.5} color="#f1f1f1" />
+      <Atmosphere clock={clock} stopCount={stops.length} />
 
-      {/*
-        The ground. Without it the lower half of the frame is the sky
-        sphere's underside, which turns the whole world the colour of the
-        horizon.
-      */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[(stops.length * STATION_SPACING) / 2, -0.62, -50]}
-      >
-        <planeGeometry args={[stops.length * STATION_SPACING + 320, 460]} />
-        <meshBasicMaterial color={SCENE_COLORS.navy} />
-      </mesh>
-
-      <Sky progress={progress} />
-      <CameraRig s={s} reducedMotion={reducedMotion} />
+      <RideDriver
+        clock={clock}
+        targetSRef={targetSRef}
+        stopCount={stops.length}
+        reducedMotion={reducedMotion}
+      />
+      <Sky clock={clock} stopCount={stops.length} />
+      <CameraRig clock={clock} line={line} reducedMotion={reducedMotion} />
 
       {/* Bloom is the high tier's job and only pays off after dark. */}
-      {detail === 'high' && progress > 0.45 ? <Bloom /> : null}
+      {detail === 'high' && night ? <Bloom /> : null}
 
       <Track stations={stops.length} detail={detail} />
 
-      {stops.map((stop, index) => (
-        <group key={stop.id} position={[stationX(index), 0, 0]}>
-          <Station stop={stop} index={index} active={index === activeIndex && dwelling} />
-          {/* The prop stands on the platform, clear of the bench and the board. */}
-          <Diorama stop={stop} position={[-5, PLATFORM_HEIGHT, zOnPlatform(4.4)]} />
-        </group>
-      ))}
+      {stops.map((stop, index) => {
+        const anchor = stationAnchor(index);
+        return (
+          <group key={stop.id} position={[anchor.x, 0, anchor.z]}>
+            <Station stop={stop} index={index} active={index === activeIndex && dwelling} />
+            {/* The prop stands on the platform, clear of the bench and the board. */}
+            <Diorama stop={stop} position={[-5, PLATFORM_HEIGHT, zOnPlatform(4.4)]} />
+          </group>
+        );
+      })}
 
       <StationSigns stops={stops} />
 
-      <group position={[trainX, 0, 0]}>
-        <Train dwelling={dwelling} doorsOpen={dwelling} />
-      </group>
+      <Train line={line} clock={clock} dwelling={dwelling} />
     </>
   );
 }
@@ -130,9 +145,9 @@ export function Scene3D({ paused, still, onContextLost, ...scene }: Scene3DProps
         powerPreference: profile.detail === 'high' ? 'high-performance' : 'low-power',
         alpha: false,
       }}
-      camera={{ fov: 42, near: 0.5, far: 900, position: [-26, 13, 24] }}
+      camera={{ fov: CAMERA_FOV, near: 0.5, far: 1600, position: [-22, 8.5, 11] }}
       onCreated={({ gl }) => {
-        gl.setClearColor(new THREE.Color(SCENE_COLORS.navy), 1);
+        gl.setClearColor(new THREE.Color(SCENE_COLORS.ink), 1);
         gl.domElement.addEventListener('webglcontextlost', (event) => {
           // Without this the browser does not try to restore the context.
           event.preventDefault();

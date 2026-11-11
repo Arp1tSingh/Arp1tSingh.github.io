@@ -1,23 +1,27 @@
 /**
  * Design tokens.
  *
- * One accent colour means one thing: red is actionable, or you are here.
- * There is no decorative red anywhere else on the page.
+ * The concept's palette, everywhere: ink, cream paper, board yellow and the
+ * signal accent. One accent still means one thing: colour is actionable, or
+ * you are here. `--accent-text` is the readable tint of the accent on ink;
+ * `--accent` is the fill and marker colour.
  */
 
 :root {
   /* Palette */
-  --navy: #000016;
-  --navy-raise: #080820;
-  --navy-panel: #0c0c26;
-  --paper: #f1f1f1;
-  --grey: #9797a5;
-  --grey-dim: #6b6b78;
-  --red: #e4032e;
+  --ink: #101216;
+  --ink-raise: #171a20;
+  --ink-panel: #1c2027;
+  --paper: #fdf3d0;
+  --board: #ffc52e;
+  --accent: #d92d3a;
+  --accent-text: #ef5a63;
+  --grey: #b9b2a2;
+  --grey-dim: #948d7d;
 
   /* Structure: hairlines are the only structural device */
-  --hairline: rgba(241, 241, 241, 0.13);
-  --hairline-strong: rgba(241, 241, 241, 0.26);
+  --hairline: rgba(253, 243, 208, 0.14);
+  --hairline-strong: rgba(253, 243, 208, 0.28);
 
   /* Type
    *
@@ -55,34 +59,38 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur: 420ms;
 
-  /* The sky cycle: dawn to night across the journey. */
-  --sky-top: #05052a;
-  --sky-mid: #16163f;
-  --sky-horizon: #3a2a4e;
-  --sky-ground: #000016;
+  /* The sky cycle: the same six keys the 3D sky uses, folded into four
+     named stages for the page's ambient tokens. */
+  --sky-top: #4a5f97;
+  --sky-mid: #c78a7a;
+  --sky-horizon: #f2a36b;
+  --sky-ground: #4b4f55;
 }
 
-/* Journey progress drives the sky. Set on <html> by the journey controller. */
 :root[data-journey='dawn'] {
-  --sky-top: #0a0a33;
-  --sky-mid: #3a2438;
-  --sky-horizon: #8a3a24;
+  --sky-top: #4a5f97;
+  --sky-mid: #c78a7a;
+  --sky-horizon: #f2a36b;
+  --sky-ground: #4b4f55;
 }
 
 :root[data-journey='day'] {
-  --sky-top: #000016;
-  --sky-mid: #16163f;
-  --sky-horizon: #3a2a4e;
+  --sky-top: #2f7bc4;
+  --sky-mid: #6fb0ea;
+  --sky-horizon: #b9dcf5;
+  --sky-ground: #4b4f55;
 }
 
 :root[data-journey='dusk'] {
-  --sky-top: #05052a;
-  --sky-mid: #2a1a3e;
-  --sky-horizon: #6a2434;
+  --sky-top: #2b2458;
+  --sky-mid: #6a4f95;
+  --sky-horizon: #d98a63;
+  --sky-ground: #3a3630;
 }
 
 :root[data-journey='night'] {
-  --sky-top: #020210;
-  --sky-mid: #080820;
-  --sky-horizon: #141432;
+  --sky-top: #050814;
+  --sky-mid: #080c1c;
+  --sky-horizon: #151a2e;
+  --sky-ground: #1c2027;
 }

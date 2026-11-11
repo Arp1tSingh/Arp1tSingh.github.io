@@ -23,7 +23,7 @@ body {
 }
 
 body {
-  background: var(--navy);
+  background: var(--ink);
   color: var(--paper);
   font-family: var(--font-text);
   font-size: var(--step-0);
@@ -81,7 +81,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--red);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 0;
 }
@@ -96,7 +96,7 @@ button {
 
 /* The single accent. Used for the things a visitor can act on. */
 .accent {
-  color: var(--red);
+  color: var(--accent-text);
 }
 
 .page {
@@ -146,7 +146,7 @@ button {
   max-height: 70vh;
   overflow-y: auto;
   padding: var(--space-3);
-  background: var(--navy-panel);
+  background: var(--ink-panel);
   border: 1px solid var(--hairline-strong);
 }
 

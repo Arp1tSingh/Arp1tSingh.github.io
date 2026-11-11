@@ -42,7 +42,7 @@ test('the scene renders, or the poster stands in for it', async ({ page }) => {
     // No WebGL: the poster takes over and the journey still works.
     await expect(poster).toHaveCount(1);
     await expect(canvas).toHaveCount(0);
-    await expect(page.getByRole('dialog')).toContainText('Kurla');
+    await expect(page.getByRole('dialog')).toContainText('Dadar');
   }
 });
 
@@ -116,7 +116,7 @@ test.describe('without WebGL', () => {
     expect(sceneChunk).toBe(0);
 
     // The journey still works: the ticket still opens at the first station.
-    await expect(page.getByRole('dialog')).toContainText('Kurla');
+    await expect(page.getByRole('dialog')).toContainText('Dadar');
   });
 
   test('the classic view still carries every stop', async ({ page }) => {
@@ -138,5 +138,5 @@ test('the scene mirrors the line for a screen reader', async ({ page }) => {
   const index = page.locator('.journey-view__index');
   await expect(index).toHaveCount(1);
   await expect(index.locator('li')).toHaveCount(8); // the Express line
-  await expect(index.locator('a').first()).toHaveAttribute('href', '#slot-01');
+  await expect(index.locator('a').first()).toHaveAttribute('href', '#dadar');
 });

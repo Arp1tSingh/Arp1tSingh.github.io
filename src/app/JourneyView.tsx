@@ -46,11 +46,12 @@ export function JourneyView({
   reducedMotion,
   onContextLost,
 }: JourneyViewProps) {
-  const { state, stops, totalVh, current, next, progress, closeTicket, jumpTo, position } =
+  const { state, stops, totalVh, current, next, stage, closeTicket, jumpTo, positionRef } =
     journey;
   const ticketOpen = state.phase === 'dwelling' || state.phase === 'terminus';
 
   const container = useRef<HTMLDivElement>(null);
+  const fill = useRef<HTMLSpanElement>(null);
   const [contextLost, setContextLost] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const detail = useMemo(() => profileDevice().detail, []);
@@ -62,7 +63,25 @@ export function JourneyView({
    * point of having one.
    */
   const [canRenderScene] = useState(() => profileDevice().webgl);
-  const s = position?.s ?? 0;
+  /**
+   * The progress bar is a DOM detail, not a React state. Reading the live
+   * position here keeps the bar smooth without re-rendering the scene.
+   */
+  useEffect(() => {
+    let frame = 0;
+    const tick = () => {
+      const position = positionRef.current;
+      if (fill.current) {
+        const progress = position && stops.length > 1
+          ? Math.min(1, Math.max(0, position.s / (stops.length - 1)))
+          : 0;
+        fill.current.style.transform = `scaleX(${progress.toFixed(4)})`;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => cancelAnimationFrame(frame);
+  }, [positionRef, stops.length]);
 
   /**
    * Whether the scene is worth having.
@@ -100,9 +119,10 @@ export function JourneyView({
           <Suspense fallback={<Poster reason="loading the scene" />}>
             <Scene3D
               stops={stops}
-              s={s}
+              targetSRef={positionRef}
               activeIndex={state.stopIndex}
-              progress={progress}
+              dwelling={state.phase === 'dwelling' || state.phase === 'terminus'}
+              night={stage === 'night'}
               reducedMotion={reducedMotion}
               detail={detail}
               paused={paused}
@@ -137,10 +157,7 @@ export function JourneyView({
               <p className="station-card__next mono">Terminus</p>
             )}
             <div className="station-card__rail" role="presentation">
-              <span
-                className="station-card__fill"
-                style={{ transform: `scaleX(${progress.toFixed(4)})` }}
-              />
+              <span ref={fill} className="station-card__fill" />
             </div>
           </div>
         ) : null}

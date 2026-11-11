@@ -29,8 +29,8 @@ test('choosing Express boards the train and a ticket opens at the first stop', a
   await expect(dialog).toBeVisible();
   await expect(dialog).toHaveAttribute('aria-modal', 'true');
 
-  // The claim is on the front of the ticket.
-  await expect(dialog).toContainText('origin server');
+  // The claim is on the front of the ticket. Dadar is the first stop now.
+  await expect(dialog).toContainText('starts being something you can break');
 
   // The QR code is fetched when the ticket opens, not carried in the bundle.
   await expect(dialog.locator('[role="img"]')).toBeVisible();
@@ -43,7 +43,7 @@ test('scrolling on closes the ticket and moves the line', async ({ page }) => {
 
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
-  await expect(dialog).toContainText('Kurla');
+  await expect(dialog).toContainText('Dadar');
 
   // Scroll, and the line moves under the visitor. The ticket at the first
   // station gives way to the ticket at the next one.
@@ -59,7 +59,7 @@ test('scrolling on closes the ticket and moves the line', async ({ page }) => {
   await expect
     .poll(async () => page.evaluate(() => window.scrollY), { timeout: 15_000 })
     .toBeGreaterThan(viewport!.height);
-  await expect(dialog).toContainText('Ghatkopar');
+  await expect(dialog).toContainText('Kurla');
 });
 
 test('the map opens with M and closes with M again', async ({ page }) => {
@@ -80,10 +80,10 @@ test('the arrow keys move between stops', async ({ page }) => {
   await page.getByRole('button', { name: /express/i }).first().click();
 
   const dialog = page.getByRole('dialog');
-  await expect(dialog).toContainText('Kurla');
+  await expect(dialog).toContainText('Dadar');
 
   await page.keyboard.press('ArrowRight');
-  await expect(dialog).toContainText('Ghatkopar');
+  await expect(dialog).toContainText('Kurla');
 });
 
 test('a deep link jumps straight to a stop', async ({ page }) => {

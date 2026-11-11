@@ -250,7 +250,7 @@ function Legend(): JSX.Element {
         <li className="map2d__legend-item">
           <svg className="map2d__legend-mark" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
             <circle cx="10" cy="10" r="6" fill="var(--paper)" />
-            <circle cx="10" cy="10" r="9" fill="none" stroke="var(--red)" strokeWidth="1.5" />
+            <circle cx="10" cy="10" r="9" fill="none" stroke="var(--accent)" strokeWidth="1.5" />
           </svg>
           <span>
             <strong>You are here</strong> - the stop you are standing at

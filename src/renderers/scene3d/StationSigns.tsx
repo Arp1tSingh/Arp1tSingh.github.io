@@ -33,15 +33,16 @@ export function makeSignTexture(name: string): THREE.CanvasTexture {
 
   const context = canvas.getContext('2d');
   if (context) {
-    context.fillStyle = '#000016';
+    context.fillStyle = '#ffc52e';
     context.fillRect(0, 0, SIGN_WIDTH, SIGN_HEIGHT);
-    context.fillStyle = '#e4032e';
-    context.fillRect(0, 0, SIGN_WIDTH, 6);
-    context.fillStyle = '#f1f1f1';
-    context.font = '700 34px "JetBrains Mono Variable", "JetBrains Mono", monospace';
+    context.strokeStyle = '#101216';
+    context.lineWidth = 6;
+    context.strokeRect(3, 3, SIGN_WIDTH - 6, SIGN_HEIGHT - 6);
+    context.fillStyle = '#101216';
+    context.font = '800 34px "JetBrains Mono Variable", "JetBrains Mono", monospace';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
-    context.fillText(name.toUpperCase().slice(0, 18), SIGN_WIDTH / 2, SIGN_HEIGHT / 2 + 4);
+    context.fillText(name.toUpperCase().slice(0, 18), SIGN_WIDTH / 2, SIGN_HEIGHT / 2 + 3);
   }
 
   const texture = new THREE.CanvasTexture(canvas);

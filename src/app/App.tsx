@@ -27,8 +27,6 @@ const ClassicView = lazy(() =>
   import('../renderers/classic').then((module) => ({ default: module.ClassicView })),
 );
 
-const SKY_STAGES = ['dawn', 'day', 'dusk', 'night'] as const;
-
 export function App() {
   const journey = useJourney();
   const wallet = useWallet();
@@ -64,11 +62,11 @@ export function App() {
 
   const atGate = journey.state.phase === 'gate';
 
-  // The sky cycle: dawn to night across the journey.
+  // The sky cycle: dawn to night across the journey. The stage changes a
+  // handful of times per ride, so this is not a per-frame effect.
   useEffect(() => {
-    const stage = SKY_STAGES[Math.min(SKY_STAGES.length - 1, Math.floor(journey.progress * 4))];
-    document.documentElement.dataset.journey = stage;
-  }, [journey.progress]);
+    document.documentElement.dataset.journey = journey.stage;
+  }, [journey.stage]);
 
   // While the gate is up the page cannot scroll: the visitor has not chosen a
   // line yet, and the line behind it is standing still. The classic view and

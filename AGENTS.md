@@ -3,3 +3,23 @@ configured browsers first, then push once. After a push, use
 `gh run watch --exit-status` instead of sleeping, and read the logs with
 `gh run view --log-failed` only after the run finishes. Batch known fixes
 into a single push.
+
+## 3D overhaul (in progress)
+
+- Art direction: concept palette (`#ffc52e` board, `#fdf3d0` paper, `#101216`
+  ink, `#d92d3a` accent); third rail, no catenary and no pantograph.
+- Station order: `dadar`, `slot-06` (Sion), `slot-01` (Kurla), `slot-02`
+  (Ghatkopar), `slot-03` (Mulund), `slot-04` (Thane), `slot-07` (Diva),
+  `slot-05` (Dombivli), `kalyan`, `slot-08` (Ulhasnagar), `slot-09`
+  (Ambernath), `badlapur`.
+- Phases: 0 content order, 1 ride clock, 2 path/track, 3 camera, 4 metro
+  train, 5 sky/palette, 6 docs/verification.
+- Status: phases 0-5 done. 148 unit tests and 93 e2e tests (Chromium,
+  Firefox, WebKit) pass; typecheck and build pass. Screenshots at
+  0/25/50/75/100% desktop, mobile and reduced motion reviewed. The city now
+  stands 46 units back from the line's own normal, which removed the flat
+  grey wall at Thane.
+- Remaining before ship: user-owned résumé PDF, one Kalyan before/after
+  number and two clips; then push once and watch CI.
+- Verify locally: `npm run typecheck`, `npm test`, `npx playwright test`,
+  `npm run build`. Review screenshots at 0/25/50/75/100% and mobile.

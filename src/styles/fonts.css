@@ -1,4 +1,46 @@
 /**
+ * The fallbacks.
+ *
+ * A web font that arrives after the first paint swaps in and reflows the
+ * text around it. On the gate, where the station names are set in a large
+ * display face, that swap moved the whole panel: a layout shift of 0.11.
+ *
+ * These fallback faces are metric-matched to the real ones - the same
+ * x-height, the same ascent and descent - so the swap changes the letter
+ * shapes and nothing else. Times New Roman, Arial and Courier New are the
+ * metric-compatible families that exist everywhere; Liberation Serif,
+ * Liberation Sans and Liberation Mono are the same metrics on Linux.
+ */
+
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Georgia'), local('serif');
+  size-adjust: 104.44%;
+  ascent-override: 98%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Tight Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Helvetica'), local('Helvetica Neue');
+  size-adjust: 105.77%;
+  ascent-override: 97%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Courier New'), local('Liberation Mono'), local('DejaVu Sans Mono');
+  size-adjust: 127.91%;
+  ascent-override: 102%;
+  descent-override: 30%;
+  line-gap-override: 0%;
+}
+
+
+/**
  * The three faces, self-hosted.
  *
  * Latin subset only, 119 KB in total. The files live in `src/assets/fonts`

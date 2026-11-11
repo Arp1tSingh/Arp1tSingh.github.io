@@ -19,10 +19,15 @@
   --hairline: rgba(241, 241, 241, 0.13);
   --hairline-strong: rgba(241, 241, 241, 0.26);
 
-  /* Type */
-  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
-  --font-text: 'Inter Tight Variable', 'Inter Tight', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+  /* Type
+   *
+   * Each stack names a metric-matched fallback, so a web font that arrives
+   * late changes the letter shapes and not the layout. See `fonts.css`.
+   */
+  --font-display: 'Fraunces Variable', 'Fraunces Fallback', 'Times New Roman', Georgia, serif;
+  --font-text: 'Inter Tight Variable', 'Inter Tight Fallback', Arial, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono Fallback', 'Courier New', ui-monospace,
+    monospace;
 
   --step--2: clamp(0.68rem, 0.66rem + 0.1vw, 0.76rem);
   --step--1: clamp(0.8rem, 0.77rem + 0.16vw, 0.92rem);

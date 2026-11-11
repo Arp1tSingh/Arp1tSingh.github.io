@@ -192,4 +192,4 @@ The end-to-end suite covers the ten-second contract at three widths, the Classic
 
 ## Licence
 
-Hand-written apart from the three OFL fonts in `node_modules`. The project screenshots belong to the projects they depict.
+Hand-written apart from the three OFL fonts in `src/assets/fonts`. The project screenshots belong to the projects they depict.

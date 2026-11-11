@@ -88,12 +88,21 @@ only". It is **not** implemented. The night sky and the train's emissive
 window band carry the mood instead, and the saving is a whole post-processing
 pass. It is the one item in the art direction that is outstanding.
 
-### The train model
+### A modelled train
 
 The train is **built from primitives**, not modelled in Blender. That is the
 blueprint's own stated mitigation - "Ship the primitive-built train from the
 prototype, upgrade later" - and it keeps the whole 3D payload at zero bytes
 of geometry files. A modelled train is a Phase 4b decision, not a blocker.
+
+The numbers the primitives currently hit, all asserted by the unit tests:
+
+| Element | Blueprint budget | Built |
+| --- | --- | --- |
+| The train | 12,000 to 20,000 triangles | 15,076 |
+| The track | under 60 draw calls | 6 |
+| A station | under 8,000 triangles | 212 (worst) |
+| A diorama | under 3,000 triangles | 748 (worst) |
 
 ### A curved line
 
@@ -113,3 +122,18 @@ npm run test:e2e           # the browser
 
 `npm run validate:strict` additionally refuses any `TBD` left in the content.
 That is the launch gate: it should pass before the site is shared.
+
+### Adding a stop
+
+1. Write `content/stops/<id>.json`. The shape is in the README; `npm run
+   validate` will tell you exactly what is missing.
+2. Add the id to `content/route.json` under `order`. The validator refuses a
+   file that is not on the order and an order entry with no file.
+3. Give it a `prop` from the list in
+   `src/renderers/scene3d/Dioramas.tsx`. A prop that is not on the list draws
+   nothing at the station rather than a placeholder box, so a typo is quiet
+   in the scene and obvious in the code.
+4. `npm run generate:content && npm run validate && npm test`.
+
+The station's sign is drawn from `stop.station` at runtime, so a new station
+needs no image work at all.

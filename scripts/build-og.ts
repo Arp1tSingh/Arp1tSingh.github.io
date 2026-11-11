@@ -34,7 +34,7 @@ const ACCENT: Rgb = [0xe4, 0x03, 0x2e];
 const MUTED: Rgb = [0x97, 0x97, 0xa5];
 
 const TITLE_TEXT = 'ARPIT SINGH';
-const SUBTITLE_TEXT = 'PORTFOLIO AND PROJECT ARCHIVE';
+const SUBTITLE_TEXT = 'THE LOCAL 3D - THREE RENDERERS';
 
 const MARGIN_X = 80;
 const TITLE_TOP = 84;
@@ -310,7 +310,7 @@ function buildSvg(): string {
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" role="img" aria-labelledby="og-title og-desc">`,
-    '  <title id="og-title">Arpit Singh - portfolio and project archive</title>',
+    '  <title id="og-title">Arpit Singh - The Local 3D</title>',
     '  <desc id="og-desc">The social card for arpit singh, a portfolio and project archive.</desc>',
     `  <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" fill="#000016"/>`,
     `  <text x="${MARGIN_X}" y="${titleBaseline}" font-family="Georgia, serif" font-size="${titleSize}" letter-spacing="${TITLE_SCALE}" fill="#f1f1f1">${TITLE_TEXT}</text>`,

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="og-title og-desc">
-  <title id="og-title">Arpit Singh - portfolio and project archive</title>
+  <title id="og-title">Arpit Singh - The Local 3D</title>
   <desc id="og-desc">The social card for arpit singh, a portfolio and project archive.</desc>
   <rect width="1200" height="630" fill="#000016"/>
   <text x="80" y="171" font-family="Georgia, serif" font-size="92" letter-spacing="16" fill="#f1f1f1">ARPIT SINGH</text>
   <rect x="80" y="224" width="360" height="8" fill="#e4032e"/>
-  <text x="80" y="295" font-family="Georgia, serif" font-size="29" letter-spacing="5" fill="#9797a5">PORTFOLIO AND PROJECT ARCHIVE</text>
+  <text x="80" y="295" font-family="Georgia, serif" font-size="29" letter-spacing="5" fill="#9797a5">THE LOCAL 3D - THREE RENDERERS</text>
 </svg>

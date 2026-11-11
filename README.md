@@ -148,13 +148,27 @@ The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 87 KB
 
 Two things were worth the trouble of finding. The classic view's build-time renderer imports `react-dom/server`, which is a hundred and eighty kilobytes of machinery for rendering on a server - it now lives in its own module, and the browser chunk is 7 KB instead of 209 KB. And the train and the dioramas use Lambert rather than Standard shading: the art direction is flat colour and flat shading, and Standard's physical shading is a lot of shader to compile for an effect nobody can see in a faceted scene.
 
-A visitor whose browser cannot run WebGL never downloads the scene chunk at all: the check happens before the import, and the poster scene stands in. On a narrow screen the gate covers the whole viewport, so there is nothing to see behind it and the scene is not loaded until the ride starts.
+A visitor whose browser cannot run WebGL never downloads the scene chunk at all: the check happens before the import, and the poster scene stands in. On a narrow screen the gate covers the whole viewport, so there is nothing to see behind it and the scene is not loaded until the ride starts. And at the gate the scene draws one frame and waits, because the train is standing still and sixty frames a second of it costs the main thread for nothing.
 
 ### Performance
 
-The blueprint's targets are a largest contentful paint of 2.5 s or less, accessibility of 95 or more, and performance of 85 or more on mobile. Lighthouse runs in CI against the mobile preset and fails the build if any of them slips.
+The blueprint's targets are a largest contentful paint of 2.5 s or less, accessibility of 95 or more, and performance of 85 or more on mobile. Lighthouse runs in CI against the mobile preset and fails the build if any of them slips. The report is kept as a run artifact, because a layout shift that only appears on a throttled connection is otherwise invisible.
 
-The 3D line is the expensive part of this site: evaluating three.js is about half a second of main-thread time on a throttled phone. That is why the scene is a separate chunk, why the gate does not load it on a phone, and why the Classic view exists. It is also why the scene at the gate draws one frame and waits, rather than rendering sixty frames a second for a train that is standing still.
+Measured in CI, on the mobile preset:
+
+| | |
+| --- | --- |
+| Performance | 0.80 to 0.96, median above the 0.85 target |
+| Accessibility | 0.95 |
+| Best practices | 1.00 |
+| SEO | 1.00 |
+| Largest contentful paint | 2.3 s |
+| Cumulative layout shift | 0.018 |
+| Transferred | 219 KB |
+
+The 3D line is the expensive part of this site: evaluating three.js is about half a second of main-thread time on a throttled phone, which is most of the difference between the two performance scores above. That is why the scene is a separate chunk, why the gate does not load it on a phone, and why the Classic view exists.
+
+The layout shift was the web fonts arriving after the first paint and reflowing the gate panel. Each font stack now names a metric-matched fallback, so the swap changes the letter shapes and nothing else: the shift fell from 0.113 to 0.018.
 
 ## The ten-second contract
 

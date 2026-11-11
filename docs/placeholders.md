@@ -11,20 +11,18 @@ where a value is missing the site renders nothing rather than a lie.
 The blueprint says: "Write the Kalyan Junction card on your Fintech committee
 role (one claim, one proof)."
 
-What is there now is a **draft**, written from the committee's own content
-model in `Arp1tSingh/fintech-vit`:
+What is there now is the card written from the decisions below:
 
-- **claim** - "Built and shipped the committee's scroll-driven 3D vault site -
-  11 members, 6 portfolios and 3 events behind one scroll journey."
-- **proof.metrics** - "11 students across 3-person leadership and 6
-  portfolios", "3 events run, 170 attendees in total", "The site shipped with
-  a scripted camera audit and a motion diagnostic in CI".
+- **title** - "Technical Team Lead, Fintech VIT"
+- **oneLiner** - "Led the technical team behind the Fintech committee's 3D vault site."
+- **claim** - "Led the Fintech committee's technical team in building its scroll-driven 3D vault site, replacing a basic earlier web presence."
+- **proof.metrics** - the before-and-after, the three renderers, the scope the journey carried, and the audits in CI
 - **role** - `lead`, **period** - 2026-09 to 2026-10.
 
-These numbers come from `content.md` in `fintech-vit`, which is the committee's
-own record. What is missing is the part only Arpit can write: **what the
-technical portfolio actually did, and what changed because of it.** The
-figures above describe the committee; they do not describe the work.
+The scope figures - 11 members, 6 portfolios, the season's 3 events - come from
+`content.md` in `fintech-vit`, which is the committee's own record. They are
+kept in the **proof** as the scope of what the team shipped, and dropped from
+the **claim**, which is about the work.
 
 **Decided (2026-11-11):**
 
@@ -42,6 +40,9 @@ figures above describe the committee; they do not describe the work.
   presence." Drop "11 members, 6 portfolios and 3 events", which describes the
   committee rather than the work.
 
+**Applied (2026-11-11):** the suggested claim is in the card, the card says
+"technical team", and the committee's own figures moved to the proof.
+
 **Still open:** one number that proves the before/after (visits, sign-ups, or
 what the old site lacked), and which parts of the build were Arpit's own
 versus the team's. Without those the card can state the claim but not
@@ -54,9 +55,9 @@ To change it: edit `content/stops/kalyan.json`, then
 ### `content/stops/dadar.json` and `content/stops/badlapur.json`
 
 Both carry an empty `stack`, which is correct: the About card and the
-Terminus are not a technology. The About card's `architecture` paragraph is a
-draft summary of the portfolio's through-line and is worth a rewrite in the
-first person.
+Terminus are not a technology. The About card's `architecture` paragraph has
+been rewritten in the first person, but it is still a summary of the
+portfolio's through-line rather than something only Arpit can write.
 
 ### `content/profile.json` - the resume
 

@@ -3,7 +3,6 @@
     "collect": {
       "numberOfRuns": 2,
       "settings": {
-        "preset": "mobile",
         "onlyCategories": ["performance", "accessibility", "best-practices", "seo"]
       }
     },

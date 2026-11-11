@@ -117,54 +117,51 @@ function emptyBins(): Bins {
   return { body: [], glass: [], trim: [], lamp: [], metal: [], dark: [] };
 }
 
+/**
+ * The materials.
+ *
+ * Lambert, not Standard. The art direction is flat colour and flat shading,
+ * and Standard's physical shading is a lot of shader to compile for an
+ * effect nobody can see in a faceted scene. Lambert takes the same two
+ * lights, costs a fraction of the compile, and is what the rest of the scene
+ * already uses.
+ */
 function buildMaterials(): Record<BinKey, THREE.Material> {
   return {
     /* The body: navy, matte, faceted. */
-    body: new THREE.MeshStandardMaterial({
+    body: new THREE.MeshLambertMaterial({
       color: NAVY,
-      roughness: 0.92,
-      metalness: 0.06,
       flatShading: true,
     }),
     /* The window band: paper, lit from inside so the train reads at night. */
-    glass: new THREE.MeshStandardMaterial({
+    glass: new THREE.MeshLambertMaterial({
       color: PAPER,
       emissive: PAPER,
       emissiveIntensity: 0.85,
-      roughness: 0.55,
-      metalness: 0,
       flatShading: true,
     }),
     /* The stripe under the windows: the one red line on the body. */
-    trim: new THREE.MeshStandardMaterial({
+    trim: new THREE.MeshLambertMaterial({
       color: RED,
       emissive: RED,
       emissiveIntensity: 0.2,
-      roughness: 0.7,
-      metalness: 0,
       flatShading: true,
     }),
     /* The lamps at the ends of the set. */
-    lamp: new THREE.MeshStandardMaterial({
+    lamp: new THREE.MeshLambertMaterial({
       color: RED,
       emissive: RED,
       emissiveIntensity: 1.6,
-      roughness: 0.4,
-      metalness: 0,
       flatShading: true,
     }),
     /* The running gear: wheels, axles, bogies, couplings, pantograph. */
-    metal: new THREE.MeshStandardMaterial({
+    metal: new THREE.MeshLambertMaterial({
       color: GREY,
-      roughness: 0.68,
-      metalness: 0.28,
       flatShading: true,
     }),
     /* The recesses: the inside of a doorway and the cab windscreen. */
-    dark: new THREE.MeshStandardMaterial({
+    dark: new THREE.MeshLambertMaterial({
       color: NAVY_PANEL,
-      roughness: 0.85,
-      metalness: 0.04,
       flatShading: true,
     }),
   };

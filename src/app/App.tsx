@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
 import './app.css';
 
 import { CONTENT, getStop, lineStops } from '../data/content';
 import { Gate, Wallet } from '../ui';
-import { MapView } from '../renderers/map2d';
-import { ClassicView } from '../renderers/classic';
 import { prefersReducedMotion } from '../renderers/scene3d/tier';
 import { Header } from './Header';
 import { Footer } from './Footer';
@@ -15,12 +13,34 @@ import { useWallet } from './useWallet';
 import { useKeyboard } from './useKeyboard';
 import type { ViewMode } from './useKeyboard';
 
+/**
+ * The two other views are fetched when they are asked for.
+ *
+ * A visitor who never opens the map or the Classic view should not carry
+ * either of them, and on a slow phone the main bundle is the difference
+ * between a page that paints in half a second and one that does not.
+ */
+const MapView = lazy(() =>
+  import('../renderers/map2d').then((module) => ({ default: module.MapView })),
+);
+const ClassicView = lazy(() =>
+  import('../renderers/classic').then((module) => ({ default: module.ClassicView })),
+);
+
 const SKY_STAGES = ['dawn', 'day', 'dusk', 'night'] as const;
 
 export function App() {
   const journey = useJourney();
   const wallet = useWallet();
-  const [view, setView] = useState<ViewMode>('journey');
+  const [view, setView] = useState<ViewMode>(() => {
+    // `?view=classic` opens the flat version straight away: a link to the
+    // Classic view is a link anyone can share.
+    if (typeof window !== 'undefined') {
+      const asked = new URLSearchParams(window.location.search).get('view');
+      if (asked === 'classic' || asked === 'map') return asked;
+    }
+    return 'journey';
+  });
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const [reducedMotion] = useState(() => prefersReducedMotion());
@@ -149,17 +169,19 @@ export function App() {
 
       {view === 'map' ? (
         <div className="app__overlay">
-          <MapView
-            content={CONTENT}
-            stops={mapStops}
-            currentId={journey.current?.id ?? null}
-            activeSkill={activeSkill}
-            onJump={(id) => {
-              journey.jumpTo(id);
-              setView('journey');
-            }}
-            onFilter={setActiveSkill}
-          />
+          <Suspense fallback={null}>
+            <MapView
+              content={CONTENT}
+              stops={mapStops}
+              currentId={journey.current?.id ?? null}
+              activeSkill={activeSkill}
+              onJump={(id) => {
+                journey.jumpTo(id);
+                setView('journey');
+              }}
+              onFilter={setActiveSkill}
+            />
+          </Suspense>
         </div>
       ) : null}
 
@@ -178,9 +200,13 @@ export function App() {
         </section>
       ) : null}
 
-      <div className="classic-view">
-        <ClassicView content={CONTENT} />
-      </div>
+      {view === 'classic' ? (
+        <div className="classic-view">
+          <Suspense fallback={null}>
+            <ClassicView content={CONTENT} />
+          </Suspense>
+        </div>
+      ) : null}
 
       <Footer profile={CONTENT.profile} />
     </div>

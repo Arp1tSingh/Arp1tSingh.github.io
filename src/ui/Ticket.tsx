@@ -16,10 +16,9 @@
  * ticket. A visitor can photograph a ticket and compare it later.
  */
 
-import { useEffect, useId, useMemo, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { ReactElement } from 'react';
 import type { Stop } from '../core/types';
-import { qrMatrix } from './qr';
 
 import './ui.css';
 
@@ -79,15 +78,31 @@ const QUIET_ZONE = 4;
  * The QR code on the stub. It is decorative in the sense that the repository
  * URL is printed next to it as text: nothing is ever reachable only by
  * pointing a camera at it.
+ *
+ * The encoder is fetched when the ticket opens rather than when the page
+ * loads. It is a real QR implementation - Reed-Solomon, masking, the lot -
+ * and it is a lot of code to make every visitor carry for a code most of
+ * them never look at.
  */
 function TicketQr({ url }: { url: string }) {
-  const matrix = useMemo(() => {
-    try {
-      const result = qrMatrix(url);
-      return result.length > 0 ? result : null;
-    } catch {
-      return null;
-    }
+  const [matrix, setMatrix] = useState<boolean[][] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void import('./qr')
+      .then((module) => {
+        if (!alive) return;
+        try {
+          const result = module.qrMatrix(url);
+          setMatrix(result.length > 0 ? result : null);
+        } catch {
+          setMatrix(null);
+        }
+      })
+      .catch(() => setMatrix(null));
+    return () => {
+      alive = false;
+    };
   }, [url]);
 
   if (!matrix) return null;

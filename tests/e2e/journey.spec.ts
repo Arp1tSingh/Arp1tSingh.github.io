@@ -31,6 +31,9 @@ test('choosing Express boards the train and a ticket opens at the first stop', a
 
   // The claim is on the front of the ticket.
   await expect(dialog).toContainText('origin server');
+
+  // The QR code is fetched when the ticket opens, not carried in the bundle.
+  await expect(dialog.locator('[role="img"]')).toBeVisible();
 });
 
 test('scrolling on closes the ticket and moves the line', async ({ page }) => {

@@ -21,7 +21,14 @@ describe('the ticket', () => {
     expect(html).toContain('aria-modal="true"');
     expect(html).toContain(project.claim);
     expect(html).toContain(project.links.repo);
-    expect(html).toContain('role="img"');
+  });
+
+  it('fetches the QR code rather than carrying it in the bundle', () => {
+    // The encoder is a separate chunk, so the static markup has the stub and
+    // the URL but not the code itself.
+    const html = renderToStaticMarkup(<Ticket stop={project} open onClose={() => {}} />);
+    expect(html).not.toContain('role="img"');
+    expect(html).toContain(project.links.repo);
   });
 
   it('offers no résumé action while there is no résumé', () => {

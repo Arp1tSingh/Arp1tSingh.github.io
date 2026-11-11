@@ -13,5 +13,5 @@
 
 import './classic.css';
 
-export { ClassicView, renderClassicHtml } from './ClassicView';
+export { ClassicView } from './ClassicView';
 export type { ClassicViewProps } from './ClassicView';

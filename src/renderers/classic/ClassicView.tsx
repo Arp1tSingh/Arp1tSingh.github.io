@@ -21,7 +21,6 @@
  */
 
 import type { JSX } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 
 import type { MediaItem, Period, Profile, SiteContent, Stop, StopKind } from '../../core/types';
 
@@ -438,14 +437,4 @@ export function ClassicView(props: ClassicViewProps): JSX.Element {
       </footer>
     </div>
   );
-}
-
-/**
- * The classic view as a string of markup.
- *
- * Called at build time by the Vite plugin and by the tests, in Node with no
- * DOM. The markup is exactly what `ClassicView` renders.
- */
-export function renderClassicHtml(content: SiteContent): string {
-  return renderToStaticMarkup(<ClassicView content={content} />);
 }

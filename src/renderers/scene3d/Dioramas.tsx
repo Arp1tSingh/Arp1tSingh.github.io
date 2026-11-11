@@ -624,26 +624,27 @@ const BUILDERS = new Map<string, () => Prop>([
   ['ticket machine', ticketMachine],
 ]);
 
-/** The material every solid part of a prop is drawn with. */
-function bodyMaterial(): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({
+/**
+ * The material every solid part of a prop is drawn with.
+ *
+ * Lambert, like the rest of the scene: flat colour, flat shading, and a
+ * fraction of the shader to compile.
+ */
+function bodyMaterial(): THREE.MeshLambertMaterial {
+  return new THREE.MeshLambertMaterial({
     vertexColors: true,
     flatShading: true,
-    roughness: 1,
-    metalness: 0,
   });
 }
 
 /** The material the lit parts of a prop are drawn with. */
-function glowMaterial(color: string, strength: number): THREE.MeshStandardMaterial {
+function glowMaterial(color: string, strength: number): THREE.MeshLambertMaterial {
   const value = new THREE.Color(color);
-  return new THREE.MeshStandardMaterial({
+  return new THREE.MeshLambertMaterial({
     color: value,
     emissive: value,
     emissiveIntensity: strength,
     flatShading: true,
-    roughness: 1,
-    metalness: 0,
   });
 }
 

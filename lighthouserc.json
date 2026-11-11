@@ -3,7 +3,7 @@
     "collect": {
       "numberOfRuns": 2,
       "settings": {
-        "preset": "desktop",
+        "preset": "mobile",
         "onlyCategories": ["performance", "accessibility", "best-practices", "seo"]
       }
     },
@@ -14,7 +14,8 @@
         "categories:best-practices": ["error", { "minScore": 0.9 }],
         "categories:seo": ["error", { "minScore": 0.9 }],
         "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
-        "total-byte-weight": ["warn", { "maxNumericValue": 3600000 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "total-byte-weight": ["warn", { "maxNumericValue": 2600000 }],
         "unused-javascript": ["warn", { "maxNumericValue": 600000 }]
       }
     }

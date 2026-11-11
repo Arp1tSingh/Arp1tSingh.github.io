@@ -4,6 +4,7 @@ import { Indicator, Ticket } from '../ui';
 import { CONTENT } from '../data/content';
 import { Poster } from '../renderers/scene3d/Poster';
 import { prefersReducedMotion, profileDevice } from '../renderers/scene3d/tier';
+import { useMediaQuery } from './useMediaQuery';
 import type { Stop } from '../core/types';
 import type { JourneyApi } from './useJourney';
 import type { WalletApi } from './useWallet';
@@ -64,6 +65,18 @@ export function JourneyView({
   const s = position?.s ?? 0;
 
   /**
+   * Whether the scene is worth having.
+   *
+   * On a narrow screen the gate covers the whole viewport, so a scene behind
+   * it would be invisible and the visitor would pay for it anyway. On a wide
+   * one the gate is a panel and the line is the first thing on the screen, so
+   * the scene is loaded and drawn.
+   */
+  const atGate = journey.state.phase === 'gate';
+  const wide = useMediaQuery('(min-width: 721px)');
+  const showScene = !atGate || wide;
+
+  /**
    * Whether the visitor has moved the line yet.
    *
    * "Scroll is the only clock" is a rule about the scene, not about the
@@ -83,7 +96,7 @@ export function JourneyView({
       <div className="scene3d" aria-hidden="true">
         {contextLost ? (
           <Poster reason="the graphics context was lost" />
-        ) : canRenderScene ? (
+        ) : !showScene ? null : canRenderScene ? (
           <Suspense fallback={<Poster reason="loading the scene" />}>
             <Scene3D
               stops={stops}
@@ -93,6 +106,7 @@ export function JourneyView({
               reducedMotion={reducedMotion}
               detail={detail}
               paused={paused}
+              still={atGate}
               onContextLost={() => {
                 setContextLost(true);
                 onContextLost();

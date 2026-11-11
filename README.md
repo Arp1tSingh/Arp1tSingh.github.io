@@ -54,7 +54,7 @@ Every stop is one record:
 
 `npm run validate` fails the build on a missing required field, a bad enum, an orphaned stop or a broken link in `route.order`. `npm run validate:strict` additionally refuses any `TBD` left in the content — that is the launch gate.
 
-## Three layers, three renderers
+## The three renderers
 
 ```
 content/  ──validated at build──▶  src/core/  ──pure──▶  src/renderers/
@@ -67,6 +67,8 @@ content/  ──validated at build──▶  src/core/  ──pure──▶  src
 | `src/renderers/map2d/` | The network map, with skills as transfer lines. |
 | `src/renderers/scene3d/` | The 3D line: the train, the track, the stations, the sky. |
 | `src/ui/` | The gate, the ticket, the indicator and the wallet. |
+
+Any of the three can be opened on its own: `C` for the Classic view, `M` for the map, and `?view=classic` or `?view=map` opens one straight away, which is a link anyone can share.
 
 Because the core is pure, it gets unit tests instead of screenshots: `npm test` covers the route function, the pacing function, every journey transition **and the 3D triangle budgets** without opening a browser.
 
@@ -132,16 +134,27 @@ The last row is the interesting one: there is no glTF, no texture atlas and no m
 
 ### Loading the scene
 
-The scene is a separate chunk. The first paint is the poster and the page, and three.js arrives afterwards:
+Nothing is loaded that the visitor has not asked for. The chunks are:
 
-| Chunk | Raw | Gzipped |
-| --- | --- | --- |
-| The app | 500 KB | **155 KB** |
-| The 3D scene, lazy | 945 KB | 253 KB |
+| Chunk | Raw | Gzipped | When |
+| --- | --- | --- | --- |
+| The app | 277 KB | **87 KB** | With the page |
+| The 3D scene | 964 KB | 257 KB | With the line, on a wide screen |
+| The Classic view | 7 KB | 2 KB | When `C` is pressed |
+| The network map | 11 KB | 3 KB | When `M` is pressed |
+| The QR encoder | 5 KB | 2 KB | When a ticket opens |
 
-The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 155 KB of it; the rest is the train, and it arrives after the visitor can already read the page.
+The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 87 KB of it.
 
-A visitor whose browser cannot run WebGL never downloads the scene chunk at all. The check happens before the import, so three.js is not fetched and the poster scene stands in.
+Two things were worth the trouble of finding. The classic view's build-time renderer imports `react-dom/server`, which is a hundred and eighty kilobytes of machinery for rendering on a server - it now lives in its own module, and the browser chunk is 7 KB instead of 209 KB. And the train and the dioramas use Lambert rather than Standard shading: the art direction is flat colour and flat shading, and Standard's physical shading is a lot of shader to compile for an effect nobody can see in a faceted scene.
+
+A visitor whose browser cannot run WebGL never downloads the scene chunk at all: the check happens before the import, and the poster scene stands in. On a narrow screen the gate covers the whole viewport, so there is nothing to see behind it and the scene is not loaded until the ride starts.
+
+### Performance
+
+The blueprint's targets are a largest contentful paint of 2.5 s or less, accessibility of 95 or more, and performance of 85 or more on mobile. Lighthouse runs in CI against the mobile preset and fails the build if any of them slips.
+
+The 3D line is the expensive part of this site: evaluating three.js is about half a second of main-thread time on a throttled phone. That is why the scene is a separate chunk, why the gate does not load it on a phone, and why the Classic view exists. It is also why the scene at the gate draws one frame and waits, rather than rendering sixty frames a second for a train that is standing still.
 
 ## The ten-second contract
 

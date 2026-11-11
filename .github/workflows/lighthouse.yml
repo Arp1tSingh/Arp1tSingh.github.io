@@ -38,8 +38,8 @@ jobs:
           npx --yes wait-on@7 http://127.0.0.1:4173 --timeout 60000
 
       # The targets are the blueprint's: a largest contentful paint of 2.5s
-      # or less on mobile, accessibility of 95 or more, and performance of 85
-      # or more.
+      # or less, accessibility of 95 or more, and performance of 85 or more
+      # on mobile - which is how most of the visitors arrive.
       - name: Run Lighthouse
         uses: treosh/lighthouse-ci-action@v12
         with:

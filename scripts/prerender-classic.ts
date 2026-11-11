@@ -19,7 +19,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { renderClassicHtml } from '../src/renderers/classic/ClassicView';
+import { renderClassicHtml } from '../src/renderers/classic/renderToHtml';
 import { CONTENT } from '../src/data/content';
 
 const root = process.cwd();

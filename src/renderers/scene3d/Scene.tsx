@@ -87,6 +87,14 @@ export function Scene({ stops, s, activeIndex, progress, reducedMotion, detail }
 export interface Scene3DProps extends SceneProps {
   /** Stop rendering entirely. */
   paused: boolean;
+  /**
+   * Draw one frame and wait.
+   *
+   * At the gate the train is standing still and nothing in the scene moves, so
+   * rendering sixty frames a second tells the visitor nothing and costs the
+   * main thread. The scene wakes up when the ride starts.
+   */
+  still: boolean;
   /** The WebGL context was lost and cannot be restored. */
   onContextLost(): void;
 }
@@ -99,7 +107,7 @@ export interface Scene3DProps extends SceneProps {
  * takes over as well, so there is never a blank rectangle where the line
  * should be.
  */
-export function Scene3D({ paused, onContextLost, ...scene }: Scene3DProps) {
+export function Scene3D({ paused, still, onContextLost, ...scene }: Scene3DProps) {
   const profile = useMemo(() => profileDevice(), []);
   const [lost, setLost] = useState(false);
   const hidden = useDocumentHidden();
@@ -116,7 +124,7 @@ export function Scene3D({ paused, onContextLost, ...scene }: Scene3DProps) {
     <Canvas
       className="scene3d__canvas"
       dpr={profile.dpr}
-      frameloop={paused || hidden ? 'never' : 'always'}
+      frameloop={paused || hidden ? 'never' : still ? 'demand' : 'always'}
       gl={{
         antialias: profile.detail === 'high',
         powerPreference: profile.detail === 'high' ? 'high-performance' : 'low-power',

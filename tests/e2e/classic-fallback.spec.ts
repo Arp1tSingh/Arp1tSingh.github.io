@@ -20,7 +20,7 @@ const STOPS = [
   'Fintech VIT 3D Vault',
   'College Bus Route Planner',
   'LeetCode Archive',
-  'Technical Portfolio Lead, Fintech VIT',
+  'Technical Team Lead, Fintech VIT',
   'About',
   'Terminus',
 ];

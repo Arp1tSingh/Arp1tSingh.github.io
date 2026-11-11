@@ -19,7 +19,7 @@
         "kind": "image"
       }
     ],
-    "architecture": "Most of what is on this line was built outside of class: a renderer with no graphics API, a streaming protocol in TypeScript, a warehouse that reports its own negative results. The through-line is systems work that has to survive contact with real traffic."
+    "architecture": "Most of what is on this line was built outside of class. I like the version of a problem where the idea stops being a plan and starts being something you can break: a renderer with no graphics API under it, a streaming protocol in TypeScript, a warehouse that reports its own negative results rather than hiding them. The through-line is systems work that has to survive contact with real traffic."
   },
   "links": {
     "repo": "https://github.com/Arp1tSingh",

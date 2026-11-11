@@ -122,7 +122,7 @@ export const STOPS_RAW: Record<string, unknown> = {
           "kind": "image"
         }
       ],
-      "architecture": "Most of what is on this line was built outside of class: a renderer with no graphics API, a streaming protocol in TypeScript, a warehouse that reports its own negative results. The through-line is systems work that has to survive contact with real traffic."
+      "architecture": "Most of what is on this line was built outside of class. I like the version of a problem where the idea stops being a plan and starts being something you can break: a renderer with no graphics API under it, a streaming protocol in TypeScript, a warehouse that reports its own negative results rather than hiding them. The through-line is systems work that has to survive contact with real traffic."
     },
     "links": {
       "repo": "https://github.com/Arp1tSingh",
@@ -140,8 +140,8 @@ export const STOPS_RAW: Record<string, unknown> = {
   "kalyan": {
     "id": "kalyan",
     "kind": "experience",
-    "title": "Technical Portfolio Lead, Fintech VIT",
-    "oneLiner": "Owned the technical side of the college fintech committee for a full season.",
+    "title": "Technical Team Lead, Fintech VIT",
+    "oneLiner": "Led the technical team behind the Fintech committee's 3D vault site.",
     "tier": "express",
     "domain": "web",
     "role": "lead",
@@ -153,15 +153,16 @@ export const STOPS_RAW: Record<string, unknown> = {
       "Vite",
       "GitHub Actions"
     ],
-    "claim": "Built and shipped the committee's scroll-driven 3D vault site - 11 members, 6 portfolios and 3 events behind one scroll journey.",
+    "claim": "Led the Fintech committee's technical team in building its scroll-driven 3D vault site, replacing a basic earlier web presence.",
     "proof": {
       "metrics": [
-        "11 students across 3-person leadership and 6 portfolios",
-        "3 events run, 170 attendees in total",
-        "The site shipped with a scripted camera audit and a motion diagnostic in CI"
+        "Replaced the committee's earlier basic site with a scroll-driven 3D vault journey",
+        "One content model rendered three ways: the 3D journey, a plain HTML reading copy, and the committee content as machine-readable JSON",
+        "The journey carried the committee's whole roster - 11 members, 6 portfolios and the season's 3 events - on one scroll",
+        "The build ships with a scripted camera audit and a motion diagnostic in CI"
       ],
       "media": [],
-      "architecture": "The site is one content model rendered three ways: a 3D vault journey for the room, a plain HTML reading copy for search engines and screen readers, and the committee content as machine-readable JSON. The technical portfolio owned the renderer, the content pipeline and the audit scripts."
+      "architecture": "The site is one content model rendered three ways: a 3D vault journey for the room, a plain HTML reading copy for search engines and screen readers, and the committee content as machine-readable JSON. The technical team owned the renderer, the content pipeline and the audit scripts, and the committee's content model was the single source every renderer read from."
     },
     "links": {
       "repo": "https://github.com/Arp1tSingh/fintech-websiteV2",

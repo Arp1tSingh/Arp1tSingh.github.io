@@ -26,6 +26,28 @@ own record. What is missing is the part only Arpit can write: **what the
 technical portfolio actually did, and what changed because of it.** The
 figures above describe the committee; they do not describe the work.
 
+**Decided (2026-11-11):**
+
+- **Role** - Arpit **leads the technical team** of the Fintech committee at
+  VIT Mumbai. (An earlier answer picked "core committee member"; this
+  correction supersedes it.) The draft's `role: lead` is therefore **correct
+  and stays**. Say "technical team" in the card's text so it is not read as
+  leading the whole committee, which has its own 3-person leadership.
+- **What changed** - the 3D vault site **replaced a basic or missing earlier
+  site**. That is the "one proof". It is a before/after claim, so the claim
+  line should say what the committee had before, not just what was built.
+- **Suggested claim** (for Arpit to confirm or reword, since it is built only
+  from the answers above): "Led the Fintech committee's technical team in
+  building its scroll-driven 3D vault site, replacing a basic earlier web
+  presence." Drop "11 members, 6 portfolios and 3 events", which describes the
+  committee rather than the work.
+
+**Still open:** one number that proves the before/after (visits, sign-ups, or
+what the old site lacked), and which parts of the build were Arpit's own
+versus the team's. Without those the card can state the claim but not
+evidence it. `validate:strict` will not catch this, so check it by hand before
+the site is shared.
+
 To change it: edit `content/stops/kalyan.json`, then
 `npm run generate:content` and `npm run validate`.
 
@@ -38,7 +60,18 @@ first person.
 
 ### `content/profile.json` - the resume
 
-`"resume": ""` on purpose.
+`"resume": ""` on purpose. **Decided (2026-11-11): no resume PDF is ready, so
+this stays empty for now.** A resume draft was attached later the same day.
+Its contact fields (city, phone, email, LinkedIn handle, CGPA) are bracketed
+placeholders, deliberately, for online safety. That is fine for a draft, but
+do not publish it as `public/resume.pdf` while the brackets are still in it,
+because a public file with a literal `[Phone Number]` reads as an unfinished
+template. Either publish a version with only the details Arpit is happy to
+make public (for example GitHub and a dedicated email), or keep the field empty.
+Two content gaps to fix in the PDF first: it does not mention the Fintech
+technical-team lead role, and it does not list MeshStream, the path tracer,
+RegimeTrader, BillBox or DictateIt, which are the stops the site is built
+around. The LinkedIn handle should also match the profile that is public.
 
 The terminus renders the resume action **only** when this is a non-empty
 string, so an unreleased PDF never becomes a dead link. Drop the file in
@@ -63,6 +96,24 @@ These are the ones the blueprint asks for that do not exist yet:
 
 The four **Missing** rows are the ones worth doing next. Each is one clip or
 one screenshot, and each is evidence the ticket currently cannot carry.
+
+**Decided (2026-11-11):**
+
+| Stop | Plan |
+| --- | --- |
+| `slot-01` MeshStream | **Arpit to record** the swarm dashboard clip, with the live offload ratio visible. |
+| `slot-06` DictateIt | **Arpit to record** the short clip of it reading an assignment aloud. |
+| `slot-08` Bus Route Planner | Not planned. Leave the stop without a screenshot for now. |
+| `slot-09` LeetCode Archive | Not planned. Leave the stop without a screenshot or status note for now. |
+
+Nothing renders for a missing image, so the two skipped stops are safe to ship.
+
+**Seen on GitHub (read 2026-11-11):** `leetcode-practice-tracker.vercel.app` is
+set as the homepage of `Leetcode-Practice-Tracker`, so `slot-04` can carry a
+`links.demo`. `BillBox` has no homepage set, which agrees with `links.demo`
+being empty on `slot-05`. `meshstream` and `dictateit` both have public repos
+but no homepage. I could read only the first part of the repo list, so I did
+not confirm repos for Bus Route Planner or LeetCode Archive.
 
 ## Product
 

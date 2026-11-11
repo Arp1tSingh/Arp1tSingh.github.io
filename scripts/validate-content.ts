@@ -142,6 +142,21 @@ function readProfile(): void {
   if (strict) {
     for (const field of result.placeholders) addIssue(field, 'is still a placeholder');
   }
+
+  /*
+   * The résumé.
+   *
+   * The field is empty until there is a PDF, and the terminus renders no
+   * action while it is empty. The moment it is not empty, the file has to be
+   * there: a download link that 404s is worse than no download link.
+   */
+  const resume = asString((raw as Record<string, unknown>).resume);
+  if (resume.length > 0) {
+    const target = join(ROOT, 'public', resume.replace(/^\/+/, ''));
+    if (!existsSync(target)) {
+      addIssue(`${path}.resume`, `points at ${resume}, which is not in public/`);
+    }
+  }
 }
 
 function readRoute(): { raw?: Record<string, unknown>; value?: RouteConfig } {

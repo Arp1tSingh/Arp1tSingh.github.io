@@ -1,6 +1,7 @@
 import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 
 import { Indicator, Ticket } from '../ui';
+import { CONTENT } from '../data/content';
 import { Poster } from '../renderers/scene3d/Poster';
 import { prefersReducedMotion, profileDevice } from '../renderers/scene3d/tier';
 import type { Stop } from '../core/types';
@@ -137,6 +138,7 @@ export function JourneyView({
           onClose={closeTicket}
           kept={wallet.has(current.id)}
           onKeep={wallet.keep}
+          resume={CONTENT.profile.resume || undefined}
         />
       ) : null}
 

@@ -29,6 +29,14 @@ export interface TicketProps {
   onClose: () => void;
   kept?: boolean;
   onKeep?: (stop: Stop) => void;
+  /**
+   * The résumé, if there is one.
+   *
+   * The terminus is the conversion, so the résumé is its action. The field is
+   * empty until there is a PDF to point at, and then the action appears: a
+   * dead download link is worse than no download link.
+   */
+  resume?: string;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -142,7 +150,14 @@ const LINK_LABELS: ReadonlyArray<{ key: 'repo' | 'demo' | 'caseStudy'; label: st
   { key: 'caseStudy', label: 'Case study' },
 ];
 
-export function Ticket({ stop, open, onClose, kept = false, onKeep }: TicketProps) {
+export function Ticket({
+  stop,
+  open,
+  onClose,
+  kept = false,
+  onKeep,
+  resume,
+}: TicketProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeRef = useRef(onClose);
@@ -322,7 +337,7 @@ export function Ticket({ stop, open, onClose, kept = false, onKeep }: TicketProp
               </dl>
             </section>
 
-            {actions.length > 0 ? (
+            {actions.length > 0 || resume ? (
               <section className="ticket__section">
                 <h3 className="ticket__label">Actions</h3>
                 <div className="ticket__actions">
@@ -337,6 +352,11 @@ export function Ticket({ stop, open, onClose, kept = false, onKeep }: TicketProp
                       {action.label}
                     </a>
                   ))}
+                  {resume ? (
+                    <a className="ticket__action" href={resume} download>
+                      Résumé
+                    </a>
+                  ) : null}
                 </div>
               </section>
             ) : null}

@@ -1,0 +1,57 @@
+/**
+ * The scene3d renderer.
+ *
+ * The canvas is a fixed layer behind the whole journey. It is the third
+ * renderer of the same dataset: the scene reads the stops and draws them.
+ */
+
+.scene3d {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.scene3d__canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* React Three Fiber puts the class on its wrapper, not on the canvas. */
+.scene3d__canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ------------------------------------------------------------------ poster */
+
+.poster {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.poster__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.poster__caption {
+  position: absolute;
+  left: var(--page-pad);
+  bottom: var(--space-4);
+  color: var(--paper);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.poster__reason {
+  position: absolute;
+  left: var(--page-pad);
+  bottom: calc(var(--space-4) + 1.6rem);
+  color: var(--grey);
+}

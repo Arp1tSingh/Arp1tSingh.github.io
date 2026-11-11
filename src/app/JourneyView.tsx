@@ -1,11 +1,30 @@
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
+
 import { Indicator, Ticket } from '../ui';
+import { Poster } from '../renderers/scene3d/Poster';
+import { prefersReducedMotion, profileDevice } from '../renderers/scene3d/tier';
 import type { Stop } from '../core/types';
 import type { JourneyApi } from './useJourney';
 import type { WalletApi } from './useWallet';
 
+/**
+ * The scene is loaded after the first paint.
+ *
+ * "Show a poster image first so the largest paint lands before the 3D loads."
+ * three.js is a quarter of the bundle, and the poster stands in until the
+ * canvas is ready.
+ */
+const Scene3D = lazy(() =>
+  import('../renderers/scene3d/Scene').then((module) => ({ default: module.Scene3D })),
+);
+
 interface JourneyViewProps {
   journey: JourneyApi;
   wallet: WalletApi;
+  /** Stop rendering the scene entirely. */
+  paused: boolean;
+  reducedMotion: boolean;
+  onContextLost(): void;
 }
 
 /**
@@ -14,13 +33,50 @@ interface JourneyViewProps {
  * The tall element is the clock: its height is the total scroll distance the
  * pacing function asks for. Nothing animates on its own. The train moves
  * because the visitor moved.
+ *
+ * The 3D scene is a fixed layer behind everything, and the position it is
+ * given is the same route position the core computes for the ticket.
  */
-export function JourneyView({ journey, wallet }: JourneyViewProps) {
-  const { state, stops, totalVh, current, next, progress, closeTicket, jumpTo } = journey;
+export function JourneyView({
+  journey,
+  wallet,
+  paused,
+  reducedMotion,
+  onContextLost,
+}: JourneyViewProps) {
+  const { state, stops, totalVh, current, next, progress, closeTicket, jumpTo, position } =
+    journey;
   const ticketOpen = state.phase === 'dwelling' || state.phase === 'terminus';
 
+  const container = useRef<HTMLDivElement>(null);
+  const [contextLost, setContextLost] = useState(false);
+  const detail = useMemo(() => profileDevice().detail, []);
+  const s = position?.s ?? 0;
+
   return (
-    <div className="journey-view">
+    <div className="journey-view" ref={container}>
+      <div className="scene3d" aria-hidden="true">
+        {contextLost ? (
+          <Poster reason="the graphics context was lost" />
+        ) : (
+          <Suspense fallback={<Poster reason="loading the scene" />}>
+            <Scene3D
+              stops={stops}
+              s={s}
+              activeIndex={state.stopIndex}
+              progress={progress}
+              reducedMotion={reducedMotion}
+              detail={detail}
+              paused={paused}
+              onContextLost={() => {
+                setContextLost(true);
+                onContextLost();
+              }}
+            />
+          </Suspense>
+        )}
+      </div>
+
       <div
         className="journey-view__track"
         style={{ height: `${Math.max(1, totalVh) * 100}vh` }}
@@ -73,6 +129,24 @@ export function JourneyView({ journey, wallet }: JourneyViewProps) {
           onKeep={wallet.keep}
         />
       ) : null}
+
+      {/*
+        The scene needs a mirror that is not a canvas. A screen reader and a
+        search engine must see every stop, with real headings, whether or not
+        the 3D ever runs.
+      */}
+      <nav className="journey-view__index visually-hidden-focusable" aria-label="Stations on this line">
+        <h2>Stations on this line</h2>
+        <ol>
+          {stops.map((stop) => (
+            <li key={stop.id}>
+              <a href={`#${stop.id}`}>{stop.station}</a>: {stop.title}. {stop.claim}
+            </li>
+          ))}
+        </ol>
+      </nav>
     </div>
   );
 }
+
+export { prefersReducedMotion };

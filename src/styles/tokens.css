@@ -60,8 +60,8 @@
 /* Journey progress drives the sky. Set on <html> by the journey controller. */
 :root[data-journey='dawn'] {
   --sky-top: #0a0a33;
-  --sky-mid: #4a2a4a;
-  --sky-horizon: #b0472f;
+  --sky-mid: #3a2438;
+  --sky-horizon: #8a3a24;
 }
 
 :root[data-journey='day'] {
@@ -73,7 +73,7 @@
 :root[data-journey='dusk'] {
   --sky-top: #05052a;
   --sky-mid: #2a1a3e;
-  --sky-horizon: #7a2a3a;
+  --sky-horizon: #6a2434;
 }
 
 :root[data-journey='night'] {

@@ -65,10 +65,10 @@ content/  ──validated at build──▶  src/core/  ──pure──▶  src
 | `src/core/` | `route()`, `pacing()`, the journey state machine. No DOM, no React, no three.js. |
 | `src/renderers/classic/` | The flat, static, SEO-friendly view. Also tier 3 and tier 4. |
 | `src/renderers/map2d/` | The network map, with skills as transfer lines. |
-| `src/renderers/scene3d/` | The 3D line. **Not built yet.** |
+| `src/renderers/scene3d/` | The 3D line: the train, the track, the stations, the sky. |
 | `src/ui/` | The gate, the ticket, the indicator and the wallet. |
 
-Because the core is pure, it gets unit tests instead of screenshots: `npm test` covers the route function, the pacing function and every journey transition without opening a browser.
+Because the core is pure, it gets unit tests instead of screenshots: `npm test` covers the route function, the pacing function, every journey transition **and the 3D triangle budgets** without opening a browser.
 
 ## The journey
 
@@ -94,15 +94,51 @@ In Express mode a local stop's dwell collapses to zero: the train passes through
 
 | Tier | Condition | What changes |
 | --- | --- | --- |
-| 0 Full | JavaScript on, motion allowed | The journey, the gate and the map. |
-| 1 Calm | `prefers-reduced-motion` | No motion, no auto-scroll. |
-| 2 Light | A slow device | Fewer effects. |
-| 3 Classic | No WebGL | The Classic view. |
+| 0 Full | WebGL works, motion allowed | The journey, the gate, the map and the 3D line. |
+| 1 Calm | `prefers-reduced-motion` | The camera cuts between stops instead of sweeping. |
+| 2 Light | A low-end device | Fewer instances, a lower pixel ratio, no antialiasing. |
+| 3 Classic | No WebGL, or the context was lost | The poster scene, then the Classic view. |
 | 4 Plain | No JavaScript | The Classic view, prerendered to static HTML at build time. |
 
 The Classic view is prerendered into a `<noscript>` block at build time, so the page is complete and readable with zero scripting — and because `<noscript>` content is inert while scripting is on, the document never carries the content twice.
 
 If the app fails to boot, an inline timer puts the static page back. There is no state in which a visitor gets a blank page.
+
+## The 3D line
+
+The scene is built entirely from primitives. There is no glTF, no texture map and no model file, so **the whole 3D payload is 0 bytes** and the geometry budget is the only budget that matters.
+
+- **The train** is three articulated cars sharing one body style: a chassis, a roof, an emissive window band, a skirt, six wheels and a red lamp at each end. Parts that share a material are merged, so the whole set is a handful of draw calls.
+- **The track** is two rails and a ballast ribbon, with the sleepers, the catenary masts and the city behind them as `InstancedMesh`. Six draw calls for the whole line.
+- **The stations** are a modular kit: a platform, a canopy, a board, a bench and a lamp.
+- **The dioramas** are one prop per stop, chosen from the project's domain, so a station is recognisable before its name is read.
+- **The sky** is one inverted sphere and one shader with no texture. It runs from dawn to night across the journey, and the fog is the horizon colour so the city dissolves into it.
+
+The camera obeys three rules: it eases behind the train rather than being rigidly attached to it, its **angular velocity is capped** so a sweep never exceeds a gentle turn rate, and the horizon stays level - there is no roll, ever.
+
+The budgets are asserted by the unit tests, not by convention. These are the numbers the tests check against:
+
+| Element | Blueprint budget | Built | Draw calls |
+| --- | --- | --- | --- |
+| The train | 12,000 to 20,000 triangles | 15,076 | 10 |
+| The track and the city | under 60 draw calls | 6 | 6 |
+| A station | under 8,000 triangles | 212 (worst) | 6 |
+| A diorama prop | under 3,000 triangles | 748 (worst) | 1 |
+| The whole scene | under 60 draw calls | about 51 | |
+| 3D assets on the wire | under 3.5 MB | **0 bytes** | |
+
+The last row is the interesting one: there is no glTF, no texture atlas and no model file. The geometry is built in the browser from primitives, so the 3D payload costs nothing to download.
+
+### Loading the scene
+
+The scene is a separate chunk. The first paint is the poster and the page, and three.js arrives afterwards:
+
+| Chunk | Raw | Gzipped |
+| --- | --- | --- |
+| The app | 500 KB | **155 KB** |
+| The 3D scene, lazy | 945 KB | 253 KB |
+
+The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 155 KB of it; the rest is the train, and it arrives after the visitor can already read the page.
 
 ## The ten-second contract
 
@@ -126,11 +162,11 @@ Within ten seconds a visitor knows who you are, what you do and how to reach you
 | --- | --- |
 | Build | Vite 8 |
 | Framework | React 19 + TypeScript 5.9 |
-| 3D | React Three Fiber + three.js — **Phase 4, not installed yet** |
-| Tests | Vitest for the core, Playwright for the browser |
+| 3D | React Three Fiber + three.js |
+| Tests | Vitest for the core and the budgets, Playwright for the browser |
 | Hosting | GitHub Pages, deployed by GitHub Actions |
 
-No runtime dependency other than React. The three fonts are self-hosted through `@fontsource-variable`, so there is no request to `fonts.googleapis.com` anywhere in the project.
+The only runtime dependencies are React, React DOM, three.js and React Three Fiber. The three fonts are self-hosted from `src/assets/fonts`, so there is no request to `fonts.googleapis.com` anywhere in the project.
 
 ## Running it
 
@@ -145,12 +181,12 @@ ES modules need HTTP — opening `index.html` from the filesystem will not work.
 
 ```
 npm run validate        # the content, before anything else
-npm test                # the core: route, pacing, journey
+npm test                # the core and the 3D budgets
 npm run typecheck
-npm run test:e2e        # the browser
+npm run test:e2e        # the browser, in Chromium, Firefox and WebKit
 ```
 
-The end-to-end suite covers the ten-second contract at three widths, the Classic view with JavaScript disabled, the gate, the ticket lifecycle, the deep links and the content parity between the renderers.
+The end-to-end suite covers the ten-second contract at three widths, the Classic view with JavaScript disabled, the gate, the ticket lifecycle, the deep links, the content parity between the renderers, and the 3D scene with its degradation to the poster.
 
 ## Licence
 

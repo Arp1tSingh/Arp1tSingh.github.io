@@ -6,6 +6,9 @@ interface HeaderProps {
   onOpenClassic(): void;
   onOpenJourney(): void;
   view: 'journey' | 'map' | 'classic';
+  /** The scene is not rendering. */
+  paused: boolean;
+  onTogglePause(): void;
 }
 
 /**
@@ -15,7 +18,15 @@ interface HeaderProps {
  * lives here as a solid accent button on frame one, at every width, and never
  * scrolls away. It is a `mailto:`, so there is no form and nothing to fail.
  */
-export function Header({ profile, onOpenMap, onOpenClassic, onOpenJourney, view }: HeaderProps) {
+export function Header({
+  profile,
+  onOpenMap,
+  onOpenClassic,
+  onOpenJourney,
+  view,
+  paused,
+  onTogglePause,
+}: HeaderProps) {
   return (
     <header className="site-header">
       <div className="site-header__bar">
@@ -50,6 +61,15 @@ export function Header({ profile, onOpenMap, onOpenClassic, onOpenJourney, view 
             Classic
           </button>
         </nav>
+
+        <button
+          type="button"
+          className="site-header__link site-header__pause"
+          aria-pressed={paused}
+          onClick={onTogglePause}
+        >
+          {paused ? 'Resume' : 'Pause'}
+        </button>
 
         <a className="site-header__cta" href={`mailto:${profile.email}`}>
           Hire me

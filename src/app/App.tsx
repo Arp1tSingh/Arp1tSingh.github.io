@@ -6,6 +6,7 @@ import { CONTENT, getStop, lineStops } from '../data/content';
 import { Gate, Wallet } from '../ui';
 import { MapView } from '../renderers/map2d';
 import { ClassicView } from '../renderers/classic';
+import { prefersReducedMotion } from '../renderers/scene3d/tier';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { JourneyView } from './JourneyView';
@@ -21,6 +22,9 @@ export function App() {
   const wallet = useWallet();
   const [view, setView] = useState<ViewMode>('journey');
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
+  const [paused, setPaused] = useState(false);
+  const [reducedMotion] = useState(() => prefersReducedMotion());
+  const [contextLost, setContextLost] = useState(false);
   const savedScroll = useRef(0);
 
   // Boot. The inline script in index.html has already armed the app; this
@@ -38,6 +42,12 @@ export function App() {
     const stage = SKY_STAGES[Math.min(SKY_STAGES.length - 1, Math.floor(journey.progress * 4))];
     document.documentElement.dataset.journey = stage;
   }, [journey.progress]);
+
+  // If the graphics context is lost and cannot be restored, the Classic view
+  // is the finished state and the visitor goes there rather than to a hole.
+  useEffect(() => {
+    if (contextLost) setView('classic');
+  }, [contextLost]);
 
   // The Classic view is a separate surface, not a scroll position.
   useEffect(() => {
@@ -95,6 +105,8 @@ export function App() {
       <Header
         profile={CONTENT.profile}
         view={view}
+        paused={paused}
+        onTogglePause={() => setPaused((value) => !value)}
         onOpenJourney={() => setView('journey')}
         onOpenMap={() => setView('map')}
         onOpenClassic={() => setView('classic')}
@@ -108,7 +120,13 @@ export function App() {
             onSelect={(line) => selectLine(line)}
           />
         ) : view === 'journey' ? (
-          <JourneyView journey={journey} wallet={wallet} />
+          <JourneyView
+            journey={journey}
+            wallet={wallet}
+            paused={paused}
+            reducedMotion={reducedMotion}
+            onContextLost={() => setContextLost(true)}
+          />
         ) : null}
       </main>
 

@@ -21,7 +21,9 @@
 .site-header {
   position: fixed;
   inset: 0 0 auto 0;
-  z-index: 40;
+  /* Above the ticket panel: the contact button is the one thing a visitor
+     must never have to hunt for, so it never disappears. */
+  z-index: 70;
   background: var(--navy);
   border-bottom: 1px solid var(--hairline);
 }
@@ -121,6 +123,10 @@
   z-index: 20;
   padding: var(--page-pad);
   pointer-events: none;
+  /* The train leads out of the bottom left of the frame, so the card sits on
+     the other side of it and never covers the thing it is describing. */
+  display: flex;
+  justify-content: flex-end;
 }
 
 .station-card {
@@ -215,6 +221,9 @@
 .site-footer {
   border-top: 1px solid var(--hairline);
   padding: var(--space-5) var(--page-pad);
+  /* Above the 3D canvas, which is a fixed layer behind the journey. */
+  position: relative;
+  z-index: 10;
 }
 
 .site-footer__inner {

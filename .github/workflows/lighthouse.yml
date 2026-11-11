@@ -1,0 +1,51 @@
+name: Lighthouse
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lighthouse
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Serve the site
+        run: |
+          npx --yes serve@14 --listen 4173 dist &
+          npx --yes wait-on@7 http://127.0.0.1:4173 --timeout 60000
+
+      # The targets are the blueprint's: a largest contentful paint of 2.5s
+      # or less on mobile, accessibility of 95 or more, and performance of 85
+      # or more.
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://127.0.0.1:4173/
+          uploadArtifacts: false
+          temporaryPublicStorage: false
+          configPath: ./lighthouserc.json
+          runs: 2

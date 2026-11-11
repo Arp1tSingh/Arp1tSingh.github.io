@@ -1,0 +1,50 @@
+/**
+ * The station label.
+ *
+ * The name of a station is not drawn in the 3D scene: the board carries a
+ * blank panel and the app draws the name over the canvas in HTML, so it
+ * stays crisp, legible and selectable however far away the camera is.
+ *
+ * The app positions `.station3d__label` by projecting the board's anchor
+ * (`boardLabelAnchor` / `boardLabelWorld` in `StationKit.tsx`) to the
+ * screen, and setting its left and top to that point. The label centres
+ * itself on the point.
+ *
+ * The class names here are the kit's own, so nothing else on the page can
+ * collide with them.
+ */
+
+.station3d__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+
+  /* The board's panel is `--paper`, so the label is ink on paper. */
+  padding: 0.3rem 0.5rem;
+  background: var(--paper);
+  color: var(--navy);
+
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+
+  /* The name is the visitor's to read, and to select. */
+  user-select: text;
+  -webkit-user-select: text;
+
+  /* The canvas keeps its own picking; the label never eats a click. */
+  pointer-events: none;
+}
+
+/**
+ * When the label is the thing that is hovered or focused, it is allowed to
+ * take the pointer, so the app can make the name a link.
+ */
+.station3d__label--live {
+  pointer-events: auto;
+}

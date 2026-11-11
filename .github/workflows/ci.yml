@@ -48,7 +48,7 @@ jobs:
         run: npm run build
 
       - name: Install Playwright
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: End-to-end tests
         run: npm run test:e2e
@@ -57,4 +57,4 @@ jobs:
         run: |
           total=$(du -sb dist | cut -f1)
           echo "dist is $total bytes"
-          test "$total" -lt 2600000
+          test "$total" -lt 3600000

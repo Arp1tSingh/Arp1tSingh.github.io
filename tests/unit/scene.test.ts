@@ -43,6 +43,39 @@ describe('the track', () => {
     expect(furthest.max.x).toBeGreaterThanOrEqual((12 - 1) * STATION_SPACING);
   });
 
+  it('lays its sleepers across the line, not along it', () => {
+    const sleepers = built.group.getObjectByName('sleepers') as THREE.InstancedMesh;
+    expect(sleepers.count).toBeGreaterThan(700);
+
+    const first = new THREE.Matrix4();
+    const second = new THREE.Matrix4();
+    sleepers.getMatrixAt(0, first);
+    sleepers.getMatrixAt(1, second);
+
+    const p0 = new THREE.Vector3().setFromMatrixPosition(first);
+    const p1 = new THREE.Vector3().setFromMatrixPosition(second);
+    const along = p1.clone().sub(p0).normalize();
+    const across = new THREE.Vector3(1, 0, 0).applyQuaternion(
+      new THREE.Quaternion().setFromRotationMatrix(first),
+    );
+
+    // The 3.4-unit axis is the one that crosses the rails.
+    expect(Math.abs(across.dot(along))).toBeLessThan(0.1);
+    expect(p0.distanceTo(p1)).toBeCloseTo(1.5, 1);
+  });
+
+  it('gives the rails and ballast a profile instead of a flat ribbon', () => {
+    const rail = built.group.getObjectByName('rail-left') as THREE.Mesh;
+    const ballast = built.group.getObjectByName('ballast') as THREE.Mesh;
+    rail.geometry.computeBoundingBox();
+    ballast.geometry.computeBoundingBox();
+
+    const railBox = rail.geometry.boundingBox!;
+    const ballastBox = ballast.geometry.boundingBox!;
+    expect(railBox.max.y - railBox.min.y).toBeGreaterThan(0.12);
+    expect(ballastBox.max.y - ballastBox.min.y).toBeGreaterThan(0.15);
+  });
+
   it('draws less on a low-end device', () => {
     const low = buildTrack({ stations: 12, detail: 'low' });
     const high = buildTrack({ stations: 12, detail: 'high' });
@@ -64,10 +97,10 @@ describe('the track', () => {
 describe('the train', () => {
   const train = buildTrain();
 
-  it('is between twelve and twenty thousand triangles', () => {
+  it('stays under a small triangle budget', () => {
     const triangles = countTriangles(train);
-    expect(triangles).toBeGreaterThanOrEqual(12000);
-    expect(triangles).toBeLessThanOrEqual(20000);
+    expect(triangles).toBeGreaterThanOrEqual(5000);
+    expect(triangles).toBeLessThanOrEqual(9000);
   });
 
   it('costs a small number of draw calls', () => {

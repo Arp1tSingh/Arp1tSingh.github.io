@@ -141,7 +141,9 @@ export function Scene3D({ paused, still, onContextLost, ...scene }: Scene3DProps
       dpr={profile.dpr}
       frameloop={paused || hidden ? 'never' : still ? 'demand' : 'always'}
       gl={{
-        antialias: profile.detail === 'high',
+        // MSAA on both tiers. The low tier saves its budget on instances and
+        // pixel ratio, not on the stair-stepped city edges.
+        antialias: true,
         powerPreference: profile.detail === 'high' ? 'high-performance' : 'low-power',
         alpha: false,
       }}

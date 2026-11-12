@@ -137,7 +137,10 @@ ground and they should not turn into a laser beam; only the train's window
 band, the station lamps and the platform edges are meant to glow.
 
 The cost is one extra pass and a render target, so the scene is still a lazy
-chunk and a visitor without WebGL never fetches it.
+chunk and a visitor without WebGL never fetches it. The composer's beauty
+target carries 4x MSAA, capped by the GPU, so switching bloom on at night
+does not quietly switch antialiasing off when the dark silhouettes need it
+most.
 
 ### A modelled train
 
@@ -146,20 +149,27 @@ blueprint's own stated mitigation - "Ship the primitive-built train from the
 prototype, upgrade later" - and it keeps the whole 3D payload at zero bytes
 of geometry files. A modelled train is a Phase 4b decision, not a blocker.
 
+The 2026-11-12 pass stripped it back to what a rider reads at this scale:
+the shell, the livery, the layered doors and windows, and the wheels. The
+roof pod, vents, underframe, equipment box and bogie boxes are gone.
+
 The numbers the primitives currently hit, all asserted by the unit tests:
 
 | Element | Blueprint budget | Built |
 | --- | --- | --- |
-| The train | 12,000 to 20,000 triangles | 15,076 |
-| The track | under 60 draw calls | 6 |
+| The train | under 10,000 triangles | 6,804 |
+| The track | under 60 draw calls | 7 |
 | A station | under 8,000 triangles | 212 (worst) |
 | A diorama | under 3,000 triangles | 748 (worst) |
 
 ### A curved line
 
-The track runs straight along the X axis. The camera rig already caps its
-angular velocity and eases behind the train, so a curve can be added without
-touching either rule - but the curve itself is not there.
+**Done (2026-11-11).** The line weaves between two lanes: it runs straight
+through each platform, jogs to the other lane between stations, and two
+rounds of Chaikin smoothing round the corners. The ballast, rails and third
+rail are ribbons extruded along that path, and each sleeper is laid across
+the rails from the path tangent. The camera's capped turn rate made the curve
+possible without changing the camera rules.
 
 ## How to change any of this
 

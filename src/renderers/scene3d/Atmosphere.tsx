@@ -3,8 +3,8 @@
  *
  * The lights, the ground and the fog are one grade, driven by the same ride
  * clock as the sky. At Dadar the world is warm and the hemisphere light is
- * strong; by Badlapur the ground is dark, the sun is a moon, and the lamps
- * carry the scene.
+ * strong; by Badlapur the sun is below the line and the moon carries what
+ * light is left.
  */
 
 import { useRef } from 'react';
@@ -13,6 +13,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 import { SCENE_COLORS, STATION_SPACING } from './constants';
+import { celestialAt } from './celestial';
 import { nightAmount, skyColours } from './Sky';
 import { rideProgress } from './ride';
 
@@ -36,12 +37,16 @@ export function Atmosphere({ clock, stopCount }: AtmosphereProps) {
     const progress = rideProgress(clock.current.s, stopCount);
     const night = nightAmount(progress);
     const colours = skyColours(progress);
+    const celestial = celestialAt(progress);
 
     if (hemisphere.current) {
       hemisphere.current.intensity = 0.95 - 0.62 * night;
     }
 
     if (sun.current) {
+      // A directional light's direction is `target - position`, so placing
+      // it along the sun (or the risen moon) is all the alignment we need.
+      sun.current.position.copy(celestial.light).multiplyScalar(120);
       sun.current.intensity = 1.15 * (1 - night) + 0.08;
       sun.current.color.copy(colours.horizon).lerp(white.current, 0.6);
     }

@@ -2,9 +2,14 @@
  * The train.
  *
  * Three cars in the concept's metro livery: a silver shell, a blue band, a
- * red line under the windows, a dark underframe, a grey roof and a warm lit
- * window band. The two end cars taper into a cab; the middle car is the
- * articulated body between them.
+ * red line under the windows, a warm lit window band and a pair of sliding
+ * doors on each side. The two end cars taper into a cab; the middle car is
+ * the articulated body between them.
+ *
+ * The brief was to strip the clutter. The grey roof cap, air-conditioning
+ * pod, vents, underframe, equipment box, bogie boxes, axle cylinders and cab
+ * bands are gone. What is left is the shell, the livery, the glazing and the
+ * wheels, which are the only things a rider actually reads at this scale.
  *
  * Each car is its own group, placed on the track independently, so the set
  * bends through the jogs instead of sliding along a straight axis. Each car
@@ -12,8 +17,7 @@
  * and on the end cars one light mesh. That is eight draw calls for the set.
  *
  * The train is powered by the third rail. There is no pantograph and no
- * roof wire; the collector shoes sit on the +Z side of each bogie, over the
- * third rail.
+ * roof wire.
  */
 
 import { useEffect, useMemo, useRef } from 'react';
@@ -31,8 +35,8 @@ import { rideProgress } from './ride';
 /* ------------------------------------------------------------------ *
  * The dimensions of one car, in world units.
  *
- * The rail head is y = 0. The floor of the car is at y = 1, level with the
- * platform, and the roof is at y = 3.5.
+ * The rail head is y = 0.22. The floor of the car is at y = 1, level with
+ * the platform, and the roof is at y = 3.5.
  * ------------------------------------------------------------------ */
 
 const CAR_LENGTH = 8;
@@ -40,7 +44,6 @@ const CAR_WIDTH = 2.9;
 const CAR_HEIGHT = 2.5;
 const BODY_FLOOR = 1;
 const BODY_CENTRE = BODY_FLOOR + CAR_HEIGHT / 2;
-const ROOF_TOP = 3.62;
 
 /** How far apart two car centres are. Three cars span 25.6 units. */
 export const CAR_PITCH = 8.8;
@@ -49,15 +52,25 @@ export const CAR_PITCH = 8.8;
 const NOSE_LENGTH = 1.15;
 const NOSE_SCALE = 0.76;
 
+/** The wheel rests on the rail head at y = 0.22. */
+const RAIL_TOP = 0.22;
 const WHEEL_RADIUS = 0.45;
 const WHEEL_WIDTH = 0.22;
 const WHEEL_Z = RAIL_GAUGE / 2;
-const WHEEL_Y = WHEEL_RADIUS + 0.03;
+const WHEEL_Y = RAIL_TOP + WHEEL_RADIUS;
 
 const BAND_Y = 1.35;
 const STRIPE_Y = 1.7;
-const BAND_LENGTH = 5.8;
-const STRIPE_LENGTH = 6;
+const BAND_LENGTH = 5.5;
+const STRIPE_LENGTH = 5.5;
+
+/* Door and window depths, from the shell outwards. Every visible face has
+ * its own depth, so no two of them can z-fight. */
+const SHELL_SIDE = CAR_WIDTH / 2;
+const GASKET_Z = SHELL_SIDE + 0.005;
+const DOOR_Z = SHELL_SIDE + 0.04;
+const PANEL_Z = SHELL_SIDE + 0.065;
+const WINDOW_Z = SHELL_SIDE + 0.02;
 
 /* ------------------------------------------------------------------ *
  * The palette
@@ -66,7 +79,6 @@ const STRIPE_LENGTH = 6;
 const SILVER = SCENE_COLORS.silver;
 const BLUE = SCENE_COLORS.blue;
 const RED = SCENE_COLORS.red;
-const ROOF = SCENE_COLORS.grey;
 const DARK = SCENE_COLORS.inkRaise;
 const BLACK = '#15161a';
 const GLASS = SCENE_COLORS.window;
@@ -90,22 +102,6 @@ function box(
     geometry: new THREE.BoxGeometry(width, height, depth).translate(x, y, z),
     colour,
   };
-}
-
-function rounded(
-  width: number,
-  height: number,
-  depth: number,
-  segments: number,
-  radius: number,
-  x: number,
-  y: number,
-  z: number,
-  colour: string,
-): Painted {
-  const geometry = new RoundedBoxGeometry(width, height, depth, segments, radius);
-  geometry.translate(x, y, z);
-  return { geometry, colour };
 }
 
 /**
@@ -189,8 +185,8 @@ function buildCar(spec: CarSpec, materials: ReturnType<typeof buildMaterials>): 
   const glass: Painted[] = [];
   const lights: Painted[] = [];
 
-  /* The shell. */
-  const shell = new RoundedBoxGeometry(CAR_LENGTH, CAR_HEIGHT, CAR_WIDTH, 8, 0.36);
+  /* The shell. Its rounded roof is the roof: no cap and no pod above it. */
+  const shell = new RoundedBoxGeometry(CAR_LENGTH, CAR_HEIGHT, CAR_WIDTH, 5, 0.36);
   if (spec.nose === 'front') taperNose(shell, 1);
   if (spec.nose === 'rear') taperNose(shell, -1);
   shell.translate(0, BODY_CENTRE, 0);
@@ -200,70 +196,61 @@ function buildCar(spec: CarSpec, materials: ReturnType<typeof buildMaterials>): 
   body.push(box(BAND_LENGTH, 0.34, CAR_WIDTH + 0.04, 0, BAND_Y, 0, BLUE));
   body.push(box(STRIPE_LENGTH, 0.09, CAR_WIDTH + 0.05, 0, STRIPE_Y, 0, RED));
 
-  /* The window band: four panels, slightly proud of the shell. */
-  [-2.55, -1.0, 1.0, 2.55].forEach((x) => {
-    glass.push(box(1.35, 0.9, CAR_WIDTH + 0.06, x, 2.58, 0, GLASS));
-  });
-
-  /* The double doorway in the middle of each side. */
+  /* The saloon windows: one clean panel either side of the doorway, kept
+   * clear of the nose taper so no glass floats off the shell. */
   [-1, 1].forEach((side) => {
-    const z = side * (CAR_WIDTH / 2 + 0.02);
-    body.push(box(1.55, 1.95, 0.07, 0, 2.02, z, DARK));
-    glass.push(box(1.25, 0.68, 0.03, 0, 2.6, z + side * 0.02, GLASS));
-    body.push(box(0.055, 1.95, 0.09, 0, 2.02, z + side * 0.01, SILVER));
-    body.push(box(1.4, 0.42, 0.09, 0, 1.35, z + side * 0.01, BLUE));
+    const z = side * WINDOW_Z;
+    [-1.95, 1.95].forEach((x) => {
+      glass.push(box(1.6, 0.85, 0.05, x, 2.55, z, GLASS));
+    });
   });
 
-  /* The roof, its air-conditioning pod and the vents. */
-  body.push(rounded(7.9, 0.24, 2.48, 3, 0.1, 0, ROOF_TOP, 0, ROOF));
-  body.push(rounded(2.6, 0.32, 1.75, 2, 0.1, -0.6, ROOF_TOP + 0.28, 0, ROOF));
-  [-2.6, 2.6].forEach((x) => {
-    body.push(box(0.8, 0.18, 1.0, x, ROOF_TOP + 0.2, 0, DARK));
-  });
+  /* The double doorway in the middle of each side. The gasket sits against
+   * the shell, the two leaves stand proud of it, and the glass and the blue
+   * lower panel stand proud of the leaves. Each layer has a different depth,
+   * which is what stops the door window from flickering. */
+  [-1, 1].forEach((side) => {
+    const gasketZ = side * GASKET_Z;
+    const doorZ = side * DOOR_Z;
+    const panelZ = side * PANEL_Z;
 
-  /* The underframe and the equipment boxes between the bogies. */
-  body.push(rounded(6.5, 0.55, 2.34, 2, 0.08, 0, 0.78, 0, DARK));
-  body.push(box(1.5, 0.32, 1.5, 0, 0.62, 0, BLACK));
+    body.push(box(1.58, 1.96, 0.03, 0, 2.02, gasketZ, DARK));
 
-  /* The bogies, the axles and the wheels. */
-  const wheel = wheelGeometry();
-  [-2.55, 2.55].forEach((x) => {
-    body.push(box(1.7, 0.42, 1.62, x, 0.52, 0, DARK));
-    body.push({
-      geometry: new THREE.CylinderGeometry(0.08, 0.08, WHEEL_Z * 2, 12)
-        .rotateX(Math.PI / 2)
-        .translate(x, WHEEL_Y, 0),
-      colour: ROOF,
+    [-1, 1].forEach((leaf) => {
+      body.push(box(0.72, 1.88, 0.05, leaf * 0.37, 2.02, doorZ, SILVER));
+      glass.push(box(0.58, 0.62, 0.02, leaf * 0.37, 2.5, panelZ, GLASS));
+      body.push(box(0.62, 0.54, 0.02, leaf * 0.37, 1.37, panelZ, BLUE));
     });
 
+    body.push(box(0.035, 1.88, 0.02, 0, 2.02, panelZ, DARK));
+  });
+
+  /* The wheels. Everything between them used to be boxes; the shell is low
+   * enough now that the wheels read as the only running gear. */
+  const wheel = wheelGeometry();
+  [-2.55, 2.55].forEach((x) => {
     [-1, 1].forEach((side) => {
       body.push({
         geometry: wheel.clone().translate(x, WHEEL_Y, side * WHEEL_Z),
         colour: BLACK,
       });
     });
-
-    /* The collector shoe, over the third rail on the +Z side. */
-    body.push(box(0.62, 0.16, 0.24, x, 0.31, 1.16, DARK));
-    body.push(box(0.12, 0.3, 0.12, x, 0.42, 1.05, ROOF));
   });
   wheel.dispose();
 
-  /* The cab. The end face is already tapered by the shell, so the glass
-   * and the lamps only have to sit on it. */
+  /* The cab. The end face is already tapered by the shell, so the glass and
+   * the lamps only have to sit on it. */
   if (spec.nose !== 'none') {
     const direction = spec.nose === 'front' ? 1 : -1;
-    const face = direction * (CAR_LENGTH / 2 + 0.02);
+    const face = direction * (CAR_LENGTH / 2 + 0.01);
 
-    body.push(box(0.06, 0.66, 1.75, face, 2.72, 0, '#171d2b'));
-    body.push(box(0.08, 0.16, 1.9, face - direction * 0.01, 1.98, 0, DARK));
-    body.push(box(0.08, 0.16, 1.9, face - direction * 0.01, 3.34, 0, DARK));
+    glass.push(box(0.05, 0.62, 1.25, face, 2.72, 0, GLASS));
 
     const lampColour = spec.nose === 'front' ? '#fff2c2' : '#ff2b2b';
     [-0.78, 0.78].forEach((z) => {
       lights.push({
-        geometry: new THREE.SphereGeometry(0.17, 12, 8)
-          .translate(direction * (CAR_LENGTH / 2 + 0.1), 1.55, z),
+        geometry: new THREE.SphereGeometry(0.14, 12, 8)
+          .translate(direction * (CAR_LENGTH / 2 + 0.06), 1.55, z),
         colour: lampColour,
       });
     });
@@ -405,7 +392,10 @@ export function Train({ line, clock, dwelling }: TrainProps): JSX.Element {
 
     const progress = rideProgress(clock.current.s, line.stations.length);
     const night = nightAmount(progress);
-    const target = 0.1 + 0.9 * night + (dwelling ? 0.35 : 0);
+    // The saloon is dark glass during the day. The interior lights come up
+    // gradually after dusk, with only a small lift while standing at a
+    // platform so the train reads as occupied without turning brown.
+    const target = 0.03 + 0.95 * night + (dwelling ? 0.12 : 0);
     materials.glass.emissiveIntensity = THREE.MathUtils.damp(
       materials.glass.emissiveIntensity,
       Math.min(1.45, target),

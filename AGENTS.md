@@ -14,11 +14,16 @@ into a single push.
   (Ambernath), `badlapur`.
 - Phases: 0 content order, 1 ride clock, 2 path/track, 3 camera, 4 metro
   train, 5 sky/palette, 6 docs/verification.
-- Status: phases 0-5 done. 148 unit tests and 93 e2e tests (Chromium,
+- Status: phases 0-5 done. 158 unit tests and 93 e2e tests (Chromium,
   Firefox, WebKit) pass; typecheck and build pass. Screenshots at
   0/25/50/75/100% desktop, mobile and reduced motion reviewed. The city now
   stands 46 units back from the line's own normal, which removed the flat
   grey wall at Thane.
+- Latest visual pass: doors are depth-layered so their glass cannot
+  z-fight; the train is down to shell, livery, glazing and wheels (6,804
+  triangles, 8 draw calls); the track has a ballast bed, profiled rails and
+  sleepers laid across the line; sun and moon follow separate world-aligned
+  arcs and the stars fade in slowly; the night composer keeps 4x MSAA.
 - Résumé is published at `public/resume.pdf`, wired through
   `content/profile.json`. Remaining: two clips (MeshStream dashboard,
   DictateIt reading), to follow after this push.

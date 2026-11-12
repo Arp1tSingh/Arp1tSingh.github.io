@@ -1,10 +1,15 @@
 /**
  * The track and the city.
  *
- * The line weaves between two lanes. The ballast, both running rails and the
- * third rail are ribbons extruded along the smoothed path, so they turn with
- * the track instead of being boxes laid on a straight axis. Sleepers and the
- * city are instanced.
+ * The line weaves between two lanes. The ballast, both running rails, the
+ * third rail and its cover are profiled ribbons extruded along the smoothed
+ * path, so they turn with the track instead of being boxes laid on a
+ * straight axis. Sleepers and the city are instanced.
+ *
+ * The refinements are the ones the concept got right: sleepers lie across
+ * the rails at a real interval, the rails have a head and a web rather than
+ * being flat strips, and the ballast is a shallow bed with shoulders. There
+ * are still no catenary masts and no new furniture.
  *
  * Seven draw calls: ballast, two running rails, third rail, third-rail cover,
  * sleepers and one city mesh. Nothing here knows what a station is called.
@@ -19,14 +24,26 @@ import { buildLine, type LinePath } from './path';
 import type { Detail } from './tier';
 
 /* ------------------------------------------------------------------ *
- * Density
+ * Density and track layers
  * ------------------------------------------------------------------ */
 
-const SLEEPER_INTERVAL: Record<Detail, number> = { high: 1.7, low: 5 };
+const SLEEPER_INTERVAL: Record<Detail, number> = { high: 1.5, low: 5 };
 
 const CITY_COUNT: Record<Detail, number> = { high: 320, low: 170 };
 
 const CITY_HEIGHT: Record<Detail, number> = { high: 58, low: 16 };
+
+/** The bed: a shallow trapezoid, wide enough to leave ballast shoulders. */
+const BALLAST_TOP = -0.18;
+const BALLAST_BASE = -0.4;
+const BALLAST_TOP_HALF = 2.3;
+const BALLAST_BASE_HALF = 2.9;
+
+/** A sleeper rests on the bed; its top is the foot of the rail. */
+const SLEEPER_HEIGHT = 0.24;
+
+/** The third rail is lower than the running rail; its cover clears both. */
+const THIRD_RAIL_OFFSET = 1.25;
 
 /**
  * How far the city stands back from the line.
@@ -43,6 +60,54 @@ const CITY_NEAR_HEIGHT = 0.2;
  * Geometry
  * ------------------------------------------------------------------ */
 
+type ProfilePoint = readonly [lateral: number, height: number];
+
+/** A running rail: head, web and foot, in cross-section. */
+const RAIL_PROFILE: readonly ProfilePoint[] = [
+  [0.065, 0.22],
+  [0.075, 0.2],
+  [0.075, 0.17],
+  [0.03, 0.155],
+  [0.03, 0.105],
+  [0.115, 0.09],
+  [0.115, 0.06],
+  [-0.115, 0.06],
+  [-0.115, 0.09],
+  [-0.03, 0.105],
+  [-0.03, 0.155],
+  [-0.075, 0.17],
+  [-0.075, 0.2],
+  [-0.065, 0.22],
+];
+
+/** The conductor rail, a bar with a chamfered top. */
+const THIRD_RAIL_PROFILE: readonly ProfilePoint[] = [
+  [0.07, 0.34],
+  [0.09, 0.31],
+  [0.09, 0.12],
+  [-0.09, 0.12],
+  [-0.09, 0.31],
+  [-0.07, 0.34],
+];
+
+/** The protective cover, a shallow peaked plate over the conductor. */
+const THIRD_RAIL_COVER_PROFILE: readonly ProfilePoint[] = [
+  [-0.16, 0.52],
+  [0.16, 0.52],
+  [0.3, 0.46],
+  [0.3, 0.42],
+  [-0.3, 0.42],
+  [-0.3, 0.46],
+];
+
+/** The ballast bed: a trapezoid with a shoulder either side. */
+const BALLAST_PROFILE: readonly ProfilePoint[] = [
+  [-BALLAST_TOP_HALF, BALLAST_TOP],
+  [BALLAST_TOP_HALF, BALLAST_TOP],
+  [BALLAST_BASE_HALF, BALLAST_BASE],
+  [-BALLAST_BASE_HALF, BALLAST_BASE],
+];
+
 function seeded(seed: number): () => number {
   let state = seed >>> 0;
   return () => {
@@ -54,24 +119,33 @@ function seeded(seed: number): () => number {
   };
 }
 
+/** Stable 0..1 noise for a vertex, so the ballast does not read as flat. */
+function vertexNoise(i: number, j: number): number {
+  let h = Math.imul(i + 1, 374761393) ^ Math.imul(j + 7, 668265263);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
 /**
- * A flat strip following the line.
+ * A cross-section extruded along the line.
  *
- * `offset` is signed distance from the centreline on the right-hand normal,
- * `width` is the strip's width and `y` is its height. The strip is double
- * sided because the camera can look at it from either side of a curve.
+ * The profile is a list of `[lateral, height]` points in clockwise order
+ * when seen from behind the ring, which makes the computed normals face
+ * outward. `vary` adds a little per-vertex shade to a surface; the ballast
+ * uses it to break up what would otherwise be a long flat ribbon.
  */
-function ribbon(
+function profileRibbon(
   line: LinePath,
   offset: number,
-  width: number,
-  y: number,
+  profile: readonly ProfilePoint[],
   color: string,
+  options: { vary?: number } = {},
 ): THREE.Mesh {
   const count = line.points.length;
-  const positions = new Float32Array(count * 2 * 3);
+  const ring = profile.length;
+  const positions = new Float32Array(count * ring * 3);
   const indices: number[] = [];
-  const half = width / 2;
+  const vary = options.vary ?? 0;
 
   for (let i = 0; i < count; i += 1) {
     const point = line.points[i];
@@ -82,18 +156,24 @@ function ribbon(
     const length = Math.hypot(tx, tz) || 1;
     const nx = -tz / length;
     const nz = tx / length;
-    const a = offset - half;
-    const b = offset + half;
-    positions[i * 6] = point.x + nx * a;
-    positions[i * 6 + 1] = y;
-    positions[i * 6 + 2] = point.z + nz * a;
-    positions[i * 6 + 3] = point.x + nx * b;
-    positions[i * 6 + 4] = y;
-    positions[i * 6 + 5] = point.z + nz * b;
+
+    for (let j = 0; j < ring; j += 1) {
+      const [lateral, y] = profile[j];
+      const at = (i * ring + j) * 3;
+      positions[at] = point.x + nx * (offset + lateral);
+      positions[at + 1] = y;
+      positions[at + 2] = point.z + nz * (offset + lateral);
+    }
 
     if (i > 0) {
-      const j = i * 2;
-      indices.push(j - 2, j - 1, j, j - 1, j + 1, j);
+      for (let j = 0; j < ring; j += 1) {
+        const next = (j + 1) % ring;
+        const a = (i - 1) * ring + j;
+        const b = (i - 1) * ring + next;
+        const c = i * ring + j;
+        const d = i * ring + next;
+        indices.push(a, b, c, b, d, c);
+      }
     }
   }
 
@@ -102,22 +182,29 @@ function ribbon(
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
 
-  const mesh = new THREE.Mesh(
-    geometry,
-    new THREE.MeshLambertMaterial({
-      color,
-      side: THREE.DoubleSide,
-      flatShading: true,
-    }),
-  );
+  let material: THREE.MeshLambertMaterial;
+  if (vary > 0) {
+    const tint = new THREE.Color(color);
+    const colors = new Float32Array(count * ring * 3);
+    for (let i = 0; i < count; i += 1) {
+      for (let j = 0; j < ring; j += 1) {
+        const shade = 1 - vary * 0.5 + vary * vertexNoise(i, j);
+        const at = (i * ring + j) * 3;
+        colors[at] = tint.r * shade;
+        colors[at + 1] = tint.g * shade;
+        colors[at + 2] = tint.b * shade;
+      }
+    }
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    material = new THREE.MeshLambertMaterial({ color: '#ffffff', vertexColors: true });
+  } else {
+    material = new THREE.MeshLambertMaterial({ color });
+  }
+
+  const mesh = new THREE.Mesh(geometry, material);
   mesh.castShadow = false;
   mesh.receiveShadow = false;
   return mesh;
-}
-
-/** A sleeper: a dark timber laid across the rails. */
-function sleeperGeometry(): THREE.BufferGeometry {
-  return new THREE.BoxGeometry(RAIL_GAUGE + 1.5, 0.18, 0.4);
 }
 
 /** One block of the city. */
@@ -171,27 +258,37 @@ export function buildTrack(options: { stations: number; detail: Detail }): {
   const group = new THREE.Group();
   group.name = 'track';
 
-  const ballast = ribbon(line, 0, 4.8, -0.22, SCENE_COLORS.ballast);
+  const ballast = profileRibbon(line, 0, BALLAST_PROFILE, SCENE_COLORS.ballast, { vary: 0.18 });
   ballast.name = 'ballast';
   group.add(ballast);
 
   [-1, 1].forEach((side) => {
-    const rail = ribbon(line, (side * RAIL_GAUGE) / 2, 0.17, 0.03, SCENE_COLORS.rail);
+    const rail = profileRibbon(line, (side * RAIL_GAUGE) / 2, RAIL_PROFILE, SCENE_COLORS.rail);
     rail.name = side < 0 ? 'rail-left' : 'rail-right';
     group.add(rail);
   });
 
-  const third = ribbon(line, 1.25, 0.14, 0.3, SCENE_COLORS.rail);
+  const third = profileRibbon(
+    line,
+    THIRD_RAIL_OFFSET,
+    THIRD_RAIL_PROFILE,
+    SCENE_COLORS.rail,
+  );
   third.name = 'third-rail';
   group.add(third);
 
-  const cover = ribbon(line, 1.25, 0.5, 0.54, SCENE_COLORS.grey);
+  const cover = profileRibbon(
+    line,
+    THIRD_RAIL_OFFSET,
+    THIRD_RAIL_COVER_PROFILE,
+    SCENE_COLORS.grey,
+  );
   cover.name = 'third-rail-cover';
   group.add(cover);
 
   const sleepers = new THREE.InstancedMesh(
-    sleeperGeometry(),
-    new THREE.MeshLambertMaterial({ color: SCENE_COLORS.sleeper, flatShading: true }),
+    new THREE.BoxGeometry(3.4, SLEEPER_HEIGHT, 0.5),
+    new THREE.MeshLambertMaterial({ color: 0xffffff, flatShading: true }),
     Math.max(1, Math.ceil(line.total / SLEEPER_INTERVAL[detail]) + 2),
   );
   sleepers.name = 'sleepers';
@@ -200,27 +297,38 @@ export function buildTrack(options: { stations: number; detail: Detail }): {
   sleepers.receiveShadow = false;
   sleepers.instanceMatrix.setUsage(THREE.StaticDrawUsage);
 
+  const sleeperColour = new THREE.Color(SCENE_COLORS.sleeper);
+  const sleeperTint = new THREE.Color();
+  const sleeperPalette = seeded(stations * 4093 + (detail === 'high' ? 11 : 19));
   const dummy = new THREE.Object3D();
+  const sleeperY = BALLAST_TOP + SLEEPER_HEIGHT / 2;
   let sleeperCount = 0;
   for (let d = 0; d <= line.total; d += SLEEPER_INTERVAL[detail]) {
     if (sleeperCount >= sleepers.count) break;
     // Walk the path by sampling the distance table directly.
     const pose = sample(line, d);
-    dummy.position.set(pose.x, -0.08, pose.z);
-    dummy.rotation.set(0, Math.atan2(-pose.tz, pose.tx), 0);
+    dummy.position.set(pose.x, sleeperY, pose.z);
+    // lookAt points the box's +Z down the track, so its 3.4-unit X axis
+    // lies across the rails. Without this the sleepers become one long plank.
+    dummy.lookAt(pose.x + pose.tx, sleeperY, pose.z + pose.tz);
     dummy.scale.set(1, 1, 1);
     dummy.updateMatrix();
     sleepers.setMatrixAt(sleeperCount, dummy.matrix);
+    sleepers.setColorAt(
+      sleeperCount,
+      sleeperTint.copy(sleeperColour).multiplyScalar(0.82 + sleeperPalette() * 0.36),
+    );
     sleeperCount += 1;
   }
   sleepers.count = sleeperCount;
   sleepers.instanceMatrix.needsUpdate = true;
+  if (sleepers.instanceColor) sleepers.instanceColor.needsUpdate = true;
   group.add(sleepers);
 
   const blocks = cityBlocks(line, detail);
   const city = new THREE.InstancedMesh(
     new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshLambertMaterial({ color: 0xffffff, flatShading: true }),
+    new THREE.MeshLambertMaterial({ color: 0xffffff, flatShading: true, dithering: true }),
     Math.max(1, blocks.length),
   );
   city.name = 'city';
@@ -232,12 +340,20 @@ export function buildTrack(options: { stations: number; detail: Detail }): {
   const color = new THREE.Color();
   const palette = seeded(stations * 104729 + (detail === 'high' ? 31 : 47));
   blocks.forEach((block, index) => {
-    dummy.position.set(block.x, block.height / 2 - 0.55, block.z);
+    dummy.position.set(block.x, block.height / 2 - 0.6, block.z);
     dummy.rotation.set(0, 0, 0);
     dummy.scale.set(block.width, block.height, block.depth);
     dummy.updateMatrix();
     city.setMatrixAt(index, dummy.matrix);
-    color.setHSL(0.55 + palette() * 0.08, 0.12, 0.38 + palette() * 0.22);
+    // The concept's own spread: a little blue in the hue, a little life in
+    // the saturation and lightness. A single grey made every silhouette
+    // edge read as a hard line against the sky.
+    color.setHSL(
+      0.55 + palette() * 0.12,
+      0.12 + palette() * 0.18,
+      0.38 + palette() * 0.3,
+      THREE.SRGBColorSpace,
+    );
     city.setColorAt(index, color);
   });
   city.count = blocks.length;

@@ -98,7 +98,7 @@ In Express mode a local stop's dwell collapses to zero: the train passes through
 | --- | --- | --- |
 | 0 Full | WebGL works, motion allowed | The journey, the gate, the map and the 3D line. |
 | 1 Calm | `prefers-reduced-motion` | The camera cuts between stops instead of sweeping. |
-| 2 Light | A low-end device | Fewer instances, a lower pixel ratio, no antialiasing. |
+| 2 Light | A low-end device | Fewer instances and a lower pixel ratio; antialiasing stays on. |
 | 3 Classic | No WebGL, or the context was lost | The poster scene, then the Classic view. |
 | 4 Plain | No JavaScript | The Classic view, prerendered to static HTML at build time. |
 
@@ -110,20 +110,20 @@ If the app fails to boot, an inline timer puts the static page back. There is no
 
 The scene is built entirely from primitives. There is no glTF, no texture map and no model file, so **the whole 3D payload is 0 bytes** and the geometry budget is the only budget that matters.
 
-- **The train** is three articulated cars in the metro livery: a silver shell, a blue band, a red line under the windows, a lit window band, tapered cab ends and a third-rail shoe on each bogie. Parts that share a material are merged, so the set is eight draw calls.
-- **The track** weaves between two lanes. The ballast, both running rails, the third rail and its cover are ribbons extruded along the smoothed path; the sleepers and the city are `InstancedMesh`. Seven draw calls for the whole line, with no catenary and no pantograph.
+- **The train** is three articulated cars in the metro livery: a silver shell, a blue band, a red line under the windows, a lit window band, tapered cab ends and four wheels per car. The roof pod, vents, underframe and bogie boxes are gone; parts that share a material are merged, so the set is 6,804 triangles in eight draw calls.
+- **The track** weaves between two lanes. The ballast bed, both running rails, the third rail and its cover are profiled ribbons extruded along the smoothed path; the sleepers lie across the rails and, with the city, are `InstancedMesh`. Seven draw calls for the whole line, with no catenary and no pantograph.
 - **The stations** are a modular kit: a platform, a canopy, a board, a bench and a lamp.
 - **The dioramas** are one prop per stop, chosen from the project's domain, so a station is recognisable before its name is read.
-- **The sky** is one inverted sphere and one shader with no texture. Six keys take it from dawn through day, golden hour and dusk to night, and the fog is the horizon colour so the city dissolves into it.
+- **The sky** is one inverted sphere and one shader with no texture. Six keys take it from dawn through day, golden hour and dusk to night, and the fog is the horizon colour so the city dissolves into it. The sun sets below the line, the moon rises on its own arc and the stars fade in behind them; all three are placed from world directions, so they stay put while the train moves.
 - **The bloom** is on at night and on the high tier only: the train's window band, the station lamps and the platform edges glow, and nothing else does.
 
 The camera obeys three rules: it eases behind the train rather than being rigidly attached to it, its **angular velocity is capped** so a sweep never exceeds a gentle turn rate, and the horizon stays level - there is no roll, ever.
 
 The budgets are asserted by the unit tests, not by convention. These are the numbers the tests check against:
 
-| Element | Blueprint budget | Built | Draw calls |
+| Element | Budget | Built | Draw calls |
 | --- | --- | --- | --- |
-| The train | 12,000 to 20,000 triangles | 16,788 | 8 |
+| The train | under 10,000 triangles | 6,804 | 8 |
 | The track and the city | under 60 draw calls | 7 | 7 |
 | A station | under 8,000 triangles | 212 (worst) | 6 |
 | A diorama prop | under 3,000 triangles | 748 (worst) | 1 |

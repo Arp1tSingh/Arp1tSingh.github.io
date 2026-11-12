@@ -6,9 +6,9 @@
  * rendered route position, so the sky and the fog change together and the
  * city dissolves into the horizon instead of sitting on it.
  *
- * The sun and the stars are camera-relative, the way they are in the
- * concept: they follow the viewer down the line rather than standing still
- * at the first station.
+ * The sun sets, the moon rises and the stars fade in. All three are placed
+ * in world directions from `celestial.ts` and only translated with the
+ * camera, so they stay put while the train moves down the line.
  */
 
 import { useEffect, useMemo, useRef } from 'react';
@@ -16,6 +16,7 @@ import type { MutableRefObject } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
+import { celestialAt, SKY_RADIUS, starDome } from './celestial';
 import { rideProgress } from './ride';
 
 export interface SkyProps {
@@ -55,11 +56,17 @@ const fragmentShader = /* glsl */ `
   uniform vec3 uMid;
   uniform vec3 uHorizon;
 
+  // A sub-LSB hash is enough to break the banding in the dark gradient.
+  float hash21(vec2 p) {
+    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+  }
+
   void main() {
     float height = normalize(vLocal).y;
     vec3 colour = mix(uHorizon, uMid, smoothstep(-0.08, 0.30, height));
     colour = mix(colour, uTop, smoothstep(0.24, 0.88, height));
     gl_FragColor = vec4(colour, 1.0);
+    gl_FragColor.rgb += (hash21(gl_FragCoord.xy) - 0.5) / 255.0;
     #include <colorspace_fragment>
   }
 `;
@@ -91,28 +98,34 @@ export function skyColours(progress: number): {
   };
 }
 
-/** The deterministic star field, in camera-local space. */
-function starField(count = 350): Float32Array {
-  const positions = new Float32Array(count * 3);
-  let seed = 7;
+/** A little colour in the stars, so the dome is not a sheet of white dots. */
+function starColours(count: number): Float32Array {
+  const colours = new Float32Array(count * 3);
+  let seed = 23;
   const random = () => {
     seed = (seed * 16807) % 2147483647;
     return seed / 2147483647;
   };
 
   for (let i = 0; i < count; i += 1) {
-    positions[i * 3] = (random() - 0.5) * 1500;
-    positions[i * 3 + 1] = 60 + random() * 640;
-    positions[i * 3 + 2] = -880;
+    const brightness = 0.45 + 0.55 * Math.pow(random(), 1.7);
+    const tint = random();
+    const r = tint < 0.16 ? 1 : tint > 0.9 ? 0.82 : 0.96;
+    const g = tint < 0.16 ? 0.9 : tint > 0.9 ? 0.9 : 0.97;
+    const b = tint < 0.16 ? 0.72 : 1;
+    colours[i * 3] = brightness * r;
+    colours[i * 3 + 1] = brightness * g;
+    colours[i * 3 + 2] = brightness * b;
   }
-  return positions;
+
+  return colours;
 }
 
 /**
  * The sky.
  *
- * One inverted sphere, one shader, no texture. The sun and the stars are
- * placed in world space from the camera every frame, so they are always in
+ * One inverted sphere, one shader, no texture. The sun, the moon and the
+ * stars are placed from world directions every frame, so they are always in
  * front of the viewer and never left behind at the first station.
  */
 export function Sky({ clock, stopCount }: SkyProps) {
@@ -120,6 +133,7 @@ export function Sky({ clock, stopCount }: SkyProps) {
   const camera = useThree((state) => state.camera);
   const sky = useRef<THREE.Mesh>(null);
   const sun = useRef<THREE.Mesh>(null);
+  const moon = useRef<THREE.Mesh>(null);
   const stars = useRef<THREE.Points>(null);
 
   const uniforms = useMemo(
@@ -131,7 +145,7 @@ export function Sky({ clock, stopCount }: SkyProps) {
     [],
   );
 
-  const sunGeometry = useMemo(() => new THREE.CircleGeometry(26, 32), []);
+  const sunGeometry = useMemo(() => new THREE.CircleGeometry(26, 48), []);
   const sunMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
@@ -139,13 +153,30 @@ export function Sky({ clock, stopCount }: SkyProps) {
         fog: false,
         depthWrite: false,
         toneMapped: false,
+        transparent: true,
+        side: THREE.DoubleSide,
+      }),
+    [],
+  );
+  const moonGeometry = useMemo(() => new THREE.CircleGeometry(18, 48), []);
+  const moonMaterial = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: '#e8edff',
+        fog: false,
+        depthWrite: false,
+        toneMapped: false,
+        transparent: true,
+        opacity: 0,
         side: THREE.DoubleSide,
       }),
     [],
   );
   const starGeometry = useMemo(() => {
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(starField(), 3));
+    const count = 1200;
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(starDome(count), 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(starColours(count), 3));
     return geometry;
   }, []);
   const starMaterial = useMemo(
@@ -154,10 +185,12 @@ export function Sky({ clock, stopCount }: SkyProps) {
         color: '#ffffff',
         size: 2.4,
         sizeAttenuation: false,
+        vertexColors: true,
         transparent: true,
         opacity: 0,
         fog: false,
         depthWrite: false,
+        toneMapped: false,
       }),
     [],
   );
@@ -166,20 +199,23 @@ export function Sky({ clock, stopCount }: SkyProps) {
     () => () => {
       sunGeometry.dispose();
       sunMaterial.dispose();
+      moonGeometry.dispose();
+      moonMaterial.dispose();
       starGeometry.dispose();
       starMaterial.dispose();
     },
-    [sunGeometry, sunMaterial, starGeometry, starMaterial],
+    [sunGeometry, sunMaterial, moonGeometry, moonMaterial, starGeometry, starMaterial],
   );
 
   const offset = useRef(new THREE.Vector3());
   const sunColour = useMemo(() => new THREE.Color('#fff2c0'), []);
-  const moonColour = useMemo(() => new THREE.Color('#dfe6ff'), []);
+  const sunsetColour = useMemo(() => new THREE.Color('#ff9a55'), []);
+  const moonColour = useMemo(() => new THREE.Color('#e8edff'), []);
 
   useFrame(() => {
     const progress = rideProgress(clock.current.s, stopCount);
     const colours = skyColours(progress);
-    const night = nightAmount(progress);
+    const state = celestialAt(progress);
 
     uniforms.uTop.value.copy(colours.top);
     uniforms.uMid.value.copy(colours.mid);
@@ -197,25 +233,29 @@ export function Sky({ clock, stopCount }: SkyProps) {
     // The sphere is a backdrop, not a place: it travels with the camera.
     if (sky.current) sky.current.position.copy(camera.position);
 
-    // The sun arcs over the day and turns into the moon at night. The
-    // numbers are the concept's own path, unchanged.
+    // The discs sit at a fixed bearing and distance, always facing the
+    // viewer. Only the bearing comes from the sky clock.
     if (sun.current) {
-      const u = progress / 0.82;
-      offset.current.set(
-        u < 1 ? 420 - 840 * u : -260,
-        u < 1 ? 150 + 190 * Math.sin(u * Math.PI) : 250,
-        -700,
-      );
-      offset.current.applyQuaternion(camera.quaternion).add(camera.position);
+      offset.current.copy(state.sun).multiplyScalar(SKY_RADIUS).add(camera.position);
       sun.current.position.copy(offset.current);
       sun.current.quaternion.copy(camera.quaternion);
-      sun.current.scale.setScalar(1 - 0.4 * night);
-      sunMaterial.color.copy(sunColour).lerp(moonColour, night);
+      const low = 1 - Math.min(1, Math.max(0, state.sunElevation / 0.7));
+      sun.current.scale.setScalar(1 + 0.22 * low);
+      sunMaterial.color.copy(sunColour).lerp(sunsetColour, low);
+      sunMaterial.opacity = state.sunOpacity;
+    }
+
+    if (moon.current) {
+      offset.current.copy(state.moon).multiplyScalar(SKY_RADIUS).add(camera.position);
+      moon.current.position.copy(offset.current);
+      moon.current.quaternion.copy(camera.quaternion);
+      moonMaterial.color.copy(moonColour);
+      moonMaterial.opacity = state.moonOpacity;
     }
 
     if (stars.current) {
       stars.current.position.copy(camera.position);
-      starMaterial.opacity = night;
+      starMaterial.opacity = state.stars;
     }
   });
 
@@ -237,19 +277,27 @@ export function Sky({ clock, stopCount }: SkyProps) {
         />
       </mesh>
 
-      <mesh
-        ref={sun}
-        geometry={sunGeometry}
-        material={sunMaterial}
-        renderOrder={-999}
-        frustumCulled={false}
-      />
-
       <points
         ref={stars}
         geometry={starGeometry}
         material={starMaterial}
+        renderOrder={-999}
+        frustumCulled={false}
+      />
+
+      <mesh
+        ref={sun}
+        geometry={sunGeometry}
+        material={sunMaterial}
         renderOrder={-998}
+        frustumCulled={false}
+      />
+
+      <mesh
+        ref={moon}
+        geometry={moonGeometry}
+        material={moonMaterial}
+        renderOrder={-997}
         frustumCulled={false}
       />
     </>

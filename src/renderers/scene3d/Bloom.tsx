@@ -30,10 +30,10 @@ export interface BloomProps {
  * station lamps, and it only earns its cost after the sky has gone dark.
  *
  * The composer replaces R3F's own render loop, so the passes are in charge
- * of the frame. Three renders into a linear target without tone mapping, the
- * bloom pass works in linear light, and the output pass applies the tone map
- * and the colour space at the end - which is the order the renderer would
- * have used on its own, so nothing about the frame changes except the glow.
+ * of the frame. Its beauty target is multisampled: without that, the glow
+ * would quietly turn off the canvas's own antialiasing exactly when the
+ * city's dark silhouettes need it most. The bloom and output passes run on
+ * resolved, full-screen images, so only the first target pays for MSAA.
  */
 export function Bloom({ strength = 0.34, radius = 0.45, threshold = 0.9 }: BloomProps) {
   const gl = useThree((state) => state.gl);
@@ -43,7 +43,16 @@ export function Bloom({ strength = 0.34, radius = 0.45, threshold = 0.9 }: Bloom
   const dpr = useThree((state) => state.viewport.dpr);
 
   const composer = useMemo(() => {
-    const instance = new EffectComposer(gl);
+    // The default composer target has no samples. Give the beauty pass the
+    // same 4x MSAA the canvas would have had, capped by the GPU.
+    const samples = Math.min(4, gl.capabilities.samples || 0);
+    const target = new THREE.WebGLRenderTarget(1, 1, {
+      type: THREE.HalfFloatType,
+      samples,
+    });
+    target.texture.name = 'Bloom.rt1';
+
+    const instance = new EffectComposer(gl, target);
     instance.addPass(new RenderPass(scene, camera));
     instance.addPass(
       new UnrealBloomPass(

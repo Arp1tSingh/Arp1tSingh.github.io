@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { Ticket, ticketSerial } from '../../src/ui/Ticket';
+import { Ticket } from '../../src/ui/Ticket';
 import { CONTENT } from '../../src/data/content';
 
 const terminus = CONTENT.stops.find((stop) => stop.kind === 'terminus')!;
@@ -37,6 +37,18 @@ describe('the ticket', () => {
     expect(html).toContain('ticket__close');
   });
 
+  it('puts the close action on the station board and prints no serial', () => {
+    const html = renderToStaticMarkup(
+      <Ticket stop={project} open onClose={() => {}} onKeep={() => {}} />,
+    );
+
+    expect(html).toContain('ticket__board-end');
+    expect(html).toMatch(/ticket__board-end[\s\S]*ticket__close/);
+    expect(html).not.toContain('ticket__top');
+    expect(html).not.toContain('ticket__serial');
+    expect(html).not.toMatch(/LT-[0-9A-Z]{12}/);
+  });
+
   it('marks a kept ticket and leaves the wallet action in place', () => {
     const html = renderToStaticMarkup(
       <Ticket stop={project} open onClose={() => {}} kept onKeep={() => {}} />,
@@ -59,16 +71,5 @@ describe('the ticket', () => {
     expect(html).toContain('Résumé');
     expect(html).toContain('href="resume.pdf"');
     expect(html).toContain('download');
-  });
-});
-
-describe('the serial number', () => {
-  it('is the same every time for the same station', () => {
-    expect(ticketSerial('slot-01')).toBe(ticketSerial('slot-01'));
-    expect(ticketSerial('slot-01')).not.toBe(ticketSerial('slot-02'));
-  });
-
-  it('looks like a serial', () => {
-    expect(ticketSerial('slot-01')).toMatch(/^LT-[0-9A-Z]{12}$/);
   });
 });

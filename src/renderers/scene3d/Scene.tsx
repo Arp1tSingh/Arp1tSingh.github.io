@@ -85,7 +85,7 @@ export function Scene({
         const anchor = stationAnchor(index);
         return (
           <group key={stop.id} position={[anchor.x, 0, anchor.z]}>
-            <Station stop={stop} index={index} active={index === activeIndex && dwelling} />
+            <Station stop={stop} index={index} line={line} active={index === activeIndex && dwelling} />
             {/* The prop stands on the platform, clear of the bench and the board. */}
             <Diorama stop={stop} position={[-5, PLATFORM_HEIGHT, zOnPlatform(4.4)]} />
           </group>

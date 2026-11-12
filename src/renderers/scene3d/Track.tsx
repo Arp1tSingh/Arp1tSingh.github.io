@@ -11,8 +11,9 @@
  * being flat strips, and the ballast is a shallow bed with shoulders. There
  * are still no catenary masts and no new furniture.
  *
- * Seven draw calls: ballast, two running rails, third rail, third-rail cover,
- * sleepers and one city mesh. Nothing here knows what a station is called.
+ * Eight draw calls: ballast, two running rails, third rail, third-rail cover,
+ * sleepers, the small city and the tower skyline. Nothing here knows what a
+ * station is called.
  */
 
 import { useEffect, useMemo } from 'react';
@@ -214,6 +215,166 @@ interface Building {
   width: number;
   depth: number;
   height: number;
+  /** The bottom of the block. Defaults to the city's ground line. */
+  base?: number;
+  /** A per-instance tint, used by the towers. */
+  colour?: string;
+}
+
+/**
+ * The tower plan.
+ *
+ * The small blocks are spread along the whole line, but the towers are the
+ * skyline's narrative: three over Dadar, thinning to one at Thane, and none
+ * at all after it. Heights taper on the same arc, so the ride out of the
+ * city reads as the city falling away.
+ */
+const TOWER_COUNTS = [3, 2, 2, 1, 1, 1] as const;
+
+/** The low and high end of each station's tower height, in world units. */
+const TOWER_HEIGHTS: ReadonlyArray<readonly [number, number]> = [
+  [95, 110],
+  [88, 100],
+  [82, 94],
+  [78, 88],
+  [74, 82],
+  [70, 78],
+];
+
+/** How far back each station's towers stand from the line. */
+const TOWER_SETBACKS: ReadonlyArray<readonly [number, number]> = [
+  [64, 96],
+  [76, 104],
+  [84, 112],
+  [92, 120],
+  [104, 132],
+  [116, 144],
+];
+
+/** Where each tower sits along the track relative to its station. Thane's
+ * single tower stands before the station, so nothing is left after it. */
+const TOWER_ALONG: ReadonlyArray<ReadonlyArray<number>> = [
+  [-20, 4, 26],
+  [-14, 14],
+  [-14, 16],
+  [-8],
+  [6],
+  [-12],
+];
+
+const TOWER_TINTS = [
+  SCENE_COLORS.canopy,
+  SCENE_COLORS.grey,
+  SCENE_COLORS.greyDim,
+  SCENE_COLORS.inkPanel,
+] as const;
+
+/** One tower, before it is split into its tiers. */
+export interface TowerSpec {
+  /** The station index the tower belongs to. */
+  station: number;
+  x: number;
+  z: number;
+  width: number;
+  depth: number;
+  height: number;
+  /** The share of the height taken by the wide lower tier. */
+  baseFraction: number;
+  /** The crown's footprint as a share of the base. */
+  crownScale: number;
+  /** Zero when the tower has no spire. */
+  spireHeight: number;
+  colour: string;
+}
+
+/**
+ * Lay the towers out along the line.
+ *
+ * This is pure geometry, so the distribution can be asserted without a
+ * canvas: the plan is the contract, the instanced mesh is only how it is
+ * drawn.
+ */
+export function towerLayout(line: LinePath): TowerSpec[] {
+  const random = seeded(line.stations.length * 15485863 + 7);
+  const towers: TowerSpec[] = [];
+  const zones = Math.min(TOWER_COUNTS.length, line.stations.length);
+
+  for (let station = 0; station < zones; station += 1) {
+    const count = TOWER_COUNTS[station];
+    const [lowHeight, highHeight] = TOWER_HEIGHTS[station];
+    const [nearSetback, farSetback] = TOWER_SETBACKS[station];
+    const along = TOWER_ALONG[station];
+
+    for (let i = 0; i < count; i += 1) {
+      const side = ((station + i) % 2 === 0 ? -1 : 1) as -1 | 1;
+      const setback = nearSetback + random() * (farSetback - nearSetback);
+      const pose = sample(line, line.stations[station] + along[i]);
+      const height = lowHeight + random() * (highHeight - lowHeight);
+
+      towers.push({
+        station,
+        x: pose.x - pose.tz * side * setback,
+        z: pose.z + pose.tx * side * setback,
+        width: 7 + random() * 7,
+        depth: 7 + random() * 7,
+        height,
+        baseFraction: 0.55 + random() * 0.12,
+        crownScale: 0.58 + random() * 0.12,
+        spireHeight: random() < 0.45 ? 6 + random() * 6 : 0,
+        colour: TOWER_TINTS[Math.floor(random() * TOWER_TINTS.length)],
+      });
+    }
+  }
+
+  return towers;
+}
+
+/** Split each tower into a lower tier, a crown and an optional spire. */
+function towerParts(towers: TowerSpec[]): Building[] {
+  const parts: Building[] = [];
+
+  towers.forEach((tower) => {
+    const baseHeight = tower.height * tower.baseFraction;
+    const crownHeight = tower.height - baseHeight;
+    const crownWidth = tower.width * tower.crownScale;
+    const crownDepth = tower.depth * tower.crownScale;
+    const base = -0.6;
+
+    parts.push({
+      x: tower.x,
+      z: tower.z,
+      width: tower.width,
+      depth: tower.depth,
+      height: baseHeight,
+      base,
+      colour: tower.colour,
+    });
+
+    const crownBase = base + baseHeight;
+    parts.push({
+      x: tower.x,
+      z: tower.z,
+      width: crownWidth,
+      depth: crownDepth,
+      height: crownHeight,
+      base: crownBase,
+      colour: tower.colour,
+    });
+
+    if (tower.spireHeight > 0) {
+      parts.push({
+        x: tower.x,
+        z: tower.z,
+        width: 1.1,
+        depth: 1.1,
+        height: tower.spireHeight,
+        base: crownBase + crownHeight,
+        colour: SCENE_COLORS.greyDim,
+      });
+    }
+  });
+
+  return parts;
 }
 
 function cityBlocks(line: LinePath, detail: Detail): Building[] {
@@ -360,6 +521,36 @@ export function buildTrack(options: { stations: number; detail: Detail }): {
   city.instanceMatrix.needsUpdate = true;
   if (city.instanceColor) city.instanceColor.needsUpdate = true;
   group.add(city);
+
+  /* The towers are their own mesh: the small blocks can stay at their old
+   * density and the skyline can change without rebuilding them. Each tower
+   * is two stacked boxes and, sometimes, a thin spire. */
+  const towers = towerParts(towerLayout(line));
+  const towerMesh = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshLambertMaterial({ color: 0xffffff, flatShading: true, dithering: true }),
+    Math.max(1, towers.length),
+  );
+  towerMesh.name = 'towers';
+  towerMesh.frustumCulled = false;
+  towerMesh.castShadow = false;
+  towerMesh.receiveShadow = false;
+  towerMesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+
+  const towerColour = new THREE.Color();
+  towers.forEach((block, index) => {
+    dummy.position.set(block.x, (block.base ?? -0.6) + block.height / 2, block.z);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(block.width, block.height, block.depth);
+    dummy.updateMatrix();
+    towerMesh.setMatrixAt(index, dummy.matrix);
+    towerColour.set(block.colour ?? SCENE_COLORS.grey);
+    towerMesh.setColorAt(index, towerColour);
+  });
+  towerMesh.count = towers.length;
+  towerMesh.instanceMatrix.needsUpdate = true;
+  if (towerMesh.instanceColor) towerMesh.instanceColor.needsUpdate = true;
+  group.add(towerMesh);
 
   return { group, drawCalls: countMeshes(group) };
 }

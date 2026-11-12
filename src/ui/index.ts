@@ -14,7 +14,7 @@ import './ui.css';
 export { Gate } from './Gate';
 export type { GateProps } from './Gate';
 
-export { Ticket, ticketSerial } from './Ticket';
+export { Ticket } from './Ticket';
 export type { TicketProps } from './Ticket';
 
 export { Indicator } from './Indicator';

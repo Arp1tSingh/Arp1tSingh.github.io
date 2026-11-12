@@ -7,19 +7,15 @@
  *   front  two seconds   station board, claim, three stack tags, tier stamp
  *   back   thirty seconds metrics, screenshots, architecture, role, period
  *
- * A thin top bar carries the serial number and the close action. Keeping a
+ * The station board carries the close action at its far end. Keeping a
  * ticket for the wallet sits with the other actions at the end of the proof,
  * so nothing floats over the evidence while it is being read.
  *
  * It is a dialog, but not a modal one: the header stays usable, Escape closes
  * it, a click outside closes it, and focus is handed in and back out.
- *
- * The serial number is derived from the stop id with a hash, never from a
- * random number or a clock, so the same station always prints the same
- * ticket. A visitor can photograph a ticket and compare it later.
  */
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { Stop } from '../core/types';
 
 import './ui.css';
@@ -38,35 +34,6 @@ export interface TicketProps {
    * dead download link is worse than no download link.
    */
   resume?: string;
-}
-
-/* -------------------------------------------------------------------------- */
-/* The serial number                                                            */
-/* -------------------------------------------------------------------------- */
-
-/** FNV-1a, 32 bit. Small, fast and stable across runs and machines. */
-function fnv1a(input: string, seed: number): number {
-  let hash = seed >>> 0;
-  for (let index = 0; index < input.length; index += 1) {
-    hash ^= input.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  return hash >>> 0;
-}
-
-/** Base 36, fixed width, upper case: a serial looks like a serial. */
-function chunk(value: number, width: number): string {
-  return value.toString(36).toUpperCase().padStart(width, '0').slice(-width);
-}
-
-/**
- * The serial number printed on the ticket. Deterministic: the same stop id
- * always gives the same serial, on every device, in every render.
- */
-export function ticketSerial(id: string): string {
-  const head = chunk(fnv1a(id, 0x811c9dc5), 6);
-  const tail = chunk(fnv1a(`${id}#local-3d`, 0x811c9dc5), 6);
-  return `LT-${head}${tail}`;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -185,7 +152,6 @@ export function Ticket({
    * closes the ticket when the train leaves the station. Nothing here has to
    * listen for the wheel: the scroll position is the only clock.
    */
-  const serial = useMemo(() => ticketSerial(stop.id), [stop.id]);
   const tags = stop.stack.slice(0, 3);
 
   const actions = LINK_LABELS.map((action) => ({ ...action, href: stop.links[action.key] })).filter(
@@ -208,19 +174,22 @@ export function Ticket({
         tabIndex={-1}
         ref={panelRef}
       >
-        <div className="ticket__top">
-          <span className="ticket__serial mono">{serial}</span>
-          <button type="button" className="ticket__close" onClick={onClose} aria-label="Close the ticket">
-            Close
-          </button>
-        </div>
-
         <div className="ticket__grid">
           {/* ---------------------------------------------------------- front */}
           <div className="ticket__front">
             <div className="ticket__board">
               <span className="ticket__station">{stop.station}</span>
-              <span className="ticket__tier">{stop.tier}</span>
+              <span className="ticket__board-end">
+                <span className="ticket__tier">{stop.tier}</span>
+                <button
+                  type="button"
+                  className="ticket__close"
+                  onClick={onClose}
+                  aria-label="Close the ticket"
+                >
+                  Close
+                </button>
+              </span>
             </div>
 
             <h2 className="ticket__title" id={titleId}>

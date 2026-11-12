@@ -183,7 +183,7 @@ Within ten seconds a visitor knows who you are, what you do and how to reach you
 
 - **Palette** is the concept's own: `#101216` ink, `#fdf3d0` paper, `#ffc52e` board yellow and `#d92d3a` signal red. `--accent-text` is the readable tint of the red on ink.
 - Board yellow means *act*, or *you are here*: the contact button, the ticket board, the current stop and the progress fill. Red is the signal: focus rings, map lines and the live marker. There is no decorative colour in either.
-- **Fraunces** for everything that matters. **Inter Tight** for text. **JetBrains Mono** only where it is genuinely a machine readout — a serial number, a dot-matrix board, a stack.
+- **Fraunces** for everything that matters. **Inter Tight** for text. **JetBrains Mono** only where it is genuinely a machine readout — the dot-matrix indicator, a station board, a stack.
 - `border-radius: 0` throughout. Flat colour: no shadows, no blur, no glass.
 - Hairlines at 14% cream are the only structural device.
 

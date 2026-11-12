@@ -1,10 +1,11 @@
 /**
  * The train.
  *
- * Three cars in the concept's metro livery: a silver shell, a blue band, a
- * red line under the windows, a warm lit window band and a pair of sliding
- * doors on each side. The two end cars taper into a cab; the middle car is
- * the articulated body between them.
+ * Three cars in the Central Railway livery: a silver shell, a broad purple
+ * lower band, a thin purple stripe above the windows, cream "CR" marks on
+ * the sides and a red "CR" on each cab face. The shell has a tight bevel so
+ * the edges stay crisp at the camera's distance. The two end cars taper into
+ * a cab; the middle car is the articulated body between them.
  *
  * The brief was to strip the clutter. The grey roof cap, air-conditioning
  * pod, vents, underframe, equipment box, bogie boxes, axle cylinders and cab
@@ -27,7 +28,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
-import { RAIL_GAUGE, SCENE_COLORS } from './constants';
+import { RAIL_GAUGE, SCENE_COLORS, TRAIN_HALF_WIDTH } from './constants';
 import { makePose, poseAt, routeDistance, yawAlong, type LinePath } from './path';
 import { nightAmount } from './Sky';
 import { rideProgress } from './ride';
@@ -40,10 +41,14 @@ import { rideProgress } from './ride';
  * ------------------------------------------------------------------ */
 
 const CAR_LENGTH = 8;
-const CAR_WIDTH = 2.9;
+const CAR_WIDTH = TRAIN_HALF_WIDTH * 2;
 const CAR_HEIGHT = 2.5;
 const BODY_FLOOR = 1;
 const BODY_CENTRE = BODY_FLOOR + CAR_HEIGHT / 2;
+
+/** A tight bevel: enough to catch the light, sharp enough to read as edges. */
+const SHELL_RADIUS = 0.14;
+const SHELL_SEGMENTS = 2;
 
 /** How far apart two car centres are. Three cars span 25.6 units. */
 export const CAR_PITCH = 8.8;
@@ -59,10 +64,34 @@ const WHEEL_WIDTH = 0.22;
 const WHEEL_Z = RAIL_GAUGE / 2;
 const WHEEL_Y = RAIL_TOP + WHEEL_RADIUS;
 
-const BAND_Y = 1.35;
-const STRIPE_Y = 1.7;
+const BAND_Y = 1.5;
+const BAND_HEIGHT = 0.95;
+const STRIPE_Y = 3.18;
+const STRIPE_HEIGHT = 0.08;
 const BAND_LENGTH = 5.5;
 const STRIPE_LENGTH = 5.5;
+
+/** Where the side CR sits, measured from the middle of the car. */
+const CR_X = -1.8;
+const CR_Y = BAND_Y;
+const CR_CAB_Y = 1.95;
+
+/* The side mark is drawn as blocks of paint rather than a texture, so it
+ * costs a few dozen triangles and no extra draw call. A 4x5 bitmap is the
+ * smallest grid where both letters still read. */
+const CR_COLS = 4;
+const CR_ROWS = 5;
+const CR_PIXEL_W = 0.085;
+const CR_PIXEL_H = 0.14;
+const CR_GAP = 0.085;
+const CR_DEPTH = 0.02;
+const CR_GLYPHS: ReadonlyArray<ReadonlyArray<string>> = [
+  ['1111', '1000', '1000', '1000', '1111'],
+  ['1110', '1001', '1001', '1110', '1010'],
+];
+
+/** Sits just proud of the band face, which is already 0.02 out from the shell. */
+const CR_MARK_Z = CAR_WIDTH / 2 + 0.045;
 
 /* Door and window depths, from the shell outwards. Every visible face has
  * its own depth, so no two of them can z-fight. */
@@ -77,7 +106,8 @@ const WINDOW_Z = SHELL_SIDE + 0.02;
  * ------------------------------------------------------------------ */
 
 const SILVER = SCENE_COLORS.silver;
-const BLUE = SCENE_COLORS.blue;
+const PURPLE = SCENE_COLORS.crPurple;
+const PAPER = SCENE_COLORS.paper;
 const RED = SCENE_COLORS.red;
 const DARK = SCENE_COLORS.inkRaise;
 const BLACK = '#15161a';
@@ -168,6 +198,68 @@ function wheelGeometry(): THREE.BufferGeometry {
   return geometry;
 }
 
+/**
+ * Stamp "CR" in solid blocks.
+ *
+ * `plane` picks which face the mark lies on: the car side (XY) or a cab
+ * (YZ). `facing` is the side of the car, or the cab direction, so the
+ * columns are mirrored on the far face and the letters still read left to
+ * right from wherever the camera stands.
+ */
+function crMark(
+  plane: 'side' | 'cab',
+  facing: -1 | 1,
+  x: number,
+  y: number,
+  z: number,
+  colour: string,
+): Painted[] {
+  const parts: Painted[] = [];
+  const glyphWidth = CR_COLS * CR_PIXEL_W;
+  const totalWidth = glyphWidth * 2 + CR_GAP;
+
+  CR_GLYPHS.forEach((glyph, index) => {
+    const glyphLeft = -totalWidth / 2 + index * (glyphWidth + CR_GAP);
+
+    glyph.forEach((row, rowIndex) => {
+      for (let column = 0; column < CR_COLS; column += 1) {
+        if (row[column] !== '1') continue;
+
+        const along = glyphLeft + (column + 0.5) * CR_PIXEL_W;
+        const up = (CR_ROWS / 2 - rowIndex - 0.5) * CR_PIXEL_H;
+
+        if (plane === 'side') {
+          parts.push(
+            box(
+              CR_PIXEL_W * 0.86,
+              CR_PIXEL_H * 0.86,
+              CR_DEPTH,
+              x + facing * along,
+              y + up,
+              z,
+              colour,
+            ),
+          );
+        } else {
+          parts.push(
+            box(
+              CR_DEPTH,
+              CR_PIXEL_H * 0.86,
+              CR_PIXEL_W * 0.86,
+              x,
+              y + up,
+              z - facing * along,
+              colour,
+            ),
+          );
+        }
+      }
+    });
+  });
+
+  return parts;
+}
+
 /* ------------------------------------------------------------------ *
  * One car
  * ------------------------------------------------------------------ */
@@ -185,16 +277,26 @@ function buildCar(spec: CarSpec, materials: ReturnType<typeof buildMaterials>): 
   const glass: Painted[] = [];
   const lights: Painted[] = [];
 
-  /* The shell. Its rounded roof is the roof: no cap and no pod above it. */
-  const shell = new RoundedBoxGeometry(CAR_LENGTH, CAR_HEIGHT, CAR_WIDTH, 5, 0.36);
+  /* The shell. Its rounded roof is the roof: no cap and no pod above it.
+   * Two segments keep the corner bevel to a single narrow facet, which is
+   * what makes the silhouette read as sharp against the sky. */
+  const shell = new RoundedBoxGeometry(
+    CAR_LENGTH,
+    CAR_HEIGHT,
+    CAR_WIDTH,
+    SHELL_SEGMENTS,
+    SHELL_RADIUS,
+  );
   if (spec.nose === 'front') taperNose(shell, 1);
   if (spec.nose === 'rear') taperNose(shell, -1);
   shell.translate(0, BODY_CENTRE, 0);
   body.push({ geometry: shell, colour: SILVER });
 
-  /* The blue band and the red line under the windows. */
-  body.push(box(BAND_LENGTH, 0.34, CAR_WIDTH + 0.04, 0, BAND_Y, 0, BLUE));
-  body.push(box(STRIPE_LENGTH, 0.09, CAR_WIDTH + 0.05, 0, STRIPE_Y, 0, RED));
+  /* The Central Railway livery: a broad purple band at floor level and a
+   * narrow purple stripe above the windows. The shell stays white, so both
+   * read as paint on metal rather than as separate panels. */
+  body.push(box(BAND_LENGTH, BAND_HEIGHT, CAR_WIDTH + 0.04, 0, BAND_Y, 0, PURPLE));
+  body.push(box(STRIPE_LENGTH, STRIPE_HEIGHT, CAR_WIDTH + 0.05, 0, STRIPE_Y, 0, PURPLE));
 
   /* The saloon windows: one clean panel either side of the doorway, kept
    * clear of the nose taper so no glass floats off the shell. */
@@ -205,8 +307,15 @@ function buildCar(spec: CarSpec, materials: ReturnType<typeof buildMaterials>): 
     });
   });
 
+  /* Cream "CR" on each side, sitting on the purple band between the doorway
+   * and the cab. Both marks are stamped in place so they read from either
+   * side of the train. */
+  [-1, 1].forEach((side) => {
+    body.push(...crMark('side', side as -1 | 1, CR_X, CR_Y, side * CR_MARK_Z, PAPER));
+  });
+
   /* The double doorway in the middle of each side. The gasket sits against
-   * the shell, the two leaves stand proud of it, and the glass and the blue
+   * the shell, the two leaves stand proud of it, and the glass and the purple
    * lower panel stand proud of the leaves. Each layer has a different depth,
    * which is what stops the door window from flickering. */
   [-1, 1].forEach((side) => {
@@ -219,7 +328,7 @@ function buildCar(spec: CarSpec, materials: ReturnType<typeof buildMaterials>): 
     [-1, 1].forEach((leaf) => {
       body.push(box(0.72, 1.88, 0.05, leaf * 0.37, 2.02, doorZ, SILVER));
       glass.push(box(0.58, 0.62, 0.02, leaf * 0.37, 2.5, panelZ, GLASS));
-      body.push(box(0.62, 0.54, 0.02, leaf * 0.37, 1.37, panelZ, BLUE));
+      body.push(box(0.62, 0.54, 0.02, leaf * 0.37, 1.37, panelZ, PURPLE));
     });
 
     body.push(box(0.035, 1.88, 0.02, 0, 2.02, panelZ, DARK));
@@ -239,12 +348,17 @@ function buildCar(spec: CarSpec, materials: ReturnType<typeof buildMaterials>): 
   wheel.dispose();
 
   /* The cab. The end face is already tapered by the shell, so the glass and
-   * the lamps only have to sit on it. */
+   * the lamps only have to sit on it. The red CR goes below the windscreen,
+   * between the lamps, where a rider sees it head on. */
   if (spec.nose !== 'none') {
     const direction = spec.nose === 'front' ? 1 : -1;
     const face = direction * (CAR_LENGTH / 2 + 0.01);
 
     glass.push(box(0.05, 0.62, 1.25, face, 2.72, 0, GLASS));
+
+    body.push(
+      ...crMark('cab', direction, direction * (CAR_LENGTH / 2 + 0.05), CR_CAB_Y, 0, RED),
+    );
 
     const lampColour = spec.nose === 'front' ? '#fff2c2' : '#ff2b2b';
     [-0.78, 0.78].forEach((z) => {

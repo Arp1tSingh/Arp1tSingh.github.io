@@ -3,10 +3,17 @@ import * as THREE from 'three';
 
 import { CONTENT } from '../../src/data/content';
 import { buildTrain } from '../../src/renderers/scene3d/Train';
-import { buildStation } from '../../src/renderers/scene3d/StationKit';
+import { buildStation, PLATFORM_DEPTH, PLATFORM_EDGE } from '../../src/renderers/scene3d/StationKit';
 import { buildDiorama } from '../../src/renderers/scene3d/Dioramas';
-import { buildTrack } from '../../src/renderers/scene3d/Track';
-import { STATION_SPACING, TRAIN_LENGTH } from '../../src/renderers/scene3d/constants';
+import { buildTrack, towerLayout } from '../../src/renderers/scene3d/Track';
+import {
+  STATION_SPACING,
+  TRAIN_HALF_WIDTH,
+  TRAIN_LENGTH,
+  stationAnchor,
+  stationX,
+} from '../../src/renderers/scene3d/constants';
+import { buildLine, type LinePath } from '../../src/renderers/scene3d/path';
 
 function countTriangles(root: THREE.Object3D): number {
   let triangles = 0;
@@ -30,11 +37,29 @@ function countMeshes(root: THREE.Object3D): number {
   return meshes;
 }
 
+/** The shortest distance from a point to the smoothed centreline, in XZ. */
+function distanceToLine(line: LinePath, x: number, z: number): number {
+  let best = Infinity;
+  for (let i = 0; i < line.points.length - 1; i += 1) {
+    const a = line.points[i];
+    const b = line.points[i + 1];
+    const dx = b.x - a.x;
+    const dz = b.z - a.z;
+    const length = dx * dx + dz * dz;
+    const t =
+      length > 0 ? Math.max(0, Math.min(1, ((x - a.x) * dx + (z - a.z) * dz) / length)) : 0;
+    const px = a.x + dx * t - x;
+    const pz = a.z + dz * t - z;
+    best = Math.min(best, px * px + pz * pz);
+  }
+  return Math.sqrt(best);
+}
+
 describe('the track', () => {
   const built = buildTrack({ stations: 12, detail: 'high' });
 
-  it('costs a handful of draw calls', () => {
-    expect(countMeshes(built.group)).toBeLessThanOrEqual(8);
+  it('costs eight draw calls', () => {
+    expect(countMeshes(built.group)).toBe(8);
     expect(built.drawCalls).toBe(countMeshes(built.group));
   });
 
@@ -92,6 +117,42 @@ describe('the track', () => {
 
     expect(instances(low.group)).toBeLessThan(instances(high.group));
   });
+
+  it('is densest at Dadar and stops after Thane', () => {
+    const line = buildLine(12);
+    const towers = towerLayout(line);
+    const counts = new Array(12).fill(0) as number[];
+    towers.forEach((tower) => {
+      counts[tower.station] += 1;
+    });
+
+    expect(counts.slice(0, 6)).toEqual([3, 2, 2, 1, 1, 1]);
+    expect(counts.slice(6)).toEqual([0, 0, 0, 0, 0, 0]);
+    // No tower stands past Thane, even after the lateral offset from the line.
+    expect(Math.max(...towers.map((tower) => tower.x))).toBeLessThan(stationX(5));
+  });
+
+  it('tapers from Dadar down to Thane', () => {
+    const towers = towerLayout(buildLine(12));
+    const at = (station: number) => towers.filter((tower) => tower.station === station);
+    const dadar = at(0);
+    const thane = at(5);
+
+    expect(Math.min(...dadar.map((tower) => tower.height))).toBeGreaterThanOrEqual(95);
+    expect(Math.max(...dadar.map((tower) => tower.height))).toBeLessThanOrEqual(110);
+    expect(Math.max(...thane.map((tower) => tower.height))).toBeLessThanOrEqual(78);
+    expect(Math.max(...thane.map((tower) => tower.height))).toBeLessThan(
+      Math.min(...dadar.map((tower) => tower.height)),
+    );
+  });
+
+  it('draws the towers in their own mesh', () => {
+    const towers = built.group.getObjectByName('towers') as THREE.InstancedMesh;
+    const city = built.group.getObjectByName('city') as THREE.InstancedMesh;
+    expect(towers).toBeDefined();
+    expect(city.count).toBe(320);
+    expect(towers.count).toBeGreaterThan(20);
+  });
 });
 
 describe('the train', () => {
@@ -123,12 +184,60 @@ describe('the train', () => {
 });
 
 describe('the stations', () => {
+  const line = buildLine(CONTENT.stops.length);
+
   it('are under eight thousand triangles and eight draw calls each', () => {
-    for (const stop of CONTENT.stops) {
-      const station = buildStation({ stop, active: false });
+    CONTENT.stops.forEach((stop, index) => {
+      const station = buildStation({ stop, active: false, line, index });
       expect(countTriangles(station), stop.id).toBeLessThan(8000);
       expect(countMeshes(station), stop.id).toBeLessThanOrEqual(8);
-    }
+    });
+  });
+
+  it('leave the train room along the whole platform', () => {
+    expect(PLATFORM_EDGE).toBeGreaterThanOrEqual(TRAIN_HALF_WIDTH + 0.5);
+
+    CONTENT.stops.forEach((stop, index) => {
+      const station = buildStation({ stop, active: false, line, index });
+      const anchor = stationAnchor(index);
+      let nearest = Infinity;
+
+      station.traverse((object) => {
+        const mesh = object as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        const positions = mesh.geometry.getAttribute('position');
+        for (let i = 0; i < positions.count; i += 1) {
+          const x = positions.getX(i) + anchor.x;
+          const z = positions.getZ(i) + anchor.z;
+          nearest = Math.min(nearest, distanceToLine(line, x, z));
+        }
+      });
+
+      // The old straight slab cut the corner here. The swept edge keeps a
+      // constant offset, so nothing on the station reaches the train.
+      expect(nearest, stop.id).toBeGreaterThanOrEqual(TRAIN_HALF_WIDTH + 0.5);
+    });
+  });
+
+  it('keeps its full depth around the curve', () => {
+    CONTENT.stops.forEach((stop, index) => {
+      const station = buildStation({ stop, active: false, line, index });
+      const anchor = stationAnchor(index);
+      const structure = station.getObjectByName(`station-${stop.id}-structure`) as THREE.Mesh;
+      const positions = structure.geometry.getAttribute('position');
+      let farthest = 0;
+
+      for (let i = 0; i < positions.count; i += 1) {
+        farthest = Math.max(
+          farthest,
+          distanceToLine(line, positions.getX(i) + anchor.x, positions.getZ(i) + anchor.z),
+        );
+      }
+
+      expect(farthest, stop.id).toBeGreaterThanOrEqual(
+        PLATFORM_EDGE + PLATFORM_DEPTH - 0.3,
+      );
+    });
   });
 });
 

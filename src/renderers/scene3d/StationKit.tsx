@@ -13,7 +13,7 @@
  *      stays legible and selectable at any distance. `boardLabelAnchor`
  *      says where the app puts it.
  *   2. Everything that shares a material is merged into one geometry, so a
- *      station is six draw calls and a little over two hundred triangles.
+ *      station is seven draw calls and just under six hundred triangles.
  *   3. Flat colour, no shadows, no textures. The palette is the six tokens
  *      in `constants.ts` and nothing else.
  *
@@ -35,6 +35,7 @@ import {
   TRACK_Y,
   stationAnchor,
 } from './constants';
+import { makePose, poseAt, type LinePath } from './path';
 
 /* ------------------------------------------------------------------ *
  * The layout
@@ -68,10 +69,13 @@ export function zOnPlatform(distance: number): number {
 }
 
 /** How far the platform reaches out from the centreline. */
-const PLATFORM_DEPTH = 6;
+export const PLATFORM_DEPTH = 6;
 
 /** The platform's edge: the side the train runs along. */
-const EDGE = 2.4;
+export const PLATFORM_EDGE = 2.4;
+
+/** The red edge strip's width, measured in from the platform edge. */
+const EDGE_STRIP = 0.55;
 
 /** The canopy: a long roof on four posts, over the platform. */
 const CANOPY_LENGTH = 30;
@@ -81,12 +85,16 @@ const CANOPY_THICKNESS = 0.3;
 const CANOPY_CLEARANCE = 3.2;
 /** Where the four posts stand: along the track, and across it. */
 const CANOPY_POST_X = 12;
-const CANOPY_POST_Z = [3.6, 7.0];
+const CANOPY_POST_Z = [3.9, 7.0];
+/** The middle of the canopy roof, held a little behind the posts. */
+const CANOPY_DISTANCE = 5.6;
 
 /** The board: a panel on two legs, standing at the platform's edge. */
 const BOARD_X = 8;
-/** How far the board stands from the centreline. */
-const BOARD_DISTANCE = 2.9;
+/** How far the board stands from the centreline. The track bows towards the
+ * platform at the ends, so the furniture sits a little further back than the
+ * straight-slab layout used to. */
+const BOARD_DISTANCE = 3.2;
 /** The panel's bottom edge, above the platform. */
 const BOARD_CLEARANCE = 1.4;
 const BOARD_HEIGHT = 1.8;
@@ -104,7 +112,7 @@ const BENCH_SEAT_THICKNESS = 0.16;
 
 /** The lamp: a post with a small head, so the platform reads at night. */
 const LAMP_X = 4.8;
-const LAMP_DISTANCE = 3;
+const LAMP_DISTANCE = 3.4;
 const LAMP_POST_HEIGHT = 4;
 const LAMP_HEAD = 0.45;
 
@@ -199,7 +207,14 @@ interface CylinderPart {
   at: [number, number, number];
 }
 
-type Part = BoxPart | CylinderPart;
+/** A geometry built by hand, already in the station's local space. */
+interface GeometryPart {
+  kind: 'geometry';
+  geometry: THREE.BufferGeometry;
+  at: [number, number, number];
+}
+
+type Part = BoxPart | CylinderPart | GeometryPart;
 
 /** The seven materials, and so the seven draw calls. */
 const MATERIAL_KEYS = ['structure', 'paper', 'board', 'canopy', 'edge', 'header', 'lamp'] as const;
@@ -227,7 +242,115 @@ function geometryOf(one: Part): THREE.BufferGeometry {
   if (one.kind === 'box') {
     return new THREE.BoxGeometry(one.size[0], one.size[1], one.size[2]);
   }
-  return new THREE.CylinderGeometry(one.radius, one.radius, one.height, 8);
+  if (one.kind === 'cylinder') {
+    return new THREE.CylinderGeometry(one.radius, one.radius, one.height, 8);
+  }
+  return one.geometry;
+}
+
+/**
+ * Sweep a solid ribbon along the line.
+ *
+ * A platform used to be one straight box, but the smoothed centreline bows
+ * towards the platform lane by the ends of the straight run. A straight box
+ * therefore cut into the train. This ribbon is sampled at a constant offset
+ * from the same centreline the train follows, so the edge keeps its distance
+ * all the way to the platform ends.
+ *
+ * The four corners of each sample are inner-top, outer-top, outer-bottom and
+ * inner-bottom. The bottom face is left out: it sits on the ground and is
+ * never seen. The ribbon is already in the station's local space, because the
+ * parent places the group at `stationAnchor(index)`.
+ */
+function ribbonGeometry(
+  line: LinePath,
+  index: number,
+  innerOffset: number,
+  outerOffset: number,
+  bottomY: number,
+  topY: number,
+  segments = 32,
+): THREE.BufferGeometry {
+  const anchor = stationAnchor(index);
+  const centre = line.stations[index] ?? 0;
+  const half = PLATFORM_LENGTH / 2;
+  const pose = makePose();
+
+  const rings = segments + 1;
+  const positions = new Float32Array(rings * 4 * 3);
+  const uvs = new Float32Array(rings * 4 * 2);
+  const indices: number[] = [];
+
+  for (let i = 0; i < rings; i += 1) {
+    poseAt(line, centre - half + (i / segments) * PLATFORM_LENGTH, pose);
+    const normalX = pose.t.z;
+    const normalZ = -pose.t.x;
+    const x = pose.p.x - anchor.x;
+    const z = pose.p.z - anchor.z;
+
+    const base = i * 4;
+    const at = (corner: number, offset: number, y: number): void => {
+      positions[(base + corner) * 3] = x + normalX * offset;
+      positions[(base + corner) * 3 + 1] = y;
+      positions[(base + corner) * 3 + 2] = z + normalZ * offset;
+      uvs[(base + corner) * 2] = i / segments;
+      uvs[(base + corner) * 2 + 1] = corner % 2;
+    };
+
+    at(0, innerOffset, topY);
+    at(1, outerOffset, topY);
+    at(2, outerOffset, bottomY);
+    at(3, innerOffset, bottomY);
+  }
+
+  for (let i = 0; i < segments; i += 1) {
+    const a = i * 4;
+    const b = a + 4;
+    indices.push(
+      // top
+      a, b, b + 1,
+      a, b + 1, a + 1,
+      // the platform edge, facing the track
+      a, a + 3, b + 3,
+      a, b + 3, b,
+      // the back wall
+      a + 1, b + 1, b + 2,
+      a + 1, b + 2, a + 2,
+    );
+  }
+
+  const last = (rings - 1) * 4;
+  indices.push(
+    // the near end cap
+    0, 1, 2,
+    0, 2, 3,
+    // the far end cap, wound the other way
+    last, last + 3, last + 2,
+    last, last + 2, last + 1,
+  );
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+/** A ribbon as a mergeable part, already placed in the station's space. */
+function ribbonPart(
+  line: LinePath,
+  index: number,
+  innerOffset: number,
+  outerOffset: number,
+  bottomY: number,
+  topY: number,
+): GeometryPart {
+  return {
+    kind: 'geometry',
+    geometry: ribbonGeometry(line, index, innerOffset, outerOffset, bottomY, topY),
+    at: [0, 0, 0],
+  };
 }
 
 /**
@@ -293,6 +416,16 @@ function makeMaterial(key: MaterialKey, active: boolean): THREE.MeshLambertMater
  * The kit
  * ------------------------------------------------------------------ */
 
+/** The inputs to one station. */
+export interface StationKitOptions {
+  stop: Stop;
+  active: boolean;
+  /** The same line the train runs on. The platform edge follows it. */
+  line: LinePath;
+  /** The station's index in line order. */
+  index: number;
+}
+
 /**
  * Build a station.
  *
@@ -301,18 +434,14 @@ function makeMaterial(key: MaterialKey, active: boolean): THREE.MeshLambertMater
  * state it carries is `active`, which brightens the platform edge and
  * brings the board's header band up.
  *
- * The options object is the form the kit is built with. The shorter
- * `(stop, active)` form is the same call with the arguments unpacked, and
- * is what the unit test uses.
+ * The platform and its red edge are swept along the line, while the board,
+ * canopy, bench and lamp stay level and square to the track. That mix is
+ * deliberate: a station whose furniture leaned with the track would look
+ * like a ship, and the curved edge is the part that has to keep clear of the
+ * train.
  */
-export function buildStation(options: { stop: Stop; active: boolean }): THREE.Group;
-export function buildStation(stop: Stop, active?: boolean): THREE.Group;
-export function buildStation(
-  first: { stop: Stop; active: boolean } | Stop,
-  second?: boolean,
-): THREE.Group {
-  const stop = 'stop' in first ? first.stop : first;
-  const active = 'stop' in first ? first.active : (second ?? false);
+export function buildStation(options: StationKitOptions): THREE.Group {
+  const { stop, active, line, index } = options;
   const width = boardPanelWidth(stop);
 
   const boardZ = zOnPlatform(BOARD_DISTANCE);
@@ -323,13 +452,10 @@ export function buildStation(
   /** Everything that is one colour, in the order it is merged. */
   const parts: Record<MaterialKey, Part[]> = {
     /* The platform slab, the legs under the board, the bench legs and the
-     * lamp post: all of it is the same structural grey, so it is one mesh. */
+     * lamp post: all of it is the same structural grey, so it is one mesh.
+     * The slab is a ribbon that follows the track; the furniture is straight. */
     structure: [
-      part('box', [PLATFORM_LENGTH, PLATFORM_HEIGHT, PLATFORM_DEPTH], [
-        0,
-        PLATFORM_HEIGHT / 2,
-        zOnPlatform(EDGE + PLATFORM_DEPTH / 2),
-      ]),
+      ribbonPart(line, index, PLATFORM_EDGE, PLATFORM_EDGE + PLATFORM_DEPTH, 0, PLATFORM_HEIGHT),
       part('box', [0.18, BOARD_CLEARANCE, 0.26], [
         BOARD_X - legInset,
         PLATFORM_HEIGHT + BOARD_CLEARANCE / 2,
@@ -380,7 +506,7 @@ export function buildStation(
       part('box', [CANOPY_LENGTH, CANOPY_THICKNESS, CANOPY_DEPTH], [
         0,
         PLATFORM_HEIGHT + CANOPY_CLEARANCE + CANOPY_THICKNESS / 2,
-        zOnPlatform(5.3),
+        zOnPlatform(CANOPY_DISTANCE),
       ]),
       ...[-CANOPY_POST_X, CANOPY_POST_X].flatMap((x) =>
         CANOPY_POST_Z.map((z) =>
@@ -393,13 +519,17 @@ export function buildStation(
       ),
     ],
 
-    /* The platform edge: the one red line on the ground. */
+    /* The platform edge: the one red line on the ground, swept with the
+     * slab so it never cuts the corner into the train's path. */
     edge: [
-      part('box', [PLATFORM_LENGTH, 0.16, 0.55], [
-        0,
-        PLATFORM_HEIGHT + 0.08,
-        zOnPlatform(EDGE + 0.275),
-      ]),
+      ribbonPart(
+        line,
+        index,
+        PLATFORM_EDGE,
+        PLATFORM_EDGE + EDGE_STRIP,
+        PLATFORM_HEIGHT,
+        PLATFORM_HEIGHT + 0.16,
+      ),
     ],
 
     /* The board's header band. It is a touch deeper than the panel, so the
@@ -471,6 +601,8 @@ export interface StationProps {
   stop: Stop;
   /** The station's index in line order. */
   index: number;
+  /** The line, so the platform edge can follow the track. */
+  line: LinePath;
   /** True when the train is dwelling here. */
   active: boolean;
 }
@@ -488,10 +620,10 @@ export interface StationProps {
  * parent is the one who reads it.
  */
 export function Station(props: StationProps): JSX.Element {
-  const { stop, active } = props;
+  const { stop, index, line, active } = props;
   const group = useMemo(
-    () => buildStation({ stop, active }),
-    [stop.id, stop.station, active],
+    () => buildStation({ stop, active, line, index }),
+    [stop.id, stop.station, active, index, line],
   );
 
   useEffect(() => () => disposeStation(group), [group]);

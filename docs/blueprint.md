@@ -67,7 +67,7 @@ Seven upgrades turn the prototype into a recruiter-ready product, each aimed at 
 - Front (two seconds): station board, claim, three stack tags, tier stamp.
 - Back (thirty seconds): proof such as metrics, screenshots and an architecture sketch, plus role, period and the repo, demo and case-study actions.
 - Actions: the repo, demo and case-study links, the résumé, and a Keep ticket action for the wallet.
-- Top bar: the serial number and the close action, always in the flow so it never covers the proof.
+- Station board: the name, the tier stamp and the close action on one line, so the way out sits on the board and never covers the proof.
 ### Entry gate
 
 The gate asks where to, with Express, All stations and Map as three buttons. Links you control can preselect one: a résumé link opens Express, a portfolio link opens All stations. The wallet stays in the browser's local storage, so nothing leaves the visitor's device.

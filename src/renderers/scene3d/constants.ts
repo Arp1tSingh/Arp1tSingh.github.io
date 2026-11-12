@@ -32,6 +32,9 @@ export const RAIL_GAUGE = 1.6;
 /** How long the whole train is, three cars and two couplings. */
 export const TRAIN_LENGTH = 26;
 
+/** Half the width of one car. The platform edge is measured against this. */
+export const TRAIN_HALF_WIDTH = 1.45;
+
 /** How far the platform slab runs along the track. */
 export const PLATFORM_LENGTH = 46;
 
@@ -96,6 +99,8 @@ export const SCENE_COLORS = {
   red: '#d92d3a',
   silver: '#e6e9ee',
   blue: '#1f4fb0',
+  /* The Central Railway rake: a white body with a broad purple band. */
+  crPurple: '#5b2f83',
   grey: '#8a9099',
   greyDim: '#5f5a4e',
   canopy: '#d8d2c2',

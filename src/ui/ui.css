@@ -214,21 +214,6 @@
   padding-top: var(--header-h);
 }
 
-/* The serial and the way out. A thin bar, not a floating stub. */
-.ticket__top {
-  position: sticky;
-  top: var(--header-h);
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  min-height: 2.75rem;
-  padding: var(--space-2) var(--space-4);
-  background: var(--ink-panel);
-  border-bottom: 1px solid var(--hairline);
-}
-
 /* On a phone the ticket is a bottom sheet. */
 @media (max-width: 720px) {
   .ticket-backdrop {
@@ -243,10 +228,6 @@
     border-left: 0;
     border-top: 1px solid var(--hairline-strong);
     padding-top: 0;
-  }
-
-  .ticket__top {
-    top: 0;
   }
 }
 
@@ -444,11 +425,12 @@
   border-color: var(--paper);
 }
 
-.ticket__serial {
-  font-size: var(--step--2);
-  letter-spacing: 0.16em;
-  color: var(--grey-dim);
-  white-space: nowrap;
+/* The tier and the way out share the board's far end. */
+.ticket__board-end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
 }
 
 /* The board means "actionable": keeping the ticket is the action. */
@@ -489,16 +471,19 @@
 .ticket__close {
   font-family: var(--font-mono);
   font-size: var(--step--2);
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--grey-dim);
-  border-bottom: 1px solid transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 0.15em 0.55em;
   white-space: nowrap;
 }
 
 .ticket__close:hover {
-  color: var(--paper);
-  border-bottom-color: var(--hairline-strong);
+  background: var(--ink);
+  color: var(--board);
+  border-color: var(--ink);
 }
 
 /* ============================================================= the indicator */

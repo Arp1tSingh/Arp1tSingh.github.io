@@ -55,7 +55,7 @@ Seven upgrades turn the prototype into a recruiter-ready product, each aimed at 
 | Prototype | Upgrade | Why it matters |
 | --- | --- | --- |
 | One scroll path | Entry gate with three lines: Express (flagship stops, about a minute), All stations, and Network map | Serves different intents and time budgets from the first screen |
-| Ticket shows text | Ticket v2: front is the claim, back is the proof, stub holds a QR code to the repo | Separates a two-second scan from a thirty-second read |
+| Ticket shows text | Ticket v2: front is the claim, back is the proof, actions carry the links and the wallet | Separates a two-second scan from a thirty-second read |
 | Identical stations | One small diorama prop per stop, chosen from the project's domain | Makes each stop recognizable before its name is read |
 | Progress is implicit | Dot-matrix indicator, progress dots and the sky cycle, plus a top-down Network map | Always answers where am I and what is left |
 | Nothing is remembered | Ticket wallet: visitors keep tickets, and the terminus opens an email listing them | Turns browsing into a shortlist, with no backend |
@@ -66,7 +66,8 @@ Seven upgrades turn the prototype into a recruiter-ready product, each aimed at 
 
 - Front (two seconds): station board, claim, three stack tags, tier stamp.
 - Back (thirty seconds): proof such as metrics, screenshots and an architecture sketch, plus role, period and the repo, demo and case-study actions.
-- Stub: QR code to the repo, a serial number and a Keep ticket action for the wallet.
+- Actions: the repo, demo and case-study links, the résumé, and a Keep ticket action for the wallet.
+- Top bar: the serial number and the close action, always in the flow so it never covers the proof.
 ### Entry gate
 
 The gate asks where to, with Express, All stations and Map as three buttons. Links you control can preselect one: a résumé link opens Express, a portfolio link opens All stations. The wallet stays in the browser's local storage, so nothing leaves the visitor's device.

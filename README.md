@@ -140,11 +140,10 @@ Nothing is loaded that the visitor has not asked for. The chunks are:
 
 | Chunk | Raw | Gzipped | When |
 | --- | --- | --- | --- |
-| The app | 278 KB | **87.7 KB** | With the page |
+| The app | 277 KB | **87.4 KB** | With the page |
 | The 3D scene | 968 KB | 259 KB | With the line, on a wide screen |
 | The Classic view | 7 KB | 2 KB | When `C` is pressed |
 | The network map | 11 KB | 3 KB | When `M` is pressed |
-| The QR encoder | 5 KB | 2 KB | When a ticket opens |
 
 The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 88 KB of it.
 

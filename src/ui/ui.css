@@ -200,6 +200,16 @@
   padding-top: var(--header-h);
 }
 
+/* The serial and the way out. A thin bar, not a floating stub. */
+.ticket__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--hairline);
+}
+
 /* On a phone the ticket is a bottom sheet. */
 @media (max-width: 720px) {
   .ticket-backdrop {
@@ -411,71 +421,11 @@
   border-color: var(--paper);
 }
 
-/* The stub: the part that leaves the browser with the visitor. */
-.ticket__stub {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-top: 1px solid var(--hairline);
-  /* The stub is the part that leaves with you, so it stays put: the proof
-     scrolls under it and the QR code, the serial and the Keep action are
-     always on screen. */
-  position: sticky;
-  bottom: 0;
-  background: var(--ink-panel);
-}
-
-.ticket__stub-code {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  min-width: 0;
-}
-
-.ticket__qr {
-  display: block;
-  flex: none;
-  background: var(--paper);
-  padding: 4px;
-}
-
-.ticket__qr-svg {
-  display: block;
-  width: 6.5rem;
-  height: 6.5rem;
-}
-
-.ticket__qr-svg rect {
-  fill: var(--ink);
-}
-
 .ticket__serial {
   font-size: var(--step--2);
   letter-spacing: 0.16em;
-  color: var(--grey);
+  color: var(--grey-dim);
   white-space: nowrap;
-}
-
-.ticket__stub-detail {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-  min-width: 0;
-  flex: 1 1 16rem;
-}
-
-.ticket__url {
-  font-size: var(--step--2);
-  color: var(--grey);
-  overflow-wrap: anywhere;
-  min-width: 0;
-}
-
-.ticket__url:hover {
-  color: var(--paper);
 }
 
 /* The board means "actionable": keeping the ticket is the action. */

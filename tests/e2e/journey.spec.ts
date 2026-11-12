@@ -32,8 +32,10 @@ test('choosing Express boards the train and a ticket opens at the first stop', a
   // The claim is on the front of the ticket. Dadar is the first stop now.
   await expect(dialog).toContainText('starts being something you can break');
 
-  // The QR code is fetched when the ticket opens, not carried in the bundle.
-  await expect(dialog.locator('[role="img"]')).toBeVisible();
+  // The wallet action and the repository live in the actions row, with no
+  // sticky stub covering the proof.
+  await expect(dialog.getByRole('button', { name: /keep ticket/i })).toBeVisible();
+  await expect(dialog.getByRole('link', { name: /repository/i })).toBeVisible();
 });
 
 test('scrolling on closes the ticket and moves the line', async ({ page }) => {

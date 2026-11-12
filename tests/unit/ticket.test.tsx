@@ -23,12 +23,25 @@ describe('the ticket', () => {
     expect(html).toContain(project.links.repo);
   });
 
-  it('fetches the QR code rather than carrying it in the bundle', () => {
-    // The encoder is a separate chunk, so the static markup has the stub and
-    // the URL but not the code itself.
-    const html = renderToStaticMarkup(<Ticket stop={project} open onClose={() => {}} />);
+  it('keeps the wallet action in the actions row, with no floating stub', () => {
+    const html = renderToStaticMarkup(
+      <Ticket stop={project} open onClose={() => {}} onKeep={() => {}} />,
+    );
+
+    expect(html).not.toContain('ticket__stub');
+    expect(html).not.toContain('ticket__qr');
     expect(html).not.toContain('role="img"');
-    expect(html).toContain(project.links.repo);
+    expect(html).toContain('Keep ticket');
+    expect(html).toContain('ticket__close');
+  });
+
+  it('marks a kept ticket and leaves the wallet action in place', () => {
+    const html = renderToStaticMarkup(
+      <Ticket stop={project} open onClose={() => {}} kept onKeep={() => {}} />,
+    );
+
+    expect(html).toContain('aria-pressed="true"');
+    expect(html).toContain('>Kept</button>');
   });
 
   it('offers no résumé action while there is no résumé', () => {

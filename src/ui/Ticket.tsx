@@ -1,12 +1,15 @@
 /**
  * The ticket.
  *
- * A ticket has three faces and the visitor turns them over in three seconds
- * of attention:
+ * A ticket has two faces and the visitor turns them over in three seconds of
+ * attention:
  *
  *   front  two seconds   station board, claim, three stack tags, tier stamp
- *   back   thirty seconds metrics, screenshots, architecture, role, period, links
- *   stub   always        QR code, serial number, keep action
+ *   back   thirty seconds metrics, screenshots, architecture, role, period
+ *
+ * A thin top bar carries the serial number and the close action. Keeping a
+ * ticket for the wallet sits with the other actions at the end of the proof,
+ * so nothing floats over the evidence while it is being read.
  *
  * It is a modal dialog: it traps focus, closes on Escape, closes on a click on
  * the backdrop, and gives the focus back to whatever opened it.
@@ -16,8 +19,7 @@
  * ticket. A visitor can photograph a ticket and compare it later.
  */
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import type { ReactElement } from 'react';
+import { useEffect, useId, useMemo, useRef } from 'react';
 import type { Stop } from '../core/types';
 
 import './ui.css';
@@ -58,88 +60,13 @@ function chunk(value: number, width: number): string {
 }
 
 /**
- * The serial number printed on the stub. Deterministic: the same stop id
+ * The serial number printed on the ticket. Deterministic: the same stop id
  * always gives the same serial, on every device, in every render.
  */
 export function ticketSerial(id: string): string {
   const head = chunk(fnv1a(id, 0x811c9dc5), 6);
   const tail = chunk(fnv1a(`${id}#local-3d`, 0x811c9dc5), 6);
   return `LT-${head}${tail}`;
-}
-
-/* -------------------------------------------------------------------------- */
-/* The QR code                                                                  */
-/* -------------------------------------------------------------------------- */
-
-/** Modules of blank space around the symbol, as the QR standard asks for. */
-const QUIET_ZONE = 4;
-
-/**
- * The QR code on the stub. It is decorative in the sense that the repository
- * URL is printed next to it as text: nothing is ever reachable only by
- * pointing a camera at it.
- *
- * The encoder is fetched when the ticket opens rather than when the page
- * loads. It is a real QR implementation - Reed-Solomon, masking, the lot -
- * and it is a lot of code to make every visitor carry for a code most of
- * them never look at.
- */
-function TicketQr({ url }: { url: string }) {
-  const [matrix, setMatrix] = useState<boolean[][] | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    void import('./qr')
-      .then((module) => {
-        if (!alive) return;
-        try {
-          const result = module.qrMatrix(url);
-          setMatrix(result.length > 0 ? result : null);
-        } catch {
-          setMatrix(null);
-        }
-      })
-      .catch(() => setMatrix(null));
-    return () => {
-      alive = false;
-    };
-  }, [url]);
-
-  if (!matrix) return null;
-
-  const size = matrix.length;
-  const span = size + QUIET_ZONE * 2;
-  const modules: ReactElement[] = [];
-
-  for (let row = 0; row < size; row += 1) {
-    const line = matrix[row] ?? [];
-    for (let column = 0; column < line.length; column += 1) {
-      if (!line[column]) continue;
-      modules.push(
-        <rect
-          key={`${row}-${column}`}
-          x={column + QUIET_ZONE}
-          y={row + QUIET_ZONE}
-          width={1}
-          height={1}
-        />,
-      );
-    }
-  }
-
-  return (
-    <svg
-      className="ticket__qr-svg"
-      viewBox={`0 0 ${span} ${span}`}
-      width={span * 3}
-      height={span * 3}
-      role="img"
-      aria-label={`QR code linking to ${url}`}
-      shapeRendering="crispEdges"
-    >
-      {modules}
-    </svg>
-  );
 }
 
 /* -------------------------------------------------------------------------- */
@@ -244,7 +171,6 @@ export function Ticket({
    */
   const serial = useMemo(() => ticketSerial(stop.id), [stop.id]);
   const tags = stop.stack.slice(0, 3);
-  const repo = stop.links.repo;
 
   const actions = LINK_LABELS.map((action) => ({ ...action, href: stop.links[action.key] })).filter(
     (action) => action.href.length > 0,
@@ -267,6 +193,13 @@ export function Ticket({
         tabIndex={-1}
         ref={panelRef}
       >
+        <div className="ticket__top">
+          <span className="ticket__serial mono">{serial}</span>
+          <button type="button" className="ticket__close" onClick={onClose} aria-label="Close the ticket">
+            Close
+          </button>
+        </div>
+
         <div className="ticket__grid">
           {/* ---------------------------------------------------------- front */}
           <div className="ticket__front">
@@ -352,7 +285,7 @@ export function Ticket({
               </dl>
             </section>
 
-            {actions.length > 0 || resume ? (
+            {actions.length > 0 || resume || onKeep ? (
               <section className="ticket__section">
                 <h3 className="ticket__label">Actions</h3>
                 <div className="ticket__actions">
@@ -372,42 +305,20 @@ export function Ticket({
                       Résumé
                     </a>
                   ) : null}
+                  {onKeep ? (
+                    <button
+                      type="button"
+                      className="ticket__keep"
+                      aria-pressed={kept}
+                      onClick={() => onKeep(stop)}
+                    >
+                      {kept ? 'Kept' : 'Keep ticket'}
+                    </button>
+                  ) : null}
                 </div>
               </section>
             ) : null}
           </div>
-        </div>
-
-        {/* ----------------------------------------------------------- stub */}
-        <div className="ticket__stub">
-          <div className="ticket__stub-code">
-            {repo ? (
-              <span className="ticket__qr">
-                <TicketQr url={repo} />
-              </span>
-            ) : null}
-            <span className="ticket__serial mono">{serial}</span>
-          </div>
-
-          <div className="ticket__stub-detail">
-            {repo ? (
-              <a className="ticket__url mono" href={repo} target="_blank" rel="noopener noreferrer">
-                {repo}
-              </a>
-            ) : null}
-            <button
-              type="button"
-              className="ticket__keep"
-              aria-pressed={kept}
-              onClick={() => onKeep?.(stop)}
-            >
-              {kept ? 'Kept' : 'Keep ticket'}
-            </button>
-          </div>
-
-          <button type="button" className="ticket__close" onClick={onClose} aria-label="Close the ticket">
-            Close
-          </button>
         </div>
       </div>
     </div>

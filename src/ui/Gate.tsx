@@ -9,6 +9,9 @@
  * The email is a real `mailto:` anchor so it works with the keyboard, with a
  * screen reader and with the right-click menu, and it is visible without any
  * interaction at all.
+ *
+ * The route choices sit before the location and contact facts on purpose: on
+ * a phone the first scroll should reach the decision, not the small print.
  */
 
 import { useId, useState } from 'react';
@@ -53,21 +56,6 @@ export function Gate({ lines, profile, onSelect, currentLine }: GateProps) {
         <p className="gate__role">{profile.role}</p>
 
         <p className="gate__summary">{profile.summary}</p>
-
-        <dl className="gate__facts">
-          <div className="gate__fact">
-            <dt className="gate__fact-label mono">Based in</dt>
-            <dd className="gate__fact-value">{profile.location}</dd>
-          </div>
-          <div className="gate__fact">
-            <dt className="gate__fact-label mono">Email</dt>
-            <dd className="gate__fact-value">
-              <a className="gate__email" href={`mailto:${profile.email}`}>
-                {profile.email}
-              </a>
-            </dd>
-          </div>
-        </dl>
       </div>
 
       <nav className="gate__choose" aria-labelledby={`${nameId}-ask`}>
@@ -91,6 +79,31 @@ export function Gate({ lines, profile, onSelect, currentLine }: GateProps) {
           ))}
         </ul>
       </nav>
+
+      <dl className="gate__facts">
+        <div className="gate__fact">
+          <dt className="gate__fact-label mono">Based in</dt>
+          <dd className="gate__fact-value">{profile.location}</dd>
+        </div>
+        <div className="gate__fact">
+          <dt className="gate__fact-label mono">Email</dt>
+          <dd className="gate__fact-value">
+            <a className="gate__email" href={`mailto:${profile.email}`}>
+              {profile.email}
+            </a>
+          </dd>
+        </div>
+        {profile.resume ? (
+          <div className="gate__fact">
+            <dt className="gate__fact-label mono">Résumé</dt>
+            <dd className="gate__fact-value">
+              <a className="gate__resume" href={profile.resume} download>
+                Download the PDF
+              </a>
+            </dd>
+          </div>
+        ) : null}
+      </dl>
     </section>
   );
 }

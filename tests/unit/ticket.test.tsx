@@ -18,7 +18,9 @@ describe('the ticket', () => {
     );
 
     expect(html).toContain('role="dialog"');
-    expect(html).toContain('aria-modal="true"');
+    // The header stays usable while the ticket is open, so the ticket must
+    // not claim to be modal.
+    expect(html).not.toContain('aria-modal');
     expect(html).toContain(project.claim);
     expect(html).toContain(project.links.repo);
   });

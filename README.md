@@ -16,13 +16,13 @@ Route(i, b) = order({ e ∈ E : relevance(e, i) ≥ τ(b) })
 
 `E` is all the evidence, `i` is the visitor's intent (skim, verify, explore) and `b` is their time budget. The threshold τ falls as the budget grows: a short budget keeps only the flagship stops (Express), a long one keeps all of them (All stations).
 
-This buys three things. The 3D line, a flat Classic view and a network map become interchangeable renderers of one route. The metaphor can change later without touching content. And every design choice gets a test: does it help a visitor reach evidence faster, or judge it better?
+This buys three things. The 3D line, a flat Text view and a network map become interchangeable renderers of one route. The metaphor can change later without touching content. And every design choice gets a test: does it help a visitor reach evidence faster, or judge it better?
 
-The full brief is in [`docs/blueprint.md`](docs/blueprint.md). What is still open - the résumé, the Kalyan Junction card, the two clips that only Arpit can record - is in [`docs/placeholders.md`](docs/placeholders.md).
+The full brief is in [`docs/blueprint.md`](docs/blueprint.md). What is still open - the résumé, the Kalyan Junction card, the two clips that only Arpit can record - is in [`docs/placeholders.md`](docs/placeholders.md). The five-phase gate, ride, map and ticket pass is recorded in [`docs/ux-plan.md`](docs/ux-plan.md).
 
 ## One dataset, many renderers
 
-`content/` is the source of truth. It is validated at build time, read once, and handed to every renderer as the same immutable object. No renderer ever copies a value out of it, so a fix in the data updates the scene, the map and the Classic view together.
+`content/` is the source of truth. It is validated at build time, read once, and handed to every renderer as the same immutable object. No renderer ever copies a value out of it, so a fix in the data updates the scene, the map and the Text view together.
 
 ```
 content/
@@ -68,7 +68,7 @@ content/  ──validated at build──▶  src/core/  ──pure──▶  src
 | `src/renderers/scene3d/` | The 3D line: the train, the track, the stations, the sky. |
 | `src/ui/` | The gate, the ticket, the indicator and the wallet. |
 
-Any of the three can be opened on its own: `C` for the Classic view, `M` for the map, and `?view=classic` or `?view=map` opens one straight away, which is a link anyone can share.
+Any of the three can be opened on its own: `T` (or `C`) for the Text view, `M` for the map, and `?view=classic` or `?view=map` opens one straight away, which is a link anyone can share.
 
 Because the core is pure, it gets unit tests instead of screenshots: `npm test` covers the route function, the pacing function, every journey transition **and the 3D triangle budgets** without opening a browser.
 
@@ -101,10 +101,10 @@ In Express mode a local stop's dwell collapses to zero: the train passes through
 | 0 Full | WebGL works, motion allowed | The journey, the gate, the map and the 3D line. |
 | 1 Calm | `prefers-reduced-motion` | The camera cuts between stops instead of sweeping. |
 | 2 Light | A low-end device | Fewer instances and a lower pixel ratio; antialiasing stays on. |
-| 3 Classic | No WebGL, or the context was lost | The poster scene, then the Classic view. |
-| 4 Plain | No JavaScript | The Classic view, prerendered to static HTML at build time. |
+| 3 Text view | No WebGL, or the context was lost | The poster scene, then the Text view. |
+| 4 Plain | No JavaScript | The Text view, prerendered to static HTML at build time. |
 
-The Classic view is prerendered into a `<noscript>` block at build time, so the page is complete and readable with zero scripting — and because `<noscript>` content is inert while scripting is on, the document never carries the content twice.
+The Text view (the Classic renderer in the source tree) is prerendered into a `<noscript>` block at build time, so the page is complete and readable with zero scripting — and because `<noscript>` content is inert while scripting is on, the document never carries the content twice.
 
 If the app fails to boot, an inline timer puts the static page back. There is no state in which a visitor gets a blank page.
 
@@ -142,7 +142,7 @@ Nothing is loaded that the visitor has not asked for. The chunks are:
 | --- | --- | --- | --- |
 | The app | 277 KB | **87.4 KB** | With the page |
 | The 3D scene | 968 KB | 259 KB | With the line, on a wide screen |
-| The Classic view | 7 KB | 2 KB | When `C` is pressed |
+| The Text view | 7 KB | 2 KB | When `T` (or `C`) is pressed |
 | The network map | 11 KB | 3 KB | When `M` is pressed |
 
 The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 88 KB of it.
@@ -217,7 +217,7 @@ npm run typecheck
 npm run test:e2e        # the browser, in Chromium, Firefox and WebKit
 ```
 
-The end-to-end suite covers the ten-second contract at three widths, the Classic view with JavaScript disabled, the gate, the ticket lifecycle, the deep links, the content parity between the renderers, and the 3D scene with its degradation to the poster.
+The end-to-end suite covers the ten-second contract at three widths, the Text view with JavaScript disabled, the gate, the ticket lifecycle, the map's selection model, the mobile view menu and station sheet, the terminus wallet, the deep links, the content parity between the renderers, and the 3D scene with its degradation to the poster.
 
 ## Licence
 

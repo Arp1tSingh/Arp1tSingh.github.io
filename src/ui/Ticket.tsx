@@ -11,15 +11,15 @@
  * ticket for the wallet sits with the other actions at the end of the proof,
  * so nothing floats over the evidence while it is being read.
  *
- * It is a modal dialog: it traps focus, closes on Escape, closes on a click on
- * the backdrop, and gives the focus back to whatever opened it.
+ * It is a dialog, but not a modal one: the header stays usable, Escape closes
+ * it, a click outside closes it, and focus is handed in and back out.
  *
  * The serial number is derived from the stop id with a hash, never from a
  * random number or a clock, so the same station always prints the same
  * ticket. A visitor can photograph a ticket and compare it later.
  */
 
-import { useEffect, useId, useMemo, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { Stop } from '../core/types';
 
 import './ui.css';
@@ -70,19 +70,6 @@ export function ticketSerial(id: string): string {
 }
 
 /* -------------------------------------------------------------------------- */
-/* The focus trap                                                               */
-/* -------------------------------------------------------------------------- */
-
-const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-function focusableIn(panel: HTMLElement): HTMLElement[] {
-  return Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-    (node) => node.getClientRects().length > 0 || node === document.activeElement,
-  );
-}
-
-/* -------------------------------------------------------------------------- */
 /* The ticket                                                                   */
 /* -------------------------------------------------------------------------- */
 
@@ -103,6 +90,7 @@ export function Ticket({
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeRef = useRef(onClose);
+  const [justKept, setJustKept] = useState(false);
 
   // The close handler is read through a ref so the focus effect below only
   // runs when the ticket opens or closes, never on every render.
@@ -110,14 +98,20 @@ export function Ticket({
     closeRef.current = onClose;
   });
 
-  // Open: remember who had the focus, move the focus into the dialog, trap
-  // Tab inside it. Close: give the focus back to that same element.
+  // A new stop is a new ticket. The "saved" line belongs to the old one.
   useEffect(() => {
-    if (!open) return;
+    setJustKept(false);
+  }, [stop.id, open]);
+
+  // Open: remember who had the focus and move it into the panel. Close: give
+  // it back. The panel does not trap Tab: the header is part of the page and
+  // stays usable while the ticket is open, which is the point of a
+  // non-modal panel.
+  useEffect(() => {
+    if (!open) return undefined;
 
     const opener = document.activeElement;
-    const panel = panelRef.current;
-    panel?.focus();
+    panelRef.current?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -125,40 +119,62 @@ export function Ticket({
         closeRef.current();
         return;
       }
-      if (event.key !== 'Tab' || !panel) return;
 
-      const nodes = focusableIn(panel);
-      if (nodes.length === 0) {
-        event.preventDefault();
-        panel.focus();
-        return;
+      /*
+       * The ticket is the reading surface, so the arrows belong to it.
+       *
+       * Native arrow scrolling depends on the panel holding the focus, which
+       * it does, but it also loses the key to the page under a busy first
+       * paint. Driving the scroll here makes the behaviour the same in every
+       * browser and keeps the journey from jumping stations mid-read.
+       */
+      const panel = panelRef.current;
+      if (!panel) return;
+
+      const step = 48;
+      const page = Math.max(step, panel.clientHeight - step * 2);
+      let next: number | null = null;
+
+      switch (event.key) {
+        case 'ArrowDown':
+          next = panel.scrollTop + step;
+          break;
+        case 'ArrowUp':
+          next = panel.scrollTop - step;
+          break;
+        case 'PageDown':
+          next = panel.scrollTop + page;
+          break;
+        case 'PageUp':
+          next = panel.scrollTop - page;
+          break;
+        case 'Home':
+          next = 0;
+          break;
+        case 'End':
+          next = panel.scrollHeight;
+          break;
+        default:
+          return;
       }
 
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
-      const active = document.activeElement;
-
-      if (event.shiftKey) {
-        if (active === first || active === panel || !panel.contains(active)) {
-          event.preventDefault();
-          last.focus();
-        }
-        return;
-      }
-
-      if (active === last || !panel.contains(active)) {
-        event.preventDefault();
-        first.focus();
-      }
+      event.preventDefault();
+      panel.scrollTo({ top: next, behavior: 'auto' });
     };
 
     document.addEventListener('keydown', onKeyDown, true);
 
     return () => {
       document.removeEventListener('keydown', onKeyDown, true);
-      if (opener instanceof HTMLElement) opener.focus();
+      if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
     };
   }, [open]);
+
+  const keep = () => {
+    if (!onKeep) return;
+    onKeep(stop);
+    setJustKept(true);
+  };
 
   /**
    * The ticket does not trap the wheel.
@@ -188,7 +204,6 @@ export function Ticket({
       <div
         className="ticket"
         role="dialog"
-        aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
         ref={panelRef}
@@ -310,12 +325,18 @@ export function Ticket({
                       type="button"
                       className="ticket__keep"
                       aria-pressed={kept}
-                      onClick={() => onKeep(stop)}
+                      onClick={keep}
                     >
                       {kept ? 'Kept' : 'Keep ticket'}
                     </button>
                   ) : null}
                 </div>
+
+                {justKept ? (
+                  <p className="ticket__kept-note mono" role="status">
+                    Saved for the terminus.
+                  </p>
+                ) : null}
               </section>
             ) : null}
           </div>

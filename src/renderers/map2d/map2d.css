@@ -56,28 +56,71 @@
  * The body: the drawing on one side, the panels on the other
  * ------------------------------------------------------------------ */
 
+/**
+ * The filter comes first in the source, so a phone reads
+ * heading -> skills -> drawing -> card. On a wide screen the grid moves the
+ * filter and the card into the right-hand column.
+ */
 .map2d__body {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'skills'
+    'plot';
   gap: var(--space-4);
+}
+
+/* On a phone the filter and the card behave as if the wrapper is not there. */
+.map2d__side {
+  display: contents;
+}
+
+.map2d__skills {
+  grid-area: skills;
+}
+
+.map2d__column {
+  grid-area: plot;
+  min-width: 0;
 }
 
 @media (min-width: 60rem) {
   .map2d__body {
     grid-template-columns: minmax(0, 28rem) minmax(0, 1fr);
+    grid-template-areas: 'plot side';
     align-items: start;
   }
 
+  /**
+   * The line is tall; the card is not. Keeping the filter and the card in a
+   * sticky column means a visitor can scroll to Dombivli and still see the
+   * station they are reading. The column scrolls itself if the card is taller
+   * than the window.
+   */
   .map2d__side {
+    grid-area: side;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
     gap: var(--space-4);
     align-items: start;
   }
-}
 
-.map2d__column {
-  min-width: 0;
+  /* Inside the column both panels are plain rows, in source order. */
+  .map2d__side > * {
+    grid-area: auto;
+  }
+
+  /**
+   * The card follows the line. Once it reaches the top of the overlay it
+   * stays there while the stations scroll under it, so a visitor who picked
+   * Dombivli can still read the card when the plot has moved on.
+   */
+  .map2d__detail {
+    position: sticky;
+    top: calc(3rem + var(--space-3));
+    max-height: calc(100svh - var(--header-h) - 3rem - var(--space-5));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }
 
 /* ------------------------------------------------------------------ *
@@ -155,10 +198,18 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* Red is the journey: the stop the train is standing at. */
 .map2d__here {
   fill: none;
   stroke: var(--accent);
   stroke-width: 1.5;
+}
+
+/* The board is the selection: the station whose card is open. */
+.map2d__selected {
+  fill: none;
+  stroke: var(--board);
+  stroke-width: 2;
 }
 
 .map2d__station:focus {
@@ -217,6 +268,10 @@
 
 .map2d__label--here .map2d__label-station {
   color: var(--accent-text);
+}
+
+.map2d__label--selected .map2d__label-title {
+  color: var(--board);
 }
 
 /* ------------------------------------------------------------------ *
@@ -304,6 +359,26 @@
   color: var(--accent-text);
 }
 
+.map2d__detail-head-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.map2d__panel-close {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  font-size: var(--step-1);
+  line-height: 1;
+  color: var(--grey-dim);
+}
+
+.map2d__panel-close:hover {
+  color: var(--paper);
+}
+
 /* ------------------------------------------------------------------ *
  * The skill filter
  * ------------------------------------------------------------------ */
@@ -345,6 +420,26 @@
 /* ------------------------------------------------------------------ *
  * The station card
  * ------------------------------------------------------------------ */
+
+/* The one action that moves the train, and the only loud thing in the card. */
+.map2d__ride {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding: 0.45em 0.9em;
+  background: var(--board);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.map2d__ride:hover {
+  background: var(--paper);
+}
 
 .map2d__detail-title {
   font-size: var(--step-1);
@@ -504,4 +599,60 @@
 .map2d__fallback-stack {
   color: var(--grey-dim);
   font-size: var(--step--2);
+}
+
+/* ------------------------------------------------------------------ *
+ * On a phone the filter is a strip and the station card is a sheet
+ * ------------------------------------------------------------------ */
+
+@media (max-width: 59.999rem) {
+  .map2d__skills {
+    border: 0;
+    border-bottom: 1px solid var(--hairline);
+    padding: 0 0 var(--space-3);
+  }
+
+  .map2d__skills .map2d__panel-head {
+    margin-bottom: var(--space-2);
+  }
+
+  .map2d__skills .map2d__panel-note {
+    display: none;
+  }
+
+  /* One row that can be swiped, instead of a wall of chips below the plot. */
+  .map2d__skill-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    scrollbar-width: thin;
+  }
+
+  .map2d__skill {
+    flex: none;
+  }
+
+  .map2d__detail {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 6;
+    max-height: 62svh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 0;
+    border-top: 1px solid var(--hairline-strong);
+    background: var(--ink-panel);
+    padding: var(--space-3) var(--page-pad) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .map2d__detail--empty {
+    display: none;
+  }
+
+  .map2d__detail .map2d__ride {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

@@ -17,15 +17,51 @@ function isTyping(target: EventTarget | null): boolean {
   return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
 }
 
+function inside(target: EventTarget | null, selector: string): boolean {
+  return target instanceof Element && target.closest(selector) !== null;
+}
+
 /**
  * "Keyboard: arrow keys move between stops, E picks Express, M opens the map,
- * C opens the Classic view."
+ * T opens the text view."
+ *
+ * The journey shortcuts belong to the line. When focus is inside the ticket,
+ * the map, the text view or the wallet, the arrow keys are for reading and
+ * scrolling that surface, not for jumping the train. Escape still leaves an
+ * overlay, and the ticket handles its own Escape.
  */
 export function useKeyboard({ journey, view, setView, onSelectLine }: KeyboardOptions): void {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (isTyping(event.target)) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      // The ticket owns Escape and the arrow keys while it is open.
+      if (inside(event.target, '[role="dialog"]')) return;
+
+      // A surface that scrolls or contains its own controls keeps the arrows.
+      // The view shortcuts still work there (C closes the text view it
+      // opened), but the journey itself does not move under the overlay.
+      if (inside(event.target, '.app__overlay, .app__wallet')) {
+        switch (event.key) {
+          case 'Escape':
+            if (view === 'map' || view === 'classic') setView('journey');
+            break;
+          case 'm':
+          case 'M':
+            setView(view === 'map' ? 'journey' : 'map');
+            break;
+          case 't':
+          case 'T':
+          case 'c':
+          case 'C':
+            setView(view === 'classic' ? 'journey' : 'classic');
+            break;
+          default:
+            break;
+        }
+        return;
+      }
 
       switch (event.key) {
         case 'e':
@@ -39,6 +75,8 @@ export function useKeyboard({ journey, view, setView, onSelectLine }: KeyboardOp
           setView(view === 'map' ? 'journey' : 'map');
           break;
 
+        case 't':
+        case 'T':
         case 'c':
         case 'C':
           setView(view === 'classic' ? 'journey' : 'classic');

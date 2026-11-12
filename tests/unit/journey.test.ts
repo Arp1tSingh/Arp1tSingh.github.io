@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { CONTENT } from '../../src/data/content';
 import { stopsForLine } from '../../src/core/route';
-import { buildSegments, positionAt } from '../../src/core/pacing';
+import { buildSegments, positionAt, totalLength } from '../../src/core/pacing';
 import { canJumpTo, currentStopId, initialState, reduce } from '../../src/core/journey';
 import type { JourneyState } from '../../src/core/journey';
 
@@ -64,6 +64,15 @@ describe('the journey state machine', () => {
   it('reaches the terminus at the last stop', () => {
     const state = reduce(boarded(), { type: 'scroll', position: at(segments[segments.length - 1].end - 0.01) });
     expect(state.phase).toBe('terminus');
+  });
+
+  it('reaches the terminus at the exact end of the timeline', () => {
+    const state = reduce(boarded(), {
+      type: 'scroll',
+      position: at(totalLength(segments)),
+    });
+    expect(state.phase).toBe('terminus');
+    expect(currentStopId(state)).toBe(routeIds[routeIds.length - 1]);
   });
 
   it('jumps straight to a stop from a map click, a dot or a deep link', () => {

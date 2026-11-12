@@ -28,6 +28,7 @@
  * way on the server and in the browser.
  */
 
+import { useMemo, useState } from 'react';
 import type { JSX, KeyboardEvent as ReactKeyboardEvent } from 'react';
 
 import type { SiteContent, Stop } from '../../core/types';
@@ -309,15 +310,28 @@ function SkillPanel({
   );
 }
 
-/** The card of the stop the visitor is standing at. */
+/**
+ * The card of the station the visitor has selected.
+ *
+ * Selection is local to the map. Clicking a station no longer rides away
+ * from the map; the card updates, and the card's one primary action takes
+ * the visitor to that stop. That is the difference between browsing the
+ * network and moving the train.
+ */
 function DetailPanel({
   stop,
+  isCurrent,
   activeSkill,
   onFilter,
+  onRide,
+  onClear,
 }: {
   stop: Stop | undefined;
+  isCurrent: boolean;
   activeSkill: string | null;
   onFilter: (skill: string | null) => void;
+  onRide: (stopId: string) => void;
+  onClear: () => void;
 }): JSX.Element {
   const linkKeys = ['repo', 'demo', 'caseStudy'] as const;
   const linkLabels: Record<(typeof linkKeys)[number], string> = {
@@ -330,16 +344,35 @@ function DetailPanel({
     : [];
 
   return (
-    <section className="map2d__panel map2d__detail" aria-labelledby="map2d-detail-title">
+    <section
+      className={`map2d__panel map2d__detail${stop ? '' : ' map2d__detail--empty'}`}
+      aria-labelledby="map2d-detail-title"
+    >
       <div className="map2d__panel-head">
         <h3 className="map2d__panel-title" id="map2d-detail-title">
           Station card
         </h3>
-        {stop ? <span className="map2d__here-chip">you are here</span> : null}
+        <div className="map2d__detail-head-actions">
+          {stop && isCurrent ? <span className="map2d__here-chip">you are here</span> : null}
+          {stop ? (
+            <button
+              type="button"
+              className="map2d__panel-close"
+              aria-label="Close the station card"
+              onClick={onClear}
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {stop ? (
         <>
+          <button type="button" className="map2d__ride" onClick={() => onRide(stop.id)}>
+            Ride here <span aria-hidden="true">→</span>
+          </button>
+
           <h4 className="map2d__detail-title">{stop.title}</h4>
           <p className="map2d__detail-station mono">
             {stop.station} / {stop.badge}
@@ -403,7 +436,8 @@ function DetailPanel({
         </>
       ) : (
         <p className="map2d__empty">
-          No station selected. Pick a station on the map to read its card.
+          Pick a station on the map to read its card. The line itself is
+          on the left; the transfer lines are the skills.
         </p>
       )}
     </section>
@@ -420,24 +454,40 @@ export interface MapViewProps {
   stops: Stop[];
   currentId: string | null;
   activeSkill: string | null;
-  onJump: (stopId: string) => void;
+  /** Ride to a stop. Only the station card's primary action calls this. */
+  onRide: (stopId: string) => void;
   onFilter: (skill: string | null) => void;
 }
 
 export function MapView(props: MapViewProps): JSX.Element {
-  const { content, stops, currentId, activeSkill, onJump, onFilter } = props;
+  const { content, stops, currentId, activeSkill, onRide, onFilter } = props;
 
-  const network = networkOf(content, stops);
+  const network = useMemo(() => networkOf(content, stops), [content, stops]);
+  const skills = useMemo(() => skillsOf(network), [network]);
   const points = spine(network.length);
   const height = drawingHeight(network.length);
-  const skills = skillsOf(network);
-  const current = network.find((stop) => stop.id === currentId);
+
+  /**
+   * The selection is the map's own, not the journey's position.
+   *
+   * It starts empty on purpose: on a phone the station card is a sheet over
+   * the drawing, and opening it before the visitor has picked anything would
+   * hide the map they just asked for. The "you are here" marker still shows
+   * where the train is standing.
+   */
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selected = network.find((stop) => stop.id === selectedId);
+
   const mapLine = content.route.lines.find((line) => line.id === 'map');
+
+  const select = (stopId: string): void => {
+    setSelectedId(stopId);
+  };
 
   const onKeyDown = (event: ReactKeyboardEvent<SVGGElement>, stopId: string): void => {
     if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
       event.preventDefault();
-      onJump(stopId);
+      select(stopId);
     }
   };
 
@@ -452,6 +502,24 @@ export function MapView(props: MapViewProps): JSX.Element {
       </header>
 
       <div className="map2d__body">
+        {/*
+          The filter is first in the DOM so it is above the drawing on a
+          phone. On a wide screen the grid puts this whole column on the
+          right and keeps it in view while the line scrolls.
+        */}
+        <div className="map2d__side">
+          <SkillPanel skills={skills} activeSkill={activeSkill} onFilter={onFilter} />
+
+          <DetailPanel
+            stop={selected}
+            isCurrent={selected?.id === currentId}
+            activeSkill={activeSkill}
+            onFilter={onFilter}
+            onRide={onRide}
+            onClear={() => setSelectedId(null)}
+          />
+        </div>
+
         <div className="map2d__column">
           <div className="map2d__plot">
             <svg
@@ -505,6 +573,7 @@ export function MapView(props: MapViewProps): JSX.Element {
                 {network.map((stop, index) => {
                   const at = points[index];
                   const isCurrent = stop.id === currentId;
+                  const isSelected = stop.id === selectedId;
                   const carries = activeSkill !== null && stop.stack.includes(activeSkill);
                   const dimmed = activeSkill !== null && !carries;
                   const radius = stop.tier === 'express' ? 12 : 6.5;
@@ -517,19 +586,30 @@ export function MapView(props: MapViewProps): JSX.Element {
                         `map2d__station--${stop.tier}`,
                         dimmed ? 'map2d__station--dim' : '',
                         isCurrent ? 'map2d__station--here' : '',
+                        isSelected ? 'map2d__station--selected' : '',
                       ]
                         .filter(Boolean)
                         .join(' ')}
                       role="button"
                       tabIndex={0}
+                      aria-pressed={isSelected}
                       aria-label={`${stop.title}, ${stop.station} station, ${titleCase(stop.tier)} stop`}
                       data-stop={stop.id}
-                      onClick={() => onJump(stop.id)}
+                      onClick={() => select(stop.id)}
                       onKeyDown={(event) => onKeyDown(event, stop.id)}
                     >
                       <title>{`${stop.title} - ${stop.station}`}</title>
                       <circle className="map2d__hit" cx={at.x} cy={at.y} r={20} />
                       <circle className="map2d__dot" cx={at.x} cy={at.y} r={radius} />
+                      {isSelected ? (
+                        <circle
+                          className="map2d__selected"
+                          cx={at.x}
+                          cy={at.y}
+                          r={radius + 4}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      ) : null}
                       {isCurrent ? (
                         <circle
                           className="map2d__here"
@@ -556,6 +636,7 @@ export function MapView(props: MapViewProps): JSX.Element {
                       'map2d__label',
                       dimmed ? 'map2d__label--dim' : '',
                       stop.id === currentId ? 'map2d__label--here' : '',
+                      stop.id === selectedId ? 'map2d__label--selected' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')}
@@ -589,7 +670,8 @@ export function MapView(props: MapViewProps): JSX.Element {
                   <button
                     type="button"
                     className="map2d__fallback-button"
-                    onClick={() => onJump(stop.id)}
+                    onClick={() => select(stop.id)}
+                    aria-pressed={stop.id === selectedId}
                     aria-current={stop.id === currentId ? 'true' : undefined}
                   >
                     {stop.title}
@@ -606,11 +688,6 @@ export function MapView(props: MapViewProps): JSX.Element {
             </ul>
           </details>
         </div>
-
-        <aside className="map2d__side">
-          <SkillPanel skills={skills} activeSkill={activeSkill} onFilter={onFilter} />
-          <DetailPanel stop={current} activeSkill={activeSkill} onFilter={onFilter} />
-        </aside>
       </div>
     </section>
   );

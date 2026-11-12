@@ -23,6 +23,14 @@ const Scene3D = lazy(() =>
 interface JourneyViewProps {
   journey: JourneyApi;
   wallet: WalletApi;
+  /**
+   * Whether the line is the surface on screen.
+   *
+   * The line stays mounted behind the map and the text view so the scene does
+   * not have to rebuild when the visitor comes back, but its ticket and its
+   * fixed furniture must not float over another view.
+   */
+  active: boolean;
   /** Stop rendering the scene entirely. */
   paused: boolean;
   reducedMotion: boolean;
@@ -42,13 +50,21 @@ interface JourneyViewProps {
 export function JourneyView({
   journey,
   wallet,
+  active,
   paused,
   reducedMotion,
   onContextLost,
 }: JourneyViewProps) {
-  const { state, stops, totalVh, current, next, stage, closeTicket, jumpTo, positionRef } =
+  const { state, stops, totalVh, current, next, stage, selectLine, closeTicket, jumpTo, positionRef } =
     journey;
-  const ticketOpen = state.phase === 'dwelling' || state.phase === 'terminus';
+  /**
+   * The terminus is the wallet's surface, not another ticket.
+   *
+   * A ticket at Badlapur would sit between the visitor and the closing screen
+   * they just rode to. The last dwell therefore hands straight over to the
+   * wallet, and the ticket stays on the working stops.
+   */
+  const ticketOpen = active && state.phase === 'dwelling';
 
   const container = useRef<HTMLDivElement>(null);
   const fill = useRef<HTMLSpanElement>(null);
@@ -110,6 +126,19 @@ export function JourneyView({
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  /**
+   * One viewport of runway past the end of the line.
+   *
+   * The viewport itself occupies the last screenful of the page, so a track
+   * that is exactly `totalVh` high can never scroll the final dwell into
+   * view. The extra viewport is not extra journey: the train is standing at
+   * the terminus for all of it, and it is what makes the closing screen
+   * reachable from a normal scroll.
+   */
+  const trackVh = Math.max(1, totalVh) + 1;
+  const routes = CONTENT.route.lines.filter((line) => line.id !== 'map');
+  const keptCount = wallet.kept.length;
+
   return (
     <div className="journey-view" ref={container}>
       <div className="scene3d" aria-hidden="true">
@@ -140,22 +169,54 @@ export function JourneyView({
 
       <div
         className="journey-view__track"
-        style={{ height: `${Math.max(1, totalVh) * 100}vh` }}
+        style={{ height: `${trackVh * 100}vh` }}
         aria-hidden="true"
       />
 
       <div className="journey-view__stage">
         {current ? (
           <div className="station-card" data-phase={state.phase}>
-            <p className="station-card__station mono">{current.station}</p>
+            <div className="station-card__top">
+              <p className="station-card__station mono">{current.station}</p>
+
+              {/*
+                The line switch stays with the ride. Choosing Express at the
+                gate used to be irreversible without reloading the page; this
+                is the way back to All stations, and back again.
+              */}
+              {state.phase !== 'gate' ? (
+                <div className="station-card__lines" role="group" aria-label="Line">
+                  {routes.map((line) => (
+                    <button
+                      key={line.id}
+                      type="button"
+                      className="station-card__line"
+                      aria-pressed={state.line === line.id}
+                      onClick={() => selectLine(line.id)}
+                    >
+                      {line.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
             <p className="station-card__title">{current.title}</p>
-            {next ? (
-              <p className="station-card__next mono">
-                Next: {next.station}
-              </p>
-            ) : (
-              <p className="station-card__next mono">Terminus</p>
-            )}
+
+            <div className="station-card__foot">
+              {next ? (
+                <p className="station-card__next mono">Next: {next.station}</p>
+              ) : (
+                <p className="station-card__next mono">Terminus</p>
+              )}
+
+              {keptCount > 0 ? (
+                <p className="station-card__kept mono">
+                  {keptCount} {keptCount === 1 ? 'ticket' : 'tickets'} kept
+                </p>
+              ) : null}
+            </div>
+
             <div className="station-card__rail" role="presentation">
               <span ref={fill} className="station-card__fill" />
             </div>

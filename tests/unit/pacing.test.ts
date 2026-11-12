@@ -117,6 +117,16 @@ describe('position', () => {
     expect(position.progress).toBe(1);
   });
 
+  it('is standing at the last stop at the exact end of the timeline', () => {
+    // The page adds one viewport of runway after this point. The end of the
+    // timeline itself has to be a dwell, or the terminus can never open.
+    const position = positionAt(totalLength(segments), segments);
+    expect(position.atStop).toBe(true);
+    expect(position.phase).toBe('dwell');
+    expect(position.stopId).toBe(stops[stops.length - 1].id);
+    expect(position.progress).toBe(1);
+  });
+
   it('never goes below zero', () => {
     const position = positionAt(-50, segments);
     expect(position.s).toBe(0);

@@ -60,6 +60,7 @@
   margin-left: auto;
   display: flex;
   gap: var(--space-4);
+  align-items: center;
 }
 
 .site-header__link {
@@ -75,6 +76,11 @@
 .site-header__link[aria-current='page'] {
   color: var(--paper);
   border-bottom-color: var(--hairline-strong);
+}
+
+.site-header__resume,
+.site-header__pause {
+  white-space: nowrap;
 }
 
 /* The board is the one loud surface in the chrome: it means "act". */
@@ -94,14 +100,97 @@
   color: var(--ink);
 }
 
-@media (max-width: 720px) {
-  .site-header__handle,
-  .site-header__nav {
+/* The phone's navigation: one button, one sheet, every view reachable. */
+.site-header__menu {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  white-space: nowrap;
+}
+
+.site-header__menu-mark {
+  color: var(--board);
+  font-size: var(--step-0);
+  line-height: 1;
+}
+
+.site-header__sheet {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: grid;
+  padding: var(--space-2) var(--page-pad) var(--space-3);
+  background: var(--ink-panel);
+  border-bottom: 1px solid var(--hairline-strong);
+}
+
+.site-header__sheet-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  text-align: left;
+}
+
+.site-header__sheet-link:last-child {
+  border-bottom: 0;
+}
+
+.site-header__sheet-link[aria-current='page'] {
+  color: var(--board);
+}
+
+.site-header__sheet-note {
+  color: var(--grey-dim);
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 721px) {
+  .site-header__sheet {
+    display: none;
+  }
+}
+
+@media (max-width: 60rem) {
+  .site-header__handle {
     display: none;
   }
 
+  .site-header__bar {
+    gap: var(--space-3);
+  }
+
+  .site-header__nav {
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 720px) {
+  .site-header__nav,
+  .site-header__resume,
+  .site-header__pause {
+    display: none;
+  }
+
+  .site-header__menu {
+    display: inline-flex;
+  }
+
   .site-header__cta {
-    margin-left: auto;
+    margin-left: var(--space-2);
   }
 }
 
@@ -137,10 +226,45 @@
   background: var(--ink);
 }
 
+.station-card__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
 .station-card__station {
   color: var(--grey);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* The line switch: Express and All stations are one click apart, always. */
+.station-card__lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.station-card__line {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.1em;
+  white-space: nowrap;
+}
+
+.station-card__line:hover {
+  color: var(--paper);
+}
+
+.station-card__line[aria-pressed='true'] {
+  color: var(--board);
+  border-bottom-color: var(--board);
 }
 
 .station-card__title {
@@ -150,8 +274,23 @@
   margin-block: var(--space-1) var(--space-2);
 }
 
+.station-card__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
 .station-card__next {
   color: var(--grey);
+}
+
+.station-card__kept {
+  color: var(--board);
+  font-size: var(--step--2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .station-card__rail {
@@ -172,7 +311,7 @@
 .journey-view__cue {
   position: fixed;
   left: var(--page-pad);
-  bottom: calc(var(--space-4) + 1.6rem);
+  bottom: calc(var(--space-4) + 2.75rem);
   z-index: 45;
   padding: 0.4rem 0.9rem;
   border: 1px solid var(--hairline-strong);
@@ -189,51 +328,152 @@
   margin-left: 0.4rem;
 }
 
-/* The progress dots: one per stop, so a visitor always knows what is left. */.journey-view__dots {
+/* The progress dots: one per stop, so a visitor always knows what is left.
+   The hit area is 24px square; the mark inside stays a 7px dot. */
+.journey-view__dots {
   position: fixed;
-  left: var(--page-pad);
-  bottom: var(--space-4);
+  left: calc(var(--page-pad) - 8.5px);
+  bottom: calc(var(--space-4) - 8.5px);
   z-index: 30;
   display: flex;
-  gap: var(--space-2);
+  gap: 0;
   align-items: center;
 }
 
 .journey-view__dot {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.journey-view__dot::after {
+  content: '';
   width: 7px;
   height: 7px;
   border: 1px solid var(--grey-dim);
   background: transparent;
-  padding: 0;
 }
 
-.journey-view__dot[aria-current='true'] {
+.journey-view__dot[aria-current='true']::after {
   background: var(--board);
   border-color: var(--board);
 }
 
-.journey-view__dot:hover {
+.journey-view__dot:hover::after {
   border-color: var(--paper);
+}
+
+@media (max-width: 720px) {
+  /* The card steps above the dots instead of sitting under them. */
+  .journey-view__stage {
+    bottom: 2.75rem;
+  }
 }
 
 /* --------------------------------------------------------------- overlays */
 
-.app__overlay,
-.app__wallet {
+/**
+ * The map and the text view start below the header, not under it.
+ *
+ * Their own bars can then stick to the top of the overlay without fighting
+ * the fixed header for the same strip of screen.
+ */
+.app__overlay {
   position: fixed;
-  inset: 0;
+  inset: var(--header-h) 0 0 0;
   z-index: 50;
   overflow-y: auto;
   background: var(--ink);
-  padding: calc(var(--header-h) + var(--space-4)) var(--page-pad) var(--space-6);
 }
 
+.app__viewbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 3rem;
+  padding: var(--space-1) var(--page-pad);
+  background: var(--ink-panel);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.app__back {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  color: var(--paper);
+  white-space: nowrap;
+}
+
+.app__back:hover {
+  color: var(--board);
+}
+
+.app__viewtitle {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.app__viewtitle:focus {
+  outline: none;
+}
+
+.app__loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--page-pad);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--grey);
+}
+
+.app__loading-mark {
+  width: 8px;
+  height: 8px;
+  background: var(--board);
+  animation: app-loading-pulse 900ms steps(2, end) infinite;
+}
+
+@keyframes app-loading-pulse {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/**
+ * The terminus panel.
+ *
+ * It is a closing screen, not a drawer: full height on a phone, and a wide
+ * panel on the right at desktop so the train can stand at the last station
+ * behind it.
+ */
 .app__wallet {
-  inset: auto 0 0 0;
-  top: auto;
-  max-height: 70vh;
-  border-top: 1px solid var(--hairline);
-  z-index: 45;
+  position: fixed;
+  inset: var(--header-h) 0 0 auto;
+  width: min(44rem, 100vw);
+  z-index: 55;
+  overflow-y: auto;
+  background: var(--ink-panel);
+  border-left: 1px solid var(--hairline);
+  padding: var(--space-4) var(--page-pad) var(--space-6);
+}
+
+@media (max-width: 720px) {
+  .app__wallet {
+    inset: var(--header-h) 0 0 0;
+    width: 100%;
+    border-left: 0;
+  }
 }
 
 /* ----------------------------------------------------------------- footer */

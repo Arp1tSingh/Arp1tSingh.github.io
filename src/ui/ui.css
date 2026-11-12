@@ -79,7 +79,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  margin-top: var(--space-4);
+  /* The grid already puts one gap above this row; the extra margin here is
+     only a breath, so the address stays inside the first 900px. */
+  margin-top: var(--space-3);
   padding-top: var(--space-3);
   border-top: 1px solid var(--hairline);
 }
@@ -110,6 +112,18 @@
 
 .gate__email:hover {
   color: var(--paper);
+}
+
+.gate__resume {
+  color: var(--paper);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-color: var(--hairline-strong);
+}
+
+.gate__resume:hover {
+  color: var(--accent-text);
+  text-decoration-color: var(--accent);
 }
 
 .gate__choose {
@@ -181,9 +195,9 @@
   display: flex;
   justify-content: flex-end;
   align-items: stretch;
-  /* The layer itself catches nothing: only the panel takes clicks, so the
-     scene behind stays live and the page keeps scrolling. */
-  pointer-events: none;
+  /* A click outside the panel closes it. The header sits above this layer
+     (z-index 70), so its controls stay usable while the ticket is open. */
+  pointer-events: auto;
   background: transparent;
 }
 
@@ -202,11 +216,16 @@
 
 /* The serial and the way out. A thin bar, not a floating stub. */
 .ticket__top {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+  min-height: 2.75rem;
   padding: var(--space-2) var(--space-4);
+  background: var(--ink-panel);
   border-bottom: 1px solid var(--hairline);
 }
 
@@ -224,6 +243,10 @@
     border-left: 0;
     border-top: 1px solid var(--hairline-strong);
     padding-top: 0;
+  }
+
+  .ticket__top {
+    top: 0;
   }
 }
 
@@ -455,6 +478,14 @@
   color: var(--paper);
 }
 
+/* The confirmation belongs to the action, not to a floating toast. */
+.ticket__kept-note {
+  margin-top: var(--space-2);
+  color: var(--board);
+  font-size: var(--step--2);
+  letter-spacing: 0.04em;
+}
+
 .ticket__close {
   font-family: var(--font-mono);
   font-size: var(--step--2);
@@ -583,17 +614,63 @@
   .indicator__meta {
     justify-items: start;
   }
+
+  /*
+   * The ticket is a bottom sheet on a phone. The sliver of board left above
+   * it is not readable, so the ticket keeps the whole stage instead.
+   */
+  html:has(.ticket) .indicator {
+    display: none;
+  }
 }
 
 /* ================================================================= the wallet */
 
+/**
+ * The terminus closes the ride.
+ *
+ * The wallet is not a drawer under a ticket any more. It is the surface the
+ * last dwell hands over to: the kept shortlist, the email action, the résumé
+ * and the direct contact details, with the train standing at Badlapur behind
+ * it on a wide screen.
+ */
 .wallet {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
   align-content: start;
+  max-width: 42rem;
 }
 
 .wallet__head {
+  display: grid;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--hairline-strong);
+}
+
+.wallet__eyebrow {
+  color: var(--board);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wallet__title {
+  font-size: var(--step-3);
+  max-width: 24ch;
+}
+
+.wallet__lead {
+  color: var(--grey);
+  max-width: var(--measure);
+}
+
+.wallet__kept {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.wallet__kept-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -602,8 +679,11 @@
   border-bottom: 1px solid var(--hairline);
 }
 
-.wallet__title {
-  font-size: var(--step-2);
+.wallet__subhead {
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
 }
 
 .wallet__count {
@@ -614,8 +694,31 @@
 }
 
 .wallet__empty {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--hairline);
+  background: var(--ink-raise);
   font-size: var(--step--1);
   color: var(--grey);
+}
+
+.wallet__empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.wallet__empty-action {
+  border: 1px solid var(--hairline-strong);
+  padding: 0.45em 0.9em;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--paper);
+}
+
+.wallet__empty-action:hover {
+  border-color: var(--paper);
 }
 
 .wallet__list {
@@ -662,8 +765,8 @@
 .wallet__remove {
   flex: none;
   align-self: center;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem;
+  height: 2rem;
   font-size: var(--step-1);
   line-height: 1;
   color: var(--grey-dim);
@@ -673,15 +776,44 @@
   color: var(--paper);
 }
 
-.wallet__foot {
+.wallet__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   padding-top: var(--space-2);
+  border-top: 1px solid var(--hairline);
+}
+
+/* The board yellow is the one loud action on the closing screen. */
+.wallet__send {
+  padding: 0.55em 1em;
+  background: var(--board);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.wallet__send:hover {
+  background: var(--paper);
+}
+
+.wallet__action {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--paper);
+  border: 1px solid var(--hairline-strong);
+  padding: 0.5em 0.9em;
+}
+
+.wallet__action:hover {
+  border-color: var(--paper);
 }
 
 .wallet__clear {
+  margin-left: auto;
   font-family: var(--font-mono);
   font-size: var(--step--2);
   letter-spacing: 0.12em;
@@ -691,27 +823,55 @@
   padding-bottom: 0.15em;
 }
 
-.wallet__clear:hover:not(:disabled) {
+.wallet__clear:hover {
   color: var(--paper);
 }
 
-.wallet__clear:disabled {
-  color: var(--grey-dim);
-  border-bottom-color: transparent;
-  cursor: default;
-}
-
-/* Red means "actionable": sending the shortlist. */
-.wallet__send {
-  margin-left: auto;
-  font-family: var(--font-mono);
+.wallet__contact {
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--hairline-strong);
   font-size: var(--step--1);
-  color: var(--accent-text);
-  border-bottom: 1px solid var(--accent);
-  padding-bottom: 0.15em;
+  color: var(--grey);
 }
 
-.wallet__send:hover {
+.wallet__contact-label {
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
+}
+
+.wallet__contact-email {
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  overflow-wrap: anywhere;
+}
+
+.wallet__contact-email:hover {
   color: var(--paper);
-  border-bottom-color: var(--paper);
+}
+
+.wallet__contact-place {
+  color: var(--grey);
+}
+
+.wallet__contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.wallet__contact-links a {
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--hairline-strong);
+}
+
+.wallet__contact-links a:hover {
+  color: var(--paper);
+  text-decoration-color: var(--paper);
 }

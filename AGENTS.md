@@ -14,11 +14,19 @@ into a single push.
   (Ambernath), `badlapur`.
 - Phases: 0 content order, 1 ride clock, 2 path/track, 3 camera, 4 metro
   train, 5 sky/palette, 6 docs/verification.
-- Status: phases 0-5 done. 161 unit tests and 93 e2e tests (Chromium,
+- Status: phases 0-5 done. 169 unit tests and 111 e2e tests (Chromium,
   Firefox, WebKit) pass; typecheck and build pass. Screenshots at
   0/25/50/75/100% desktop, mobile and reduced motion reviewed. The city now
   stands 46 units back from the line's own normal, which removed the flat
   grey wall at Thane.
+- UX pass done (`docs/ux-plan.md`): the terminus hands over to a wallet
+  closing screen with one viewport of runway; the map keeps its own
+  selection and "Ride here" is the only thing that moves the train; phones
+  get a Views menu, a back bar, a filter strip above the plot and a station
+  sheet that stays shut until a station is picked; the ticket is a
+  non-modal dialog with explicit arrow scrolling and 24px dot targets.
+  "Classic" reads as "Text view" and "Pause" as "Pause motion"; the résumé
+  is in the header, the menu and the gate.
 - Pacing and track: dwell `express 0.4` / `local 0.2`, travel `0.6`.
   Express is 7.4 viewport heights and All stations 10.6, down from 11.8 and
   17.0 (about 60% more route per scroll). The centreline uses four Chaikin

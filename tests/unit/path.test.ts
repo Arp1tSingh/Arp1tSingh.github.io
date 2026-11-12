@@ -10,6 +10,7 @@ import {
 import {
   LEAD_IN,
   STATION_SPACING,
+  TRAIN_LENGTH,
   stationAnchor,
 } from '../../src/renderers/scene3d/constants';
 
@@ -61,10 +62,36 @@ describe('the line', () => {
     }
   });
 
-  it('keeps a station tangent along the platform', () => {
-    const pose = poseAt(line, line.stations[3], makePose());
-    expect(Math.abs(pose.t.x)).toBeGreaterThan(0.999);
-    expect(Math.abs(pose.t.z)).toBeLessThan(0.02);
+  it('keeps the train level with every platform', () => {
+    const underTrain = TRAIN_LENGTH / 2;
+    for (let index = 0; index < 12; index += 1) {
+      const centre = line.stations[index];
+      const anchor = stationAnchor(index);
+      const middle = poseAt(line, centre, makePose());
+      expect(Math.abs(middle.p.x - anchor.x)).toBeLessThan(0.01);
+      expect(Math.abs(middle.p.z - anchor.z)).toBeLessThan(0.001);
+      expect(Math.abs(middle.t.z)).toBeLessThan(0.02);
+
+      for (const offset of [-underTrain, underTrain]) {
+        const pose = poseAt(line, centre + offset, makePose());
+        // The smoothed wave leans less than a metre under the train, so the
+        // car ends still sit beside the platform edge rather than over it.
+        expect(Math.abs(pose.p.z - anchor.z)).toBeLessThan(1.25);
+      }
+    }
+  });
+
+  it('turns without a kink between samples', () => {
+    let previous = poseAt(line, 0, makePose()).t.clone();
+    let largest = 0;
+    for (let d = 0.25; d <= line.total; d += 0.25) {
+      const next = poseAt(line, d, makePose()).t.clone();
+      largest = Math.max(largest, previous.angleTo(next));
+      previous = next;
+    }
+    // Two Chaikin rounds used to step almost 0.21 rad at one vertex. Four
+    // rounds with a blended tangent stay well under 0.01 rad per 0.25 units.
+    expect(largest).toBeLessThan(0.01);
   });
 
   it('clamps before the start and after the end', () => {

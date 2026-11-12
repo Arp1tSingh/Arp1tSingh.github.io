@@ -54,7 +54,7 @@ test('scrolling on closes the ticket and moves the line', async ({ page }) => {
   expect(viewport).not.toBeNull();
 
   await page.mouse.move(200, 300);
-  await page.mouse.wheel(0, viewport!.height * 2);
+  await page.mouse.wheel(0, viewport!.height * 1.2);
 
   await expect
     .poll(async () => page.evaluate(() => window.scrollY), { timeout: 15_000 })

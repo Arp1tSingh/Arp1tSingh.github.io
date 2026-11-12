@@ -10,6 +10,19 @@ const allStops = stopsForLine(CONTENT.stops, CONTENT.route, 'all');
 const routeIds = allStops.map((stop) => stop.id);
 const segments = buildSegments(allStops, CONTENT.route.pacing, 'all');
 
+/**
+ * Sample points derived from the timeline, not guessed scroll numbers.
+ *
+ * The pacing weights are content, so the tests should keep passing when a
+ * stop is held longer or a travel is shortened.
+ */
+const firstDwell = segments[0];
+const firstTravel = segments[1];
+const secondDwell = segments[2];
+const dwellX = firstDwell.start + firstDwell.length / 2;
+const travelX = firstTravel.start + firstTravel.length / 2;
+const nextDwellX = secondDwell.start + secondDwell.length / 2;
+
 function at(x: number) {
   return positionAt(x, segments);
 }
@@ -38,13 +51,13 @@ describe('the journey state machine', () => {
   });
 
   it('dwells when the train stops', () => {
-    const state = reduce(boarded(), { type: 'scroll', position: at(0.2) });
+    const state = reduce(boarded(), { type: 'scroll', position: at(dwellX) });
     expect(state.phase).toBe('dwelling');
     expect(state.stopIndex).toBe(0);
   });
 
   it('travels between stops', () => {
-    const state = reduce(boarded(), { type: 'scroll', position: at(0.9) });
+    const state = reduce(boarded(), { type: 'scroll', position: at(travelX) });
     expect(state.phase).toBe('traveling');
   });
 
@@ -66,30 +79,30 @@ describe('the journey state machine', () => {
   });
 
   it('closes the ticket back into travelling', () => {
-    const dwelling = reduce(boarded(), { type: 'scroll', position: at(0.2) });
+    const dwelling = reduce(boarded(), { type: 'scroll', position: at(dwellX) });
     const closed = reduce(dwelling, { type: 'close-ticket' });
     expect(closed.phase).toBe('traveling');
   });
 
   it('does not spring the ticket open again while the train has not moved', () => {
-    const dwelling = reduce(boarded(), { type: 'scroll', position: at(0.2) });
-    const closed = reduce(dwelling, { type: 'close-ticket', x: at(0.2).x });
+    const dwelling = reduce(boarded(), { type: 'scroll', position: at(dwellX) });
+    const closed = reduce(dwelling, { type: 'close-ticket', x: at(dwellX).x });
     expect(closed.phase).toBe('traveling');
 
     // The same place, read again: still closed.
-    const again = reduce(closed, { type: 'scroll', position: at(0.2) });
+    const again = reduce(closed, { type: 'scroll', position: at(dwellX) });
     expect(again.phase).toBe('traveling');
 
     // The train moved: the next station opens its ticket.
-    const moved = reduce(closed, { type: 'scroll', position: at(1.8) });
+    const moved = reduce(closed, { type: 'scroll', position: at(nextDwellX) });
     expect(moved.phase).toBe('dwelling');
   });
 
   it('reopens the ticket when the train comes back to the same stop', () => {
-    const dwelling = reduce(boarded(), { type: 'scroll', position: at(0.2) });
-    const closed = reduce(dwelling, { type: 'close-ticket', x: at(0.2).x });
-    const away = reduce(closed, { type: 'scroll', position: at(1.8) });
-    const back = reduce(away, { type: 'scroll', position: at(0.2) });
+    const dwelling = reduce(boarded(), { type: 'scroll', position: at(dwellX) });
+    const closed = reduce(dwelling, { type: 'close-ticket', x: at(dwellX).x });
+    const away = reduce(closed, { type: 'scroll', position: at(nextDwellX) });
+    const back = reduce(away, { type: 'scroll', position: at(dwellX) });
     expect(back.phase).toBe('dwelling');
   });
 

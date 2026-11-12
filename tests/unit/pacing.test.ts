@@ -76,6 +76,11 @@ describe('the scroll timeline', () => {
     const segments = buildSegments(lineStops('all'), pacing, 'all');
     expect(totalLength(segments)).toBeGreaterThan(5);
   });
+
+  it('keeps the express line quick', () => {
+    const segments = buildSegments(lineStops('express'), pacing, 'express');
+    expect(totalLength(segments)).toBeLessThan(9);
+  });
 });
 
 describe('position', () => {

@@ -1,10 +1,10 @@
 /**
  * The line.
  *
- * A station sits in one of two lanes. The track runs straight through each
- * platform, then jogs to the other lane before the next one. Two rounds of
- * Chaikin smoothing round the corners, and an arc-length table turns a
- * distance along the line into a position and a tangent.
+ * A station sits in one of two lanes. The track runs through each platform,
+ * then jogs to the other lane before the next one. Four rounds of Chaikin
+ * smoothing turn the control polygon into a gentle wave, and the tangent is
+ * blended between samples so the heading never steps at a vertex.
  *
  * Everything in the scene reads from this module: the rails, the sleepers,
  * the carriages, the camera and the station anchors. It is pure geometry, so
@@ -43,6 +43,12 @@ export function makePose(): Pose {
   return { p: new THREE.Vector3(), t: new THREE.Vector3() };
 }
 
+/** Scratch direction for blending a tangent into the next sample. */
+const nextTangent = new THREE.Vector3();
+
+/** How many corner-cutting rounds the control polygon gets. */
+const SMOOTHING_ROUNDS = 4;
+
 function chaikin(points: THREE.Vector3[]): THREE.Vector3[] {
   const out: THREE.Vector3[] = [points[0].clone()];
   for (let i = 0; i < points.length - 1; i += 1) {
@@ -79,9 +85,7 @@ function controlPoints(stopCount: number): THREE.Vector3[] {
 /**
  * Find the distance along the line nearest to a station anchor.
  *
- * The station is on a straight run, so this is a short sample and refine
- * rather than a solve. The result is asserted against the anchor in the
- * path tests.
+ * The result is asserted against the anchor in the path tests.
  */
 function nearestDistance(line: { points: THREE.Vector3[]; cum: number[]; total: number }, x: number, z: number): number {
   const pose = makePose();
@@ -135,12 +139,21 @@ function poseAtRaw(
   const alpha = span > 0 ? (d - line.cum[lo]) / span : 0;
   out.p.lerpVectors(a, b, alpha);
   out.t.subVectors(b, a).normalize();
+
+  // Blend towards the next sample's direction. The centreline is a polyline,
+  // so without this the heading would step at every vertex; with it, the
+  // train, the sleepers and the camera all follow a continuous turn.
+  const after = line.points[lo + 2];
+  if (after) {
+    nextTangent.subVectors(after, b).normalize();
+    out.t.lerp(nextTangent, alpha).normalize();
+  }
 }
 
 /** Build the whole line for a route with this many stops. */
 export function buildLine(stopCount: number): LinePath {
   let points = controlPoints(Math.max(1, stopCount));
-  points = chaikin(chaikin(points));
+  for (let round = 0; round < SMOOTHING_ROUNDS; round += 1) points = chaikin(points);
 
   const cum: number[] = [0];
   for (let i = 1; i < points.length; i += 1) {

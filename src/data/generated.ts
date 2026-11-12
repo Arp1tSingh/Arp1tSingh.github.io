@@ -64,10 +64,10 @@ export const ROUTE_RAW: unknown = {
   ],
   "pacing": {
     "dwell": {
-      "express": 0.6,
-      "local": 0.3
+      "express": 0.4,
+      "local": 0.2
     },
-    "travel": 1,
+    "travel": 0.6,
     "expressZeroesLocalDwell": true
   }
 };

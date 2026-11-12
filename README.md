@@ -80,13 +80,15 @@ Gate ──▶ Boarding ──▶ Traveling ◀──▶ Dwelling ──▶ Term
 
 Scroll is the only clock. Nothing auto-plays past a stop, and the visitor sets the pace. The pacing function maps a scroll distance in viewport heights to a route position: the train holds at a stop for that stop's dwell weight, then travels to the next one over a fixed weight.
 
+The weights are tuned for the way people actually scroll. Express takes **7.4 viewport heights** and All stations **10.6**, down from 11.8 and 17.0: about 60% more of the line per turn of the wheel, with every stop still held long enough to read.
+
 A map click, a progress dot or a deep link jumps straight to `Dwelling` at any stop. **Every stop is reachable in one interaction from anywhere**, and that is asserted in the test suite rather than assumed.
 
 ### The three lines
 
 | Line | Intent | Budget | What it keeps |
 | --- | --- | --- | --- |
-| **Express** | skim | short | The flagship stops and the terminus. About a minute. |
+| **Express** | skim | short | The flagship stops and the terminus, in 7.4 viewport heights. |
 | **All stations** | explore | long | Every stop, local stops included. |
 | **Network map** | verify | long | The whole network, filterable by skill. |
 
@@ -111,7 +113,7 @@ If the app fails to boot, an inline timer puts the static page back. There is no
 The scene is built entirely from primitives. There is no glTF, no texture map and no model file, so **the whole 3D payload is 0 bytes** and the geometry budget is the only budget that matters.
 
 - **The train** is three articulated cars in the metro livery: a silver shell, a blue band, a red line under the windows, a lit window band, tapered cab ends and four wheels per car. The roof pod, vents, underframe and bogie boxes are gone; parts that share a material are merged, so the set is 6,804 triangles in eight draw calls.
-- **The track** weaves between two lanes. The ballast bed, both running rails, the third rail and its cover are profiled ribbons extruded along the smoothed path; the sleepers lie across the rails and, with the city, are `InstancedMesh`. Seven draw calls for the whole line, with no catenary and no pantograph.
+- **The track** weaves between two lanes. It holds the line through each platform, then changes lane on a four-round Chaikin wave; the tangent is blended between samples, so the heading never steps at a vertex. The ballast bed, both running rails, the third rail and its cover are profiled ribbons extruded along that path; the sleepers lie across the rails and, with the city, are `InstancedMesh`. 37,512 triangles and seven draw calls for the whole line, with no catenary and no pantograph.
 - **The stations** are a modular kit: a platform, a canopy, a board, a bench and a lamp.
 - **The dioramas** are one prop per stop, chosen from the project's domain, so a station is recognisable before its name is read.
 - **The sky** is one inverted sphere and one shader with no texture. Six keys take it from dawn through day, golden hour and dusk to night, and the fog is the horizon colour so the city dissolves into it. The sun sets below the line, the moon rises on its own arc and the stars fade in behind them; all three are placed from world directions, so they stay put while the train moves.
@@ -138,13 +140,13 @@ Nothing is loaded that the visitor has not asked for. The chunks are:
 
 | Chunk | Raw | Gzipped | When |
 | --- | --- | --- | --- |
-| The app | 277 KB | **87 KB** | With the page |
-| The 3D scene | 965 KB | 258 KB | With the line, on a wide screen |
+| The app | 278 KB | **87.7 KB** | With the page |
+| The 3D scene | 968 KB | 259 KB | With the line, on a wide screen |
 | The Classic view | 7 KB | 2 KB | When `C` is pressed |
 | The network map | 11 KB | 3 KB | When `M` is pressed |
 | The QR encoder | 5 KB | 2 KB | When a ticket opens |
 
-The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 87 KB of it.
+The blueprint's budget is 350 KB of initial JavaScript gzipped. The app is 88 KB of it.
 
 Two things were worth the trouble of finding. The classic view's build-time renderer imports `react-dom/server`, which is a hundred and eighty kilobytes of machinery for rendering on a server - it now lives in its own module, and the browser chunk is 7 KB instead of 209 KB. And the train and the dioramas use Lambert rather than Standard shading: the art direction is flat colour and flat shading, and Standard's physical shading is a lot of shader to compile for an effect nobody can see in a faceted scene.
 

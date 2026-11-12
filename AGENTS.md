@@ -14,11 +14,16 @@ into a single push.
   (Ambernath), `badlapur`.
 - Phases: 0 content order, 1 ride clock, 2 path/track, 3 camera, 4 metro
   train, 5 sky/palette, 6 docs/verification.
-- Status: phases 0-5 done. 158 unit tests and 93 e2e tests (Chromium,
+- Status: phases 0-5 done. 160 unit tests and 93 e2e tests (Chromium,
   Firefox, WebKit) pass; typecheck and build pass. Screenshots at
   0/25/50/75/100% desktop, mobile and reduced motion reviewed. The city now
   stands 46 units back from the line's own normal, which removed the flat
   grey wall at Thane.
+- Pacing and track: dwell `express 0.4` / `local 0.2`, travel `0.6`.
+  Express is 7.4 viewport heights and All stations 10.6, down from 11.8 and
+  17.0 (about 60% more route per scroll). The centreline uses four Chaikin
+  rounds with a blended tangent: 416 points, max vertex turn 0.052 rad,
+  37,512 track triangles in 7 draw calls.
 - Latest visual pass: doors are depth-layered so their glass cannot
   z-fight; the train is down to shell, livery, glazing and wheels (6,804
   triangles, 8 draw calls); the track has a ballast bed, profiled rails and

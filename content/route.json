@@ -38,8 +38,8 @@
     "badlapur"
   ],
   "pacing": {
-    "dwell": { "express": 0.6, "local": 0.3 },
-    "travel": 1,
+    "dwell": { "express": 0.4, "local": 0.2 },
+    "travel": 0.6,
     "expressZeroesLocalDwell": true
   }
 }

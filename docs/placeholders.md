@@ -164,12 +164,14 @@ The numbers the primitives currently hit, all asserted by the unit tests:
 
 ### A curved line
 
-**Done (2026-11-11).** The line weaves between two lanes: it runs straight
-through each platform, jogs to the other lane between stations, and two
-rounds of Chaikin smoothing round the corners. The ballast, rails and third
-rail are ribbons extruded along that path, and each sleeper is laid across
-the rails from the path tangent. The camera's capped turn rate made the curve
-possible without changing the camera rules.
+**Done (2026-11-12).** The line weaves between two lanes: it holds through
+each platform, changes lane on a four-round Chaikin wave, and blends the
+tangent between samples so the heading never steps at a vertex. The ballast,
+rails and third rail are ribbons extruded along that path, and each sleeper is
+laid across the rails from the path tangent. The camera's capped turn rate made
+the curve possible without changing the camera rules. The ride was shortened
+at the same time: Express now takes 7.4 viewport heights and All stations 10.6,
+down from 11.8 and 17.0, so each scroll covers about 60% more of the line.
 
 ## How to change any of this
 
